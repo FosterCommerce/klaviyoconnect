@@ -1,0 +1,36 @@
+{% import "_includes/forms" as forms %}
+
+<div class="field" id="klaviyoSiteId-field">
+  <div class="heading">
+    <label for="klaviyoSiteId">Public API Key / Site ID</label>
+		<p class="instructions">{{ "See Klaviyo -> Account -> Settings -> API Keys" | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="klaviyoSiteId" name="klaviyoSiteId"
+      value="{{ settings.klaviyoSiteId }}">
+	</div>
+</div>
+
+<div class="field" id="klaviyoApiKey-field">
+  <div class="heading">
+    <label for="klaviyoApiKey">Private API Key</label>
+    <p class="instructions">{{ "See Klaviyo -> Account -> Settings -> API Keys" | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="klaviyoApiKey" name="klaviyoApiKey"
+      value="{{ settings.klaviyoApiKey }}">
+	</div>
+</div>
+
+<div class="field" id="customSubscribeFieldHandle-field">
+    <div class="heading">
+      <label for="subscribeFieldHandle">Subscribe Field Handle</label>
+    </div>
+    <div class="input">
+      <input
+        class="text fullwidth" type="text" id="subscribeFieldHandle" name="subscribeFieldHandle"
+        value="{{ settings.subscribeFieldHandle }}">
+    </div>
+  </div>

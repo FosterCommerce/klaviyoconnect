@@ -1,0 +1,7 @@
+*.log
+*.bak
+*.DS_Store
+*.orig
+*Thumbs.db
+vendor/
+composer.lock
