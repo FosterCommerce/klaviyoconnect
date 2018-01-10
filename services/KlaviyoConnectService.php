@@ -23,13 +23,13 @@ class KlaviyoConnectService extends BaseApplicationComponent
             $customer = $order->customer;
 
             $email = $order->email;
-            if (is_null($email)) {
+            if (empty($email)) {
                 if (!is_null($customer->user)) {
                     $email = $customer->user->email;
                 }
             }
 
-            if (!is_null($email)) {
+            if (!empty($email)) {
                 $customerProperties = ['$email' => $email];
 
                 // Use shipping/billing details to get extra customer info if they're already set
