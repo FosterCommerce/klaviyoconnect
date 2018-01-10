@@ -5,7 +5,12 @@ class KlaviyoConnectPlugin extends BasePlugin
 {
     function getName()
     {
-         return Craft::t('Klaviyo subscription management CraftCMS plugin');
+         return Craft::t('Klaviyo Connect');
+    }
+
+    function getDescription()
+    {
+        return Craft::t('Klaviyo integration for Craft Commerce');
     }
 
     function getVersion()
