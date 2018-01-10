@@ -97,7 +97,7 @@ class KlaviyoConnectService extends BaseApplicationComponent
                 ];
 
                 $klaviyo = new Klaviyo($this->getSetting('klaviyoSiteId'));
-                $klaviyo->track('Cart Updated', $customerProperties, $extraProperties);
+                $klaviyo->track('Updated Cart', $customerProperties, $extraProperties);
             }
         }
     }
@@ -107,7 +107,7 @@ class KlaviyoConnectService extends BaseApplicationComponent
         $order = $event->params['order'];
         $klaviyo = new Klaviyo($this->getSetting('klaviyoSiteId'));
         $klaviyo->track(
-            'Order Complete',
+            'Completed Order',
             ['$email' => $order->email],
             ['Order ID' => $order->id]
         );
