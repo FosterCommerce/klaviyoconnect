@@ -10,17 +10,17 @@ class KlaviyoConnectPlugin extends BasePlugin
 
     function getDescription()
     {
-        return Craft::t('Klaviyo integration for Craft Commerce');
+        return Craft::t('Klaviyo integration for Craft CMS');
     }
 
     function getVersion()
     {
-        return '1.0';
+        return '0.1';
     }
 
     function getDeveloper()
     {
-        return 'Shoe Shine Design';
+        return 'Shoe Shine Design & Development';
     }
 
     function getDeveloperUrl()
@@ -31,18 +31,6 @@ class KlaviyoConnectPlugin extends BasePlugin
     function init()
     {
         require_once __DIR__ . '/vendor/autoload.php';
-
-        craft()->on('commerce_orders.onSaveOrder', function($event) {
-            craft()->klaviyoConnect->onSaveOrder($event);
-        });
-
-        craft()->on('commerce_orders.onOrderComplete', function($event) {
-            craft()->klaviyoConnect->onOrderComplete($event);
-        });
-
-        craft()->on('users.onSaveUser', function($event) {
-            craft()->klaviyoConnect->onSaveUser($event);
-        });
     }
 
     protected function defineSettings()
@@ -50,7 +38,6 @@ class KlaviyoConnectPlugin extends BasePlugin
         return array(
           'klaviyoSiteId' => array(AttributeType::String, 'default' => ''),
           'klaviyoApiKey' => array(AttributeType::String, 'default' => ''),
-          'subscribeFieldHandle' => array(AttributeType::String, 'default' => 'newsletter'),
         );
     }
 

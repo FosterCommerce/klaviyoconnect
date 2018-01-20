@@ -1,7 +1,6 @@
 {
     "name": "shoeshine/klaviyoconnect",
     "require": {
-        "klaviyo/php-sdk": "dev-master"
-    },
-    "minimum-stability": "dev"
+        "guzzlehttp/guzzle": "~6.0"
+    }
 }
