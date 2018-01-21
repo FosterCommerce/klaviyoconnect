@@ -4,10 +4,8 @@ namespace Craft;
 
 use \GuzzleHttp\Exception\RequestException;
 
-class KlaviyoConnect_ListsController extends BaseController
+class KlaviyoConnect_ListsController extends KlaviyoConnect_BaseController
 {
-    protected $allowAnonymous = true;
-
     public function actionAddToLists()
     {
         $this->requirePostRequest();
@@ -25,7 +23,7 @@ class KlaviyoConnect_ListsController extends BaseController
         }
 
         if (sizeof($lists) > 0) {
-            $profile = KlaviyoConnect_ProfileModel::populateModel($_POST);
+            $profile = $this->mapProfile();
             $confirmOptIn = true;
 
             if (array_key_exists('confirmOptIn', $_POST)) {
@@ -49,12 +47,6 @@ class KlaviyoConnect_ListsController extends BaseController
             }
         }
 
-        if (array_key_exists('forward', $_POST)) {
-            $url = $_POST['forward'];
-            $this->forward($url, false);
-        } else {
-            $this->redirectToPostedUrl();
-        }
+        $this->forwardOrRedirect();
     }
-
 }

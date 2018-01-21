@@ -2,19 +2,17 @@
 
 namespace Craft;
 
-use \Klaviyo;
 use \GuzzleHttp\Client;
 
 class KlaviyoConnect_ApiService extends BaseApplicationComponent
 {
-    private $settings = null;
-    private $TRACK_ONCE_KEY = '__track_once__';
     private $host = 'https://a.klaviyo.com/api/v1/';
+    private $settings = null;
     private $client = null;
 
     private $cachedLists = null;
 
-    function __construct()
+    public function __construct()
     {
         $plugin = craft()->plugins->getPlugin('klaviyoconnect');
         $this->settings = $plugin->getSettings();
@@ -25,11 +23,13 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
     }
 
     public function track($event,
-            KlaviyoConnect_ProfileModel $customer_properties,
-            KlaviyoConnect_EventPropertiesModel $properties,
-            $timestamp=NULL) {
-        if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
-            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
+        KlaviyoConnect_ProfileModel $profile,
+        KlaviyoConnect_EventPropertiesModel $properties = null,
+        $trackOnce = false,
+        $timestamp = null) {
+        $mappedProfile = $profile->map();
+        if ((!array_key_exists('$email', $mappedProfile) || empty($mappedProfile['$email']))
+            && (!array_key_exists('$id', $mappedProfile) || empty($mappedProfile['$id']))) {
 
             throw new Exception('You must identify a user by email or ID.');
         }
@@ -37,35 +37,33 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'event' => $event,
-            'customer_properties' => $customer_properties
+            'customer_properties' => $mappedProfile,
         );
 
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
 
-        if (isset($properties) && sizeof($properties) > 0) {
-            $params['properties'] = $properties;
+        $mappedProperties = $properties->map();
+        if (isset($properties) && sizeof($mappedProperties) > 0) {
+            $params['properties'] = $mappedProperties;
         }
 
-        return $this->callServerApi('track', $params);
+        return $this->callServerApi($trackOnce ? 'track-once' : 'track', $params);
     }
 
-    public function trackOnce($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
-        $properties[$this->TRACK_ONCE_KEY] = true;
-        return $this->track($event, $customer_properties, $properties, $timestamp);
-    }
-
-    public function identify($properties) {
-        if ((!array_key_exists('$email', $properties) || empty($properties['$email']))
-            && (!array_key_exists('$id', $properties) || empty($properties['$id']))) {
+    public function identify(KlaviyoConnect_ProfileModel $profile)
+    {
+        $mapped = $profile->map();
+        if ((!array_key_exists('$email', $mapped) || empty($mapped['$email']))
+            && (!array_key_exists('$id', $mapped) || empty($mapped['$id']))) {
 
             throw new Exception('You must identify a user by email or ID.');
         }
 
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
-            'properties' => $properties
+            'properties' => $mapped,
         );
 
         return $this->callServerApi('identify', $params);
@@ -92,7 +90,7 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
         return $this->cachedLists;
     }
 
-    private function getListsPaged($page=0, $lists=array(), $totalLists = 0)
+    private function getListsPaged($page = 0, $lists = array(), $totalLists = 0)
     {
         $response = $this->client->request('GET', 'lists', [
             'query' => [
@@ -129,8 +127,7 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
     public function addProfileToList(
         KlaviyoConnect_ListModel &$list,
         KlaviyoConnect_ProfileModel &$profile,
-        $confirmOptIn = true)
-    {
+        $confirmOptIn = true) {
         $params = [
             'api_key' => $this->getSetting('klaviyoApiKey'),
             'email' => $profile->email,
