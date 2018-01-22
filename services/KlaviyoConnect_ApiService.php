@@ -4,19 +4,15 @@ namespace Craft;
 
 use \GuzzleHttp\Client;
 
-class KlaviyoConnect_ApiService extends BaseApplicationComponent
+class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
 {
     private $host = 'https://a.klaviyo.com/api/v1/';
-    private $settings = null;
     private $client = null;
 
     private $cachedLists = null;
 
     public function __construct()
     {
-        $plugin = craft()->plugins->getPlugin('klaviyoconnect');
-        $this->settings = $plugin->getSettings();
-
         $this->client = new Client([
             'base_uri' => $this->host,
         ]);
@@ -102,7 +98,10 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
         foreach ($content->data as $list) {
             $totalLists++;
             if ($list->list_type === 'list') {
-                $lists[] = $list;
+                $model = new KlaviyoConnect_ListModel();
+                $model->id = $list->id;
+                $model->name = $list->name;
+                $lists[] =  $model;
             }
         }
         if ($totalLists === $content->total) {
@@ -153,10 +152,5 @@ class KlaviyoConnect_ApiService extends BaseApplicationComponent
         } else {
             return null;
         }
-    }
-
-    private function getSetting($name)
-    {
-        return $this->settings[$name];
     }
 }

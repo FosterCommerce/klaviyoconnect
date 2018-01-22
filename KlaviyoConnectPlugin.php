@@ -3,32 +3,32 @@ namespace Craft;
 
 class KlaviyoConnectPlugin extends BasePlugin
 {
-    function getName()
+    public function getName()
     {
-         return Craft::t('Klaviyo Connect');
+        return Craft::t('Klaviyo Connect');
     }
 
-    function getDescription()
+    public function getDescription()
     {
         return Craft::t('Klaviyo integration for Craft CMS');
     }
 
-    function getVersion()
+    public function getVersion()
     {
         return '0.1';
     }
 
-    function getDeveloper()
+    public function getDeveloper()
     {
         return 'Shoe Shine Design & Development';
     }
 
-    function getDeveloperUrl()
+    public function getDeveloperUrl()
     {
         return 'http://shoeshinedesign.com/';
     }
 
-    function init()
+    public function init()
     {
         require_once __DIR__ . '/vendor/autoload.php';
     }
@@ -36,15 +36,18 @@ class KlaviyoConnectPlugin extends BasePlugin
     protected function defineSettings()
     {
         return array(
-          'klaviyoSiteId' => array(AttributeType::String, 'default' => ''),
-          'klaviyoApiKey' => array(AttributeType::String, 'default' => ''),
+            'klaviyoSiteId' => array(AttributeType::String, 'default' => ''),
+            'klaviyoApiKey' => array(AttributeType::String, 'default' => ''),
+            'klaviyoDefaultProfileMapping' => array(AttributeType::String, 'default' => 'usermodel_mapping'),
+            'klaviyoAvailableLists' => array(AttributeType::Mixed, 'default' => array()),
+            'klaviyoListsAll' => array(AttributeType::Bool, 'default' => true),
         );
     }
 
     public function getSettingsHtml()
     {
         return craft()->templates->render('klaviyoconnect/settings', array(
-          'settings' => $this->getSettings()
+            'settings' => $this->getSettings(),
         ));
     }
 }

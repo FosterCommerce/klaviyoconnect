@@ -12,23 +12,44 @@ class KlaviyoConnect_ListsFieldType extends BaseFieldType
 
     public function defineContentAttribute()
     {
-        return AttributeType::Mixed;
+        return array(AttributeType::Mixed);
     }
 
     public function getInputHtml($name, $values)
     {
         $lists = craft()->klaviyoConnect_api->getLists();
-        $listOptions = [];
+        $listOptions = array();
 
-        foreach($lists as $list) {
-            $listOptions[$list->id] = $list->name;
+        $plugin = craft()->plugins->getPlugin('klaviyoconnect');
+        $availableLists = $plugin->getSettings()['klaviyoAvailableLists'];
+
+        foreach ($lists as $list) {
+            if (in_array($list->id, $availableLists)) {
+                $listOptions[$list->id] = $list->name;
+            }
+        }
+
+        $ids = array();
+        foreach ($values as $key => $value) {
+            $ids[] = $key;
         }
 
         return craft()->templates->render('klaviyoconnect/fieldtypes/checkboxgroup', array(
             'name'    => $name,
             'options' => $listOptions,
-            'values'   => $values,
+            'values'   => $ids,
         ));
     }
 
+    public function prepValueFromPost($values)
+    {
+        $modified = array();
+        $lists = craft()->klaviyoConnect_api->getLists();
+        foreach ($lists as $list) {
+            if (in_array($list->id, $values)) {
+                $modified[$list->id] = $list->name;
+            }
+        }
+        return $modified;
+    }
 }

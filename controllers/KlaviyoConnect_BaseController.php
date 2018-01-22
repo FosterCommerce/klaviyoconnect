@@ -2,7 +2,7 @@
 
 namespace Craft;
 
-class KlaviyoConnect_BaseController extends BaseController
+abstract class KlaviyoConnect_BaseController extends BaseController
 {
     protected $allowAnonymous = true;
 
@@ -18,9 +18,11 @@ class KlaviyoConnect_BaseController extends BaseController
 
     protected function mapProfile()
     {
-        // TODO Add a hook to allow users to add custom profile mapping
-        // i.e. User/Customer/etc -> profile
-        $profile = KlaviyoConnect_ProfileModel::populateModel($_POST);
+        $provider = '';
+        if (array_key_exists('klaviyoProfileMapping', $_POST)) {
+            $provider = $_POST['klaviyoProfileMapping'];
+        }
+        $profile = craft()->klaviyoConnect_map->map($provider, $_POST);
         return $profile;
     }
 }

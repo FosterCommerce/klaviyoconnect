@@ -23,3 +23,79 @@
       value="{{ settings.klaviyoApiKey }}">
 	</div>
 </div>
+
+<div class="field" id="klaviyoAvailableLists-field">
+  <div class="heading">
+    <label>Lists</label>
+    <p class="instructions">{{ "Select lists available to Control Panel" | t }}</p>
+  </div>
+  <div class="input">
+    <input type="hidden" name="klaviyoListsAll" value="0" />
+    <input type="hidden" name="klaviyoAvailableLists[]" value="" />
+    <div class="field checkboxfield">
+      <input type="checkbox"
+        class="klaviyoListsAll"
+        id="klaviyoListsAll"
+        name="klaviyoListsAll"
+        value="1"
+        {% if settings.klaviyoListsAll %}checked="checked"{% endif %}
+      />
+      <label for="klaviyoListsAll" class="klaviyoListsAll-label">All</label>
+    </div>
+    {% for list in craft.klaviyoConnect.lists %}
+    <div class="field checkboxfield">
+      <input type="checkbox" name="klaviyoAvailableLists[]"
+        class="klaviyoAvailableLists"
+        id="klaviyoAvailableLists{{ list.id }}" value="{{ list.id }}"
+        {% if list.id in settings.klaviyoAvailableLists %}
+          checked="checked"
+        {% endif %}
+      />
+      <label for="klaviyoAvailableLists{{ list.id }}">{{ list.name }}</label>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% includecss %}
+  .klaviyoListsAll-label {
+    font-weight: bold;
+  }
+{% endincludecss %}
+
+{% includejs %}
+  var checkAll = document.querySelector('.klaviyoListsAll');
+  var checkboxes = document.querySelectorAll('.klaviyoAvailableLists');
+  if (checkAll && checkboxes) {
+    checkAll.onchange = function () {
+      checkboxes.forEach(function (checkbox) {
+        checkbox.checked = checkAll.checked;
+      });
+    };
+
+    checkboxes.forEach(function (checkbox) {
+      if (checkAll.checked) checkbox.checked = true;
+      checkbox.onchange = function () {
+        checkAll.checked = false;
+      };
+    });
+  }
+{% endincludejs %}
+
+{% set mappingProviders = craft.klaviyoConnect.profileMappingProviders %}
+<div class="field" id="klaviyoDefaultProfileMapping-field">
+  <div class="heading">
+    <label for="klaviyoDefaultProfileMapping">Default Profile Mapping Provider</label>
+    <p class="instructions">{{ "Klaviyo Connect will use this provider when one isn't explicitly set in a POST." | t }}</p>
+  </div>
+  <div class="input">
+    <div class="select">
+      <select id="klaviyoDefaultProfileMapping" name="klaviyoDefaultProfileMapping">
+        {% for provider in mappingProviders %}
+          {{ provider['name'] }}
+          <option value="{{ provider['handle'] }}">{{ provider['name'] }} - {{ provider['description'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
