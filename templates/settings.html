@@ -29,6 +29,7 @@
     <label>Lists</label>
     <p class="instructions">{{ "Select lists available to Control Panel" | t }}</p>
   </div>
+{% if craft.klaviyoConnect.lists is not null %}
   <div class="input">
     <input type="hidden" name="klaviyoListsAll" value="0" />
     <input type="hidden" name="klaviyoAvailableLists[]" value="" />
@@ -55,6 +56,15 @@
     </div>
     {% endfor %}
   </div>
+{% elseif craft.klaviyoConnect.error is not null  %}
+  <ul class="errors">
+    <li>{% if '403' in craft.klaviyoConnect.error|keys %}Klaviyo Private API key is invalid{% endif %}</li>
+  </ul>
+{% else %}
+  <ul class="errors">
+    <li>No lists available</li>
+  </ul>
+{% endif %}
 </div>
 
 {% includecss %}
