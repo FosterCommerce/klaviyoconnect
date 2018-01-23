@@ -92,18 +92,22 @@
   }
 {% endincludejs %}
 
-{% set mappingProviders = craft.klaviyoConnect.profileMappingProviders %}
+{% set mappings = craft.klaviyoConnect.profileMappings %}
 <div class="field" id="klaviyoDefaultProfileMapping-field">
   <div class="heading">
-    <label for="klaviyoDefaultProfileMapping">Default Profile Mapping Provider</label>
-    <p class="instructions">{{ "Klaviyo Connect will use this provider when one isn't explicitly set in a POST." | t }}</p>
+    <label for="klaviyoDefaultProfileMapping">Default Profile Mapping </label>
+    <p class="instructions">{{ "Klaviyo Connect will use this mapping when one isn't explicitly set in a POST." | t }}</p>
   </div>
   <div class="input">
     <div class="select">
       <select id="klaviyoDefaultProfileMapping" name="klaviyoDefaultProfileMapping">
-        {% for provider in mappingProviders %}
-          {{ provider['name'] }}
-          <option value="{{ provider['handle'] }}">{{ provider['name'] }} - {{ provider['description'] }}</option>
+        {% for mapping in mappings %}
+          <option
+            value="{{ mapping['handle'] }}"
+            {% if settings.klaviyoDefaultProfileMapping == mapping.handle %}selected{% endif %}
+          >
+            {{ mapping.name }} - {{ mapping.description }}
+          </option>
         {% endfor %}
       </select>
     </div>

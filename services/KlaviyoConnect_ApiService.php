@@ -24,9 +24,7 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
         $trackOnce = false,
         $timestamp = null) {
         $mappedProfile = $profile->map();
-        if ((!array_key_exists('$email', $mappedProfile) || empty($mappedProfile['$email']))
-            && (!array_key_exists('$id', $mappedProfile) || empty($mappedProfile['$id']))) {
-
+        if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
@@ -51,9 +49,7 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
     public function identify(KlaviyoConnect_ProfileModel $profile)
     {
         $mapped = $profile->map();
-        if ((!array_key_exists('$email', $mapped) || empty($mapped['$email']))
-            && (!array_key_exists('$id', $mapped) || empty($mapped['$id']))) {
-
+        if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
@@ -101,7 +97,7 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
                 $model = new KlaviyoConnect_ListModel();
                 $model->id = $list->id;
                 $model->name = $list->name;
-                $lists[] =  $model;
+                $lists[] = $model;
             }
         }
         if ($totalLists === $content->total) {
@@ -127,6 +123,10 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
         KlaviyoConnect_ListModel &$list,
         KlaviyoConnect_ProfileModel &$profile,
         $confirmOptIn = true) {
+        if (!$profile->hasEmail()) {
+            throw new Exception('You must identify a user by email.');
+        }
+
         $params = [
             'api_key' => $this->getSetting('klaviyoApiKey'),
             'email' => $profile->email,

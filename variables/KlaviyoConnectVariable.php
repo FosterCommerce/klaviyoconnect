@@ -29,18 +29,18 @@ class KlaviyoConnectVariable
         return $this->error;
     }
 
-    public function profileMappingProviders()
+    public function profileMappings()
     {
-        return craft()->klaviyoConnect_map->getProfileMappingProviders();
+        return craft()->klaviyoConnect_map->getProfileMappings();
     }
 
-    public function profileMappingProvider($handle = '')
+    public function profileMapping($handle = '')
     {
-        return craft()->klaviyoConnect_map->getProfileMappingProvider($handle);
+        return craft()->klaviyoConnect_map->getProfileMapping($handle);
     }
 
-    public function defaultProfileMappingProvider()
+    public function defaultProfileMapping()
     {
-      return $this->profileMappingProvider();
+      return $this->profileMapping();
     }
 }

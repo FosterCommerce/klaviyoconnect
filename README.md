@@ -15,12 +15,6 @@ Site ID and Private API Key can be found here: [https://www.klaviyo.com/account#
 
 ## Field Types
 
-### Klaviyo List
-
-Single-select dropdown to select a Klaviyo list.
-
-The selected list's ID is saved.
-
 ### Klaviyo Lists
 
 Group checkbox for multi-selection of Klaiyo lists.
@@ -29,25 +23,9 @@ An array of selected list IDs are stored.
 
 ## Actions
 
-### `POST lists/addToLists`
+### `POST klaviyoConnect/api/identify`
 
-Adds a profile to a list or multiple lists.
-
-Either `list` or `lists[]` is required.
-
-#### Parameters
-
-`list` _Required_
-
-A Klaviyo list ID.
-
-`lists[]` _Required_
-
-Array of Klaviyo list IDs
-
-`confirmOptIn` _Optional_ [Default: `"1"`]
-
-Whether or not Klaviyo should send an email to the person confirming opt-in.
+#### Profile Form Parameters
 
 `email` _Required_
 
@@ -82,49 +60,113 @@ The following properties can be passed to controllers to populate a persons prof
 - `zip`
 - `image`
 
+### `POST klaviyoConnect/api/updateProfile`
+
+Adds a profile to a list or multiple lists and/or tracks an event.
+
+#### Profile Parameters
+
+Same as `identify` action.
+
+#### List Form Parameters
+
+If either `list` or `lists[]` is present, the profile will be added to the specified lists.
+
+`list` _Required_
+
+A Klaviyo list ID.
+
+`lists[]` _Required_
+
+Array of Klaviyo list IDs.
+
+`confirmOptIn` _Optional_ [Default: `"1"`]
+
+Whether or not Klaviyo should send an email to the person confirming opt-in.
+
+#### Event Form Parameters
+
+If event parameters are present, Klaviyos tracking API will be called.
+
+`event[name]`
+
+The name of the event to track.
+
+`event[event_id]`
+
+The ID to associate with an event, e.g. Order ID.
+
+`event[value]`
+
+Value associated with an event, e.g. Total Cost.
+
+`event[extra][]`
+
+Associative arrary of extra properties to be assigned to the event in Klaviyo.
+
+```
+[
+  'ShippingTotal' => '$230.00',
+  'TotalItems' => 5,
+  ...
+]
+```
+
+#### Other Form Parameters
+
+`klaviyoProfileMapping`
+
+Set the profile mapping function to set profile data. Default mappings include:
+
+ - `usermodel_mapping` Map logged in user from user session, no profile parameters are required in POST
+ - `formdata_mapping` Map from POST data
+
+ Use the `klaviyoConnect_addProfileMapping` hook to configure new mapping functions:
+
+ ```
+function klaviyoConnect_addProfileMapping()
+{
+    return [
+        'name' => 'My Custom Mapping',
+        'handle' => 'my_mapping',
+        'description' => 'My custom mapping',
+        'method' => 'myPlugin.myMapping'
+    ];
+}
+ ```
+
+ An array of associative arrays can be returned too.
+
 `forward`
 
 Indicates that the controller should forward requests to the specified action once complete.
 
 If `forward` is not set, the POST will follow the `redirect` value if present.
 
-#### Example: Add a Profile to a Single List
+#### Example
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/lists/addToLists">
+    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
 
-    <!-- Klaviyo list ID -->
-    <input type="hidden" name="list" value="FOO123">
+    <!-- Profile Mapping handle -->
+    <input type="hidden" name="klaviyoProfileMapping" value="formdata_mapping">
 
+    <!-- Profile Details -->
     <label>Title</label><input type="text" name="title" />
     <label>First Name</label><input type="text" name="first_name" />
     <label>Last Name</label><input type="text" name="last_name" />
     <label>Email</label><input type="email" name="email" />
 
-    <input type="submit" value="Submit"/>
-</form>
-```
+    <!-- List to add profile to -->
+    <input type="hidden" name="list" value="FOO123">
+    <input type="hidden" name="confirmOptIn" value="0" />
 
-#### Example: Add a Profile to Multiple Lists
-
-```
-<form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/lists/addToLists">
-    <input type="hidden" name="forward" value="somePlugin/someController/someAction">
-
-    <!-- Explicitly set confirmOptIn to false -->
-    <input type="hidden" name="confirmOptIn" value="0">
-
-    <!-- Klaviyo list IDs -->
-    <input type="hidden" name="lists[]" value="FOO123">
-    <input type="hidden" name="lists[]" value="BAR456">
-
-    <label for="">Email</label>
-    <input type="email" name="email" />
-
-    <!-- Send extra data to Klaviyo -->
-    <input type="hidden" name="extra[Foo]" value="Bar">
+    <!-- Event to track -->
+    <input type="hidden" name="event[name]" value="Event Foo" />
+    <input type="hidden" name="event[event_id]" value="a1b2c3" />
+    <input type="hidden" name="event[value]" value="Foobar">
+    <input type="hidden" name="event[extra][FooBar]" value="Foo Bar">
 
     <input type="submit" value="Submit"/>
 </form>

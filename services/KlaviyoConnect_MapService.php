@@ -7,76 +7,86 @@ class KlaviyoConnect_MapService extends KlaviyoConnect_BaseService
     const REQUIRED_KEYS = ['name', 'handle', 'description', 'method'];
 
     const USERMODEL_PROFILE_MAPPING = [
-        'name' => 'UserModel Mapping',
+        'name' => 'UserModel Profile Mapping',
         'handle' => 'usermodel_mapping',
-        'description' => 'Default UserModel profile mapping',
+        'description' => 'Simple UserModel profile mapping',
         'method' => 'klaviyoConnect_map.userModelMap',
     ];
 
-    public function getProfileMappingProviders()
-    {
-        $allProviders = [self::USERMODEL_PROFILE_MAPPING];
+    const FORMDATA_PROFILE_MAPPING = [
+        'name' => 'Form-Data Profile Mapping',
+        'handle' => 'formdata_mapping',
+        'description' => 'Simple form-data profile mapping',
+        'method' => 'klaviyoConnect_map.formDataMap',
+    ];
 
-        foreach (craft()->plugins->call('klaviyoConnect_addProfileMapping') as $key => $provider) {
-            if (isset($provider[0])) {
-                foreach ($provider as $o) {
-                    $allProviders[] = $o;
+    public function getProfileMappings()
+    {
+        $allMappings = [
+            self::USERMODEL_PROFILE_MAPPING,
+            self::FORMDATA_PROFILE_MAPPING,
+        ];
+
+        foreach (craft()->plugins->call('klaviyoConnect_addProfileMapping') as $key => $mapping) {
+            if (isset($mapping[0])) {
+                foreach ($mapping as $o) {
+                    $allMappings[] = $o;
                 }
             } else {
-                $allProviders[] = $provider;
+                $allMappings[] = $mapping;
             }
         }
 
-        $providers = array();
-        foreach ($allProviders as $provider) {
-            if ($this->validateKeys($provider)) {
-                $result = $this->generateServiceMethod($provider);
+        $mappings = array();
+        foreach ($allMappings as $mapping) {
+            if ($this->validateKeys($mapping)) {
+                $result = $this->generateServiceMethod($mapping);
                 if ($result) {
-                    $providers[] = $result;
+                    $mappings[] = $result;
                 }
             }
         }
 
-        return $providers;
+        return $mappings;
     }
 
-    public function getProfileMappingProvider($handle = '')
+    public function getProfileMapping($handle = '')
     {
         if ($handle === '') {
             $handle = $this->getSetting('klaviyoDefaultProfileMapping');
         }
-        $providers = $this->getProfileMappingProviders();
+        $mappings = $this->getProfileMappings();
         if ($handle !== '') {
-            foreach ($providers as $provider) {
-                if ($provider['handle'] === $handle) {
-                    return $provider;
+            foreach ($mappings as $mapping) {
+                if ($mapping['handle'] === $handle) {
+                    return $mapping;
                 }
             }
         }
         return null;
     }
 
-    private function validateKeys($provider)
+    private function validateKeys($mapping)
     {
         foreach (self::REQUIRED_KEYS as $requiredKey) {
-            if (!(array_key_exists($requiredKey, $provider) && $provider[$requiredKey] !== '')) {
+            if (!(array_key_exists($requiredKey, $mapping) && $mapping[$requiredKey] !== '')) {
                 return false;
             }
         }
         return true;
     }
 
-    private function generateServiceMethod($provider)
+    private function generateServiceMethod($mapping)
     {
-        $methodTuple = explode('.', $provider['method']);
+        $methodTuple = explode('.', $mapping['method']);
         if (sizeof($methodTuple) > 1) {
             $service = lcfirst($methodTuple[0]);
             $method = lcfirst($methodTuple[1]);
 
             if (isset(craft()->$service) && method_exists(craft()->$service, $method)) {
-                $provider['service'] = $service;
-                $provider['method'] = $method;
-                return $provider;
+                $mapping['service'] = $service;
+                $mapping['method'] = $method;
+                return $mapping;
             }
         }
         return false;
@@ -84,13 +94,23 @@ class KlaviyoConnect_MapService extends KlaviyoConnect_BaseService
 
     public function map($handle='', $params)
     {
-        $provider = $this->getProfileMappingProvider($handle);
-        $service = $provider['service'];
-        $method = $provider['method'];
+        $mapping = $this->getProfileMapping($handle);
+        $service = $mapping['service'];
+        $method = $mapping['method'];
         return craft()->$service->$method($params);
     }
 
     public function userModelMap($params)
+    {
+        $user = craft()->userSession->getUser();
+        $model = new KlaviyoConnect_ProfileModel();
+        $model->email = $user->email;
+        $model->first_name = $user->firstName;
+        $model->last_name = $user->lastName;
+        return $model;
+    }
+
+    public function formDataMap($params)
     {
         return KlaviyoConnect_ProfileModel::populateModel($params);
     }
