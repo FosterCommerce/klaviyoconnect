@@ -23,11 +23,11 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
         KlaviyoConnect_EventPropertiesModel $properties = null,
         $trackOnce = false,
         $timestamp = null) {
-        $mappedProfile = $profile->map();
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
+        $mappedProfile = $profile->map();
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'event' => $event,
@@ -48,11 +48,11 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
 
     public function identify(KlaviyoConnect_ProfileModel $profile)
     {
-        $mapped = $profile->map();
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
+        $mapped = $profile->map();
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'properties' => $mapped,

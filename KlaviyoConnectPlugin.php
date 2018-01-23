@@ -40,7 +40,7 @@ class KlaviyoConnectPlugin extends BasePlugin
             'klaviyoApiKey' => array(AttributeType::String, 'default' => ''),
             'klaviyoDefaultProfileMapping' => array(AttributeType::String, 'default' => 'usermodel_mapping'),
             'klaviyoAvailableLists' => array(AttributeType::Mixed, 'default' => array()),
-            'klaviyoListsAll' => array(AttributeType::Bool, 'default' => true),
+            'klaviyoListsAll' => array(AttributeType::Bool, 'default' => false),
         );
     }
 
