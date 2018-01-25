@@ -38,7 +38,7 @@ class KlaviyoConnectPlugin extends BasePlugin
         return array(
             'klaviyoSiteId' => array(AttributeType::String, 'default' => ''),
             'klaviyoApiKey' => array(AttributeType::String, 'default' => ''),
-            'klaviyoDefaultProfileMapping' => array(AttributeType::String, 'default' => 'usermodel_mapping'),
+            'klaviyoDefaultProfileMapping' => array(AttributeType::String, 'default' => 'formdata_mapping'),
             'klaviyoAvailableLists' => array(AttributeType::Mixed, 'default' => array()),
             'klaviyoListsAll' => array(AttributeType::Bool, 'default' => false),
         );
