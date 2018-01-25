@@ -15,11 +15,43 @@ Site ID and Private API Key can be found here: [https://www.klaviyo.com/account#
 
 ## Field Types
 
+### Klaviyo List
+
+Dropdown selection.
+
+Selected value is stored as an associative array:
+
+```
+[
+    'id' => listId,
+    'name' => listName,
+]
+```
+
+#### Template Example
+
+```
+<input type="hidden" name="list" value="{{myField.list.id}}">
+```
+
 ### Klaviyo Lists
 
-Group checkbox for multi-selection of Klaiyo lists.
+Group checkbox for multi-selection of Klaviyo lists.
 
-An array of selected list IDs are stored.
+Values stored in an associative array of key/value pairs:
+
+```
+[listId => listName]
+```
+
+#### Template Example
+
+```
+{% for id, name in myField.lists %}
+  <input id="subscribe-{{id}}" type="checkbox" name="lists[]" value="{{id}}" />
+  <label for="subscribe-{{id}}">{{name}}</label>
+{% endfor %}
+```
 
 ## Actions
 
