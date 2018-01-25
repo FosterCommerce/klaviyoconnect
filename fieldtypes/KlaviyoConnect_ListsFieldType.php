@@ -30,8 +30,10 @@ class KlaviyoConnect_ListsFieldType extends BaseFieldType
         }
 
         $ids = array();
-        foreach ($values as $key => $value) {
-            $ids[] = $key;
+        if (!is_null($values)) {
+            foreach ($values as $key => $value) {
+                $ids[] = $key;
+            }
         }
 
         return craft()->templates->render('klaviyoconnect/fieldtypes/checkboxgroup', array(
