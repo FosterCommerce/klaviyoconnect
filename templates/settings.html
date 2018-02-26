@@ -92,6 +92,28 @@
   }
 {% endincludejs %}
 
+<div class="field" id="klaviyoAvailableGroups-field">
+  <div class="heading">
+    <label>User Groups</label>
+    <p class="instructions">{{ "Select user groups to track changes to" | t }}</p>
+  </div>
+  <div class="input">
+    <input type="hidden" name="klaviyoAvailableGroups[]" value="" />
+    {% for group in craft.userGroups.getAllGroups %}
+    <div class="field checkboxfield">
+      <input type="checkbox" name="klaviyoAvailableGroups[]"
+        class="klaviyoAvailableGroups"
+        id="klaviyoAvailableGroups{{ group.id }}" value="{{ group.id }}"
+        {% if group.id in settings.klaviyoAvailableGroups %}
+          checked="checked"
+        {% endif %}
+      />
+      <label for="klaviyoAvailableGroups{{ group.id }}">{{ group.name }}</label>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 {% set mappings = craft.klaviyoConnect.profileMappings %}
 <div class="field" id="klaviyoDefaultProfileMapping-field">
   <div class="heading">

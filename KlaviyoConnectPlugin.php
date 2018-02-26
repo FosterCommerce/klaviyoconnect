@@ -31,6 +31,14 @@ class KlaviyoConnectPlugin extends BasePlugin
     public function init()
     {
         require_once __DIR__ . '/vendor/autoload.php';
+
+        craft()->on('users.onSaveUser', function($event) {
+            craft()->klaviyoConnect->onSaveUser($event);
+        });
+
+        craft()->on('userGroups.onAssignUserToGroups', function($event) {
+            craft()->klaviyoConnect->onAssignUserToGroups($event);
+        });
     }
 
     protected function defineSettings()
@@ -41,6 +49,7 @@ class KlaviyoConnectPlugin extends BasePlugin
             'klaviyoDefaultProfileMapping' => array(AttributeType::String, 'default' => 'formdata_mapping'),
             'klaviyoAvailableLists' => array(AttributeType::Mixed, 'default' => array()),
             'klaviyoListsAll' => array(AttributeType::Bool, 'default' => false),
+            'klaviyoAvailableGroups' => array(AttributeType::Mixed, 'default' => array()),
         );
     }
 
