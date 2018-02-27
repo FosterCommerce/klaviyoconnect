@@ -15,7 +15,11 @@ class KlaviyoConnect_ApiController extends BaseController
         $this->trackEvent();
         $this->addProfileToLists();
 
-        $this->forwardOrRedirect();
+        if (craft()->request->isAjaxRequest() && !array_key_exists('forward', $_POST)) {
+            $this->returnJSON('success');
+        } else {
+            $this->forwardOrRedirect();
+        }
     }
 
     private function trackEvent()
