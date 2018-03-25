@@ -86,7 +86,7 @@ If event parameters are present, Klaviyos tracking API will be called.
 
 `event[extra][]` - Associative arrary of extra properties to be assigned to the event in Klaviyo.
 
-### Other Form Parameters
+## Extra Form Parameters
 
 `klaviyoProfileMapping`
 
