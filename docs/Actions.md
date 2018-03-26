@@ -36,6 +36,8 @@ The following properties can be passed to controllers to populate a persons prof
 
 Adds a profile to a list or multiple lists and/or tracks an event.
 
+Calls the `identify` API too.
+
 ### Profile Parameters
 
 - `email` _Required_

@@ -12,6 +12,7 @@ class KlaviyoConnect_ApiController extends BaseController
     {
         $this->requirePostRequest();
 
+        $this->identify();
         $this->trackEvent();
         $this->addProfileToLists();
 
@@ -29,7 +30,26 @@ class KlaviyoConnect_ApiController extends BaseController
             if (array_key_exists('name', $event)) {
                 $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
                 $profile = $this->mapProfile();
+
+                $hookArgs = [
+                    $event['name'],
+                ];
+                $extraProps = array();
+                foreach (craft()->plugins->call('klaviyoConnect_trackEventMapping', $hookArgs) as $key => $mapping) {
+                    if (isset($mapping[0])) {
+                        foreach ($mapping as $o) {
+                            $extraProps = array_merge($extraProps, $o);
+                        }
+                    } else {
+                        $extraProps = array_merge($extraProps, $mapping);
+                    }
+                }
+
                 $eventProperties = KlaviyoConnect_EventPropertiesModel::populateModel($event);
+
+                if (sizeof($extraProps) > 0) {
+                    $eventProperties->setAttribute('extra', $extraProps);
+                }
 
                 try {
                     craft()->klaviyoConnect_api->track($event['name'], $profile, $eventProperties, $trackOnce);
@@ -80,6 +100,12 @@ class KlaviyoConnect_ApiController extends BaseController
 
     public function actionIdentify()
     {
+        $this->identify();
+        $this->forwardOrRedirect();
+    }
+
+    private function identify()
+    {
         $this->requirePostRequest();
         $profile = $this->mapProfile();
         try {
@@ -87,7 +113,6 @@ class KlaviyoConnect_ApiController extends BaseController
         } catch (RequestException $e) {
             KlaviyoConnectPlugin::log($e, LogLevel::Error);
         }
-        $this->forwardOrRedirect();
     }
 
     private function forwardOrRedirect()

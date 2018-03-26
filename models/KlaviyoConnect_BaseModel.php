@@ -37,7 +37,3 @@ abstract class KlaviyoConnect_BaseModel extends BaseModel
         return $mapped;
     }
 }
-
-/*
-
- */

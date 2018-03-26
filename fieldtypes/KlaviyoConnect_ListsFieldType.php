@@ -30,6 +30,7 @@ class KlaviyoConnect_ListsFieldType extends BaseFieldType
         }
 
         $ids = array();
+        $values = array();
         if (!is_null($values)) {
             foreach ($values as $key => $value) {
                 $ids[] = $key;
@@ -47,9 +48,11 @@ class KlaviyoConnect_ListsFieldType extends BaseFieldType
     {
         $modified = array();
         $lists = craft()->klaviyoConnect_api->getLists();
-        foreach ($lists as $list) {
-            if (in_array($list->id, $values)) {
-                $modified[$list->id] = $list->name;
+        if (!empty($values)) {
+            foreach ($lists as $list) {
+                if (in_array($list->id, $values)) {
+                    $modified[$list->id] = $list->name;
+                }
             }
         }
         return $modified;
