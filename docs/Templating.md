@@ -15,6 +15,38 @@
 </form>
 ```
 
+## Add to List Using `Klaviyo List` Field Type
+
+```
+<form method="POST">
+    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <label>Email</label><input type="email" name="email" />
+
+    <input type="hidden" name="list" value="{{ global.myKlaviyoList.id }}">
+
+    <input type="hidden" name="confirmOptIn" value="0" />
+
+    <input type="submit" value="Submit"/>
+</form>
+```
+
+## Add to List Using `Klaviyo Lists` Field Type
+
+```
+<form method="POST">
+    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <label>Email</label><input type="email" name="email" />
+
+    {% for id, name in global.myKlaviyoLists %}
+    <input type="hidden" name="lists[]" value="{{ id }}">
+    {% endfor %}
+
+    <input type="hidden" name="confirmOptIn" value="0" />
+
+    <input type="submit" value="Submit"/>
+</form>
+```
+
 ## Track Event
 
 ```
