@@ -17,3 +17,7 @@ A [Craft CMS](https://craftcms.com/) plugin for [Klaviyo](https://www.klaviyo.co
 ## Examples
 
 - [Templating](docs/Templating.md)
+
+## Notes
+
+- [Klaviyo Special Properties](docs/KlaviyoNotes.md)
