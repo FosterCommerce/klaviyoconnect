@@ -30,6 +30,7 @@ class KlaviyoConnectService extends KlaviyoConnect_BaseService
 
         if ($isInGroups) {
             craft()->klaviyoConnect_api->identify(KlaviyoConnect_ProfileModel::populateModel([
+                'id' => $user->id,
                 'email' => $user->email,
                 'first_name' => $user->firstName,
                 'last_name' => $user->lastName,
