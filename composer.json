@@ -1,6 +1,24 @@
 {
-    "name": "shoeshine/klaviyoconnect",
+    "name": "fostercommerce/klaviyoconnect",
+    "description": "Craft Commerce",
+    "type": "craft-plugin",
+    "version": "2.0.0",
+    "keywords": [
+      "klaviyo"
+    ],
+    "homepage": "https://fostercommerce.com",
     "require": {
-        "guzzlehttp/guzzle": "~6.0"
+      "craftcms/cms": "^3.0.0",
+      "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+      "psr-4": {
+        "fostercommerce\\klaviyoconnect\\": "src/"
+      }
+    },
+    "extra": {
+      "handle": "klaviyoconnect",
+      "name": "Klaviyo Connect",
+      "developer": "Foster Commerce"
     }
-}
+  }

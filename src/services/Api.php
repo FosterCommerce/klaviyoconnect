@@ -1,10 +1,13 @@
 <?php
 
-namespace Craft;
+namespace fostercommerce\klaviyoconnect\services;
 
-use \GuzzleHttp\Client;
+use fostercommerce\klaviyoconnect\models\Profile;
+use fostercommerce\klaviyoconnect\models\KlaviyoList;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+use GuzzleHttp\Client;
 
-class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
+class Api extends Base
 {
     private $host = 'https://a.klaviyo.com/api/v1/';
     private $client = null;
@@ -19,26 +22,25 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
     }
 
     public function track($event,
-        KlaviyoConnect_ProfileModel $profile,
-        KlaviyoConnect_EventPropertiesModel $properties = null,
+        Profile $profile,
+        EventProperties $properties = null,
         $trackOnce = false,
         $timestamp = null) {
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
-        $mappedProfile = $profile->map();
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'event' => $event,
-            'customer_properties' => $mappedProfile,
+            'customer_properties' => $profile->toArray(),
         );
 
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
 
-        $mappedProperties = $properties->map();
+        $mappedProperties = $properties->toArray();
         if (isset($properties) && sizeof($mappedProperties) > 0) {
             $params['properties'] = $mappedProperties;
         }
@@ -46,13 +48,13 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
         return $this->callServerApi($trackOnce ? 'track-once' : 'track', $params);
     }
 
-    public function identify(KlaviyoConnect_ProfileModel $profile)
+    public function identify(Profile $profile)
     {
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
 
-        $mapped = $profile->map();
+        $mapped = $profile->toArray(Profile::SPECIAL_PROPERTIES);
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'properties' => $mapped,
@@ -94,9 +96,10 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
         foreach ($content->data as $list) {
             $totalLists++;
             if ($list->list_type === 'list') {
-                $model = new KlaviyoConnect_ListModel();
-                $model->id = $list->id;
-                $model->name = $list->name;
+                $model = new KlaviyoList([
+                    'id' => $list->id,
+                    'name' => $list->name,
+                ]);
                 $lists[] = $model;
             }
         }
@@ -120,8 +123,8 @@ class KlaviyoConnect_ApiService extends KlaviyoConnect_BaseService
     }
 
     public function addProfileToList(
-        KlaviyoConnect_ListModel &$list,
-        KlaviyoConnect_ProfileModel &$profile,
+        KlaviyoList &$list,
+        Profile &$profile,
         $confirmOptIn = true) {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');

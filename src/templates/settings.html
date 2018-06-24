@@ -99,7 +99,7 @@
   </div>
   <div class="input">
     <input type="hidden" name="klaviyoAvailableGroups[]" value="" />
-    {% for group in craft.userGroups.getAllGroups %}
+    {% for group in craft.app.userGroups.getAllGroups %}
     <div class="field checkboxfield">
       <input type="checkbox" name="klaviyoAvailableGroups[]"
         class="klaviyoAvailableGroups"

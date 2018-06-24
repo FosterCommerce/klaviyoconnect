@@ -1,27 +1,24 @@
 <?php
+namespace fostercommerce\klaviyoconnect\fields;
 
-namespace Craft;
+use Craft;
+use craft\base\Field;
+use fostercommerce\klaviyoconnect\Plugin;
 
-class KlaviyoConnect_ListsFieldType extends BaseFieldType
+class ListsField extends Field
 {
 
-    public function getName()
+    public static function displayName(): string
     {
-        return Craft::t('Klaviyo Lists');
+        return Craft::t('klaviyoconnect', 'Klaviyo Lists');
     }
 
-    public function defineContentAttribute()
+    public function getInputHtml($values)
     {
-        return array(AttributeType::Mixed);
-    }
-
-    public function getInputHtml($name, $values)
-    {
-        $lists = craft()->klaviyoConnect_api->getLists();
+        $lists = Plugin::getInstance()->api->getLists();
         $listOptions = array();
 
-        $plugin = craft()->plugins->getPlugin('klaviyoconnect');
-        $availableLists = $plugin->getSettings()['klaviyoAvailableLists'];
+        $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
 
         foreach ($lists as $list) {
             if (in_array($list->id, $availableLists)) {
@@ -37,17 +34,17 @@ class KlaviyoConnect_ListsFieldType extends BaseFieldType
             }
         }
 
-        return craft()->templates->render('klaviyoconnect/fieldtypes/checkboxgroup', array(
-            'name'    => $name,
+        return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/checkboxgroup', array(
+            'name' => $this->handle,
             'options' => $listOptions,
             'values'   => $ids,
         ));
     }
 
-    public function prepValueFromPost($values)
+    public function normalizeValue($values)
     {
         $modified = array();
-        $lists = craft()->klaviyoConnect_api->getLists();
+        $lists = Plugin::getInstance()->api->getLists();
         if (!empty($values)) {
             foreach ($lists as $list) {
                 if (in_array($list->id, $values)) {

@@ -1,9 +1,10 @@
 <?php
-namespace Craft;
+namespace fostercommerce\klaviyoconnect\variables;
 
-use \GuzzleHttp\Exception\RequestException;
+use fostercommerce\klaviyoconnect\Plugin;
+use GuzzleHttp\Exception\RequestException;
 
-class KlaviyoConnectVariable
+class Variable
 {
     private $error = null;
     private $lists = null;
@@ -12,7 +13,7 @@ class KlaviyoConnectVariable
     {
         if (is_null($this->lists)) {
             try {
-                $lists = craft()->klaviyoConnect_api->getLists();
+                $lists = Plugin::getInstance()->api->getLists();
                 if (sizeof($lists) > 0) {
                     $this->lists = $lists;
                 }
@@ -31,12 +32,12 @@ class KlaviyoConnectVariable
 
     public function profileMappings()
     {
-        return craft()->klaviyoConnect_map->getProfileMappings();
+        return Plugin::getInstance()->map->getProfileMappings();
     }
 
     public function profileMapping($handle = '')
     {
-        return craft()->klaviyoConnect_map->getProfileMapping($handle);
+        return Plugin::getInstance()->map->getProfileMapping($handle);
     }
 
     public function defaultProfileMapping()

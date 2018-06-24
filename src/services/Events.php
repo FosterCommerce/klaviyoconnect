@@ -1,14 +1,15 @@
 <?php
-namespace Craft;
+namespace fostercommerce\klaviyoconnect\services;
 
-use \Klaviyo;
+use fostercommerce\klaviyoconnect\models\Profile;
+use Klaviyo;
 
-class KlaviyoConnectService extends KlaviyoConnect_BaseService
+class Events extends Base
 {
     public function onAssignUserToGroups($event)
     {
         $userId = $event->params['userId'];
-        $user = craft()->users->getUserById((int) $userId);
+        $user = Craft::$app->users->getUserById((int) $userId);
         $this->identifyUser($user);
     }
 
@@ -29,7 +30,7 @@ class KlaviyoConnectService extends KlaviyoConnect_BaseService
         }
 
         if ($isInGroups) {
-            craft()->klaviyoConnect_api->identify(KlaviyoConnect_ProfileModel::populateModel([
+            Plugin::getInstance()->api->identify(new Profile([
                 'id' => $user->id,
                 'email' => $user->email,
                 'first_name' => $user->firstName,
