@@ -27,7 +27,7 @@ class Plugin extends \craft\base\Plugin
 
         Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListField::class;
-            $event->types[] = \fostercommerce\klaviyoconnect\fields\ListFields::class;
+            $event->types[] = \fostercommerce\klaviyoconnect\fields\ListsField::class;
         });
 
         Event::on(User::class, User::EVENT_AFTER_SAVE, function(Event $event) {

@@ -13,15 +13,16 @@ class ListField extends Field
         return Craft::t('klaviyoconnect', 'Klaviyo List');
     }
 
-    public function getInputHtml($value)
+    public function getInputHtml($value, \craft\base\ElementInterface $element = NULL): string
     {
         $lists = Plugin::getInstance()->api->getLists();
         $listOptions = [];
 
+        $allLists = Plugin::getInstance()->settings->klaviyoListsAll;
         $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
 
         foreach ($lists as $list) {
-            if (in_array($list->id, $availableLists)) {
+            if ($allLists || in_array($list->id, $availableLists)) {
                 $listOptions[$list->id] = $list->name;
             }
         }
@@ -29,21 +30,28 @@ class ListField extends Field
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/select', array(
             'name' => $this->handle,
             'options' => $listOptions,
-            'value' => $value['id'],
+            'value' => $value->id,
         ));
     }
 
-    public function normalizeValue($value)
+    public function normalizeValue($value, \craft\base\ElementInterface $element = NULL)
     {
-        $lists = Plugin::getInstance()->api->getLists();
-        foreach ($lists as $list) {
-            if ($list->id === $value) {
-                return [
-                    'id' => $list->id,
-                    'name' => $list->name
-                ];
+        if ($value) {
+            $o = json_decode($value);
+            if ($o) {
+                $value = $o->id;
             }
         }
+        $modified = array();
+        $lists = Plugin::getInstance()->api->getLists();
+        if ($value) {
+            foreach ($lists as $list) {
+                if ($list->id === $value) {
+                    return $list;
+                }
+            }
+        }
+
         return null;
     }
 }

@@ -136,7 +136,7 @@ class Api extends Base
             'confirm_optin' => $confirmOptIn ? 'true' : 'false',
         ];
 
-        $mapped = $profile->map();
+        $mapped = $profile->toArray();
         unset($mapped['$email']);
         if (sizeof($mapped) > 0) {
             $params['properties'] = json_encode($mapped);
