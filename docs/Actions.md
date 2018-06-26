@@ -1,6 +1,6 @@
 # Actions
 
-## [`POST`] klaviyoConnect/api/identify
+## [`POST`] klaviyoconnect/api/identify
 
 The Identify API is used to track properties about an individual without tracking an associated event.
 
@@ -32,7 +32,7 @@ The following properties can be passed to controllers to populate a persons prof
 - `zip`
 - `image`
 
-## [`POST`] klaviyoConnect/api/updateProfile
+## [`POST`] klaviyoconnect/api/update-profile
 
 Adds a profile to a list or multiple lists and/or tracks an event.
 

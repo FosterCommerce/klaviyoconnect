@@ -1,7 +1,4 @@
 # Installation
 
-- Download and unzip, rename to `klaviyoconnect`
-- Copy the `klaviyoconnect` folder to your `craft/plugins` directory
-- From inside `klaviyoconnect` directory, run `composer install`
-- Inside the Craft control panel, navigate to Settings → Plugins.
-- Click `Install`
+See [Loading your plugin into a Craft project
+](https://docs.craftcms.com/v3/plugin-intro.html#getting-started) for details on installing plugins.

@@ -4,7 +4,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <label>Email</label><input type="email" name="email" />
 
     <!-- Add to the list -->
@@ -19,7 +19,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <label>Email</label><input type="email" name="email" />
 
     <input type="hidden" name="list" value="{{ global.myKlaviyoList.id }}">
@@ -34,7 +34,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <label>Email</label><input type="email" name="email" />
 
     {% for id, name in global.myKlaviyoLists %}
@@ -51,7 +51,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
 
     <!-- Profile Details -->
     <label>Email</label><input type="email" name="email" />
@@ -70,7 +70,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/updateProfile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
 
     <!-- Profile Details -->
     <label>Email</label><input type="email" name="email" />
@@ -93,7 +93,7 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/identify">
+    <input type="hidden" name="action" value="klaviyoconnect/api/identify">
     <label>Email</label><input type="email" name="email" />
     <input type="submit" value="Submit"/>
 </form>
@@ -103,9 +103,9 @@
 
 ```
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoConnect/api/identify">
-    <input type="hidden" name="forward" value="commerce/cart/updateCart">
-    <input type="hidden" name="redirect" value="commerce/cart">
+    <input type="hidden" name="action" value="klaviyoconnect/api/identify">
+    <input type="hidden" name="forward" value="commerce/cart/update-cart">
+    {{ redirectInput('commerce/cart') }}
 
     <label>Email</label><input type="email" name="email" />
     <input type="hidden" name="shippingAddressId" value="{{ address.id }}">
