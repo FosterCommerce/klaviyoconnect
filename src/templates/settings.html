@@ -135,3 +135,15 @@
     </div>
   </div>
 </div>
+
+<div class="field" id="cartUrl-field">
+  <div class="heading">
+    <label for="cartUrl">Cart URL</label>
+		<p class="instructions">{{ "Url to your stores cart" | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="cartUrl" name="cartUrl"
+      value="{{ settings.cartUrl }}">
+	</div>
+</div>

@@ -12,4 +12,5 @@ class Settings extends Model
     public $klaviyoAvailableLists = array();
     public $klaviyoListsAll = false;
     public $klaviyoAvailableGroups = array();
+    public $cartUrl = '/shop/cart';
 }

@@ -6,7 +6,7 @@ use fostercommerce\klaviyoconnect\Plugin;
 use craft\commerce\Plugin as CommercePlugin;
 use yii\web\HttpException;
 
-abstract class Cart extends Base
+class Cart extends Base
 {
     public function restore($number)
     {
@@ -25,5 +25,3 @@ abstract class Cart extends Base
         throw new HttpException(404);
     }
 }
-
-

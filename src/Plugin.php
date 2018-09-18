@@ -23,6 +23,7 @@ class Plugin extends \craft\base\Plugin
             'api' => \fostercommerce\klaviyoconnect\services\Api::class,
             'events' => \fostercommerce\klaviyoconnect\services\Events::class,
             'map' => \fostercommerce\klaviyoconnect\services\Map::class,
+            'cart' => \fostercommerce\klaviyoconnect\services\Cart::class,
         ]);
 
         Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
