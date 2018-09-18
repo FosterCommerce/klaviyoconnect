@@ -5,7 +5,7 @@ namespace fostercommerce\klaviyoconnect\controllers;
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use craft\web\Controller;
-use yii\base\Exception;
+use yii\web\HttpException;
 
 class CartController extends Controller
 {
@@ -17,7 +17,7 @@ class CartController extends Controller
         Plugin::getInstance()->cart->restore($number);
         $cartUrl = Plugin::getInstance()->settings->cartUrl;
         if (strlen($cartUrl) === 0) {
-            throw new Exception('Cart URL is required. Settings -> Klaviyo Connect -> Cart URL');
+            throw new HttpException(400, 'Cart URL is required. Settings -> Klaviyo Connect -> Cart URL');
         }
         return $this->redirect($cartUrl);
     }

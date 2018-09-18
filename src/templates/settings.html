@@ -147,3 +147,27 @@
       value="{{ settings.cartUrl }}">
 	</div>
 </div>
+
+<div class="field" id="productImageField-field">
+  <div class="heading">
+    <label for="productImageField">Cart URL</label>
+		<p class="instructions">{{ "Field to access product images" | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="productImageField" name="productImageField"
+      value="{{ settings.productImageField }}">
+	</div>
+</div>
+
+<div class="field" id="productImageFieldTransformation-field">
+  <div class="heading">
+    <label for="productImageFieldTransformation">Cart URL</label>
+		<p class="instructions">{{ "Image field transformation to apply" | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="productImageFieldTransformation" name="productImageFieldTransformation"
+      value="{{ settings.productImageFieldTransformation }}">
+	</div>
+</div>

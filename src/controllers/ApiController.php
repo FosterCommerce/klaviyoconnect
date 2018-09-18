@@ -54,7 +54,7 @@ class ApiController extends Controller
                 try {
                     Plugin::getInstance()->api->track($event['name'], $profile, $eventProperties, $trackOnce);
                 } catch (RequestException $e) {
-                    // TODO log this? // KlaviyoConnectPlugin::log($e, LogLevel::Error);
+                    // Swallow. Klaviyo responds with a 200.
                 }
             }
         }
@@ -91,9 +91,8 @@ class ApiController extends Controller
                 try {
                     Plugin::getInstance()->api->addProfileToList($list, $profile, $confirmOptIn);
                 } catch (RequestException $e) {
-                    // TODO log this? // KlaviyoConnectPlugin::log($e, LogLevel::Error);
+                    // Swallow. Klaviyo responds with a 200.
                 }
-
             }
         }
     }
@@ -111,7 +110,7 @@ class ApiController extends Controller
         try {
             Plugin::getInstance()->api->identify($profile);
         } catch (RequestException $e) {
-            // TODO log this? // KlaviyoConnectPlugin::log($e, LogLevel::Error);
+            // Swallow. Klaviyo responds with a 200.
         }
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace fostercommerce\klaviyoconnect\services;
 
+use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\events\AddProfileMappingEvent;
 use fostercommerce\klaviyoconnect\models\Profile;
