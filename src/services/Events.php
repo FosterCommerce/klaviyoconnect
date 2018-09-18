@@ -15,8 +15,7 @@ class Events extends Base
 
     public function onSaveUser($event)
     {
-        $user = $event->params['user'];
-        $this->identifyUser($user);
+        $this->identifyUser($event->sender);
     }
 
     private function identifyUser ($user)
