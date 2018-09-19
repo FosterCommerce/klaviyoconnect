@@ -11,14 +11,14 @@ use GuzzleHttp\Exception\RequestException;
 
 class Events extends Base
 {
-    public function onAssignUserToGroups($event)
+    public function onAssignUserToGroups(Event $event)
     {
-        $userId = $event->params['userId'];
-        $user = Craft::$app->users->getUserById((int) $userId);
+        $userId = $event->sender->userId;
+        $user = Craft::$app->users->getUserById($userId);
         $this->identifyUser($user);
     }
 
-    public function onSaveUser($event)
+    public function onSaveUser(Event $event)
     {
         $this->identifyUser($event->sender);
     }
