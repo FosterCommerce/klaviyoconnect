@@ -36,10 +36,6 @@ class Plugin extends \craft\base\Plugin
             Plugin::getInstance()->events->onSaveUser($event);
         });
 
-        Event::on(Users::class, Users::EVENT_AFTER_ASSIGN_USER_TO_GROUPS, function(UserGroupsAssignEvent $event) {
-            Plugin::getInstance()->events->onAssignUserToGroups($event);
-        });
-
         // Cart is an incomplete Order
         Event::on(Order::class, Order::EVENT_AFTER_SAVE, function(Event $e) {
             Plugin::getInstance()->events->onCartUpdated($e);

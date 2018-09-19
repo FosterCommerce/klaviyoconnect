@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
 use fostercommerce\klaviyoconnect\models\EventProperties;
@@ -11,29 +12,29 @@ use GuzzleHttp\Exception\RequestException;
 
 class Events extends Base
 {
-    public function onAssignUserToGroups(Event $event)
-    {
-        $userId = $event->sender->userId;
-        $user = Craft::$app->users->getUserById($userId);
-        $this->identifyUser($user);
-    }
-
     public function onSaveUser(Event $event)
     {
         $this->identifyUser($event->sender);
     }
 
-    private function identifyUser ($user)
+    private function isInGroup($selectedGroups, $userGroups)
     {
-        $groups = $this->getSetting('klaviyoAvailableGroups');
-        $isInGroups = false;
-        foreach ($groups as $group) {
-            if ($user->isInGroup((Int) $group)) {
-                $isInGroups = true;
+        foreach ($selectedGroups as $group) {
+            $hasGroup = in_array($group, ArrayHelper::getColumn($userGroups, 'id'), false);
+            if ($hasGroup) {
+                return true;
             }
         }
 
-        if ($isInGroups) {
+        return false;
+    }
+
+    private function identifyUser ($user)
+    {
+        $groups = $this->getSetting('klaviyoAvailableGroups');
+        $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
+
+        if ($this->isInGroup($groups, $userGroups)) {
             Plugin::getInstance()->api->identify(new Profile([
                 'id' => $user->id,
                 'email' => $user->email,
