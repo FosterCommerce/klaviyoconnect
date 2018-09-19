@@ -4,6 +4,7 @@ namespace fostercommerce\klaviyoconnect;
 use Craft;
 use craft\services\Users;
 use craft\elements\User;
+use craft\commerce\elements\Order;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
@@ -23,6 +24,7 @@ class Plugin extends \craft\base\Plugin
             'api' => \fostercommerce\klaviyoconnect\services\Api::class,
             'events' => \fostercommerce\klaviyoconnect\services\Events::class,
             'map' => \fostercommerce\klaviyoconnect\services\Map::class,
+            'cart' => \fostercommerce\klaviyoconnect\services\Cart::class,
         ]);
 
         Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
@@ -34,8 +36,13 @@ class Plugin extends \craft\base\Plugin
             Plugin::getInstance()->events->onSaveUser($event);
         });
 
-        Event::on(Users::class, Users::EVENT_AFTER_ASSIGN_USER_TO_GROUPS, function(UserGroupsAssignEvent $event) {
-            Plugin::getInstance()->events->onAssignUserToGroups($event);
+        // Cart is an incomplete Order
+        Event::on(Order::class, Order::EVENT_AFTER_SAVE, function(Event $e) {
+            Plugin::getInstance()->events->onCartUpdated($e);
+        });
+
+        Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function(Event $e) {
+            Plugin::getInstance()->events->onOrderCompleted($e);
         });
 
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {

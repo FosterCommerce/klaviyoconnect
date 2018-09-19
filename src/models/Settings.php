@@ -12,4 +12,7 @@ class Settings extends Model
     public $klaviyoAvailableLists = array();
     public $klaviyoListsAll = false;
     public $klaviyoAvailableGroups = array();
+    public $cartUrl = '/shop/cart';
+    public $productImageField = 'productImage';
+    public $productImageFieldTransformation = 'productThumbnail';
 }

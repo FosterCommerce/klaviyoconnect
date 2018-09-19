@@ -88,6 +88,17 @@ If event parameters are present, Klaviyos tracking API will be called.
 
 `event[extra][]` - Associative arrary of extra properties to be assigned to the event in Klaviyo.
 
+## [`GET`] actions/klaviyoconnect/cart/restore?number=<cart number>
+
+Restores a previously active cart
+
+Example:
+
+```
+https://mysite.com/actions/klaviyoconnect/cart/restore?number=9e3b4f8f3904a0e07311378bb144a102
+```
+
+
 ## Extra Form Parameters
 
 `klaviyoProfileMapping`

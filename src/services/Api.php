@@ -5,6 +5,7 @@ namespace fostercommerce\klaviyoconnect\services;
 use fostercommerce\klaviyoconnect\models\Profile;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use fostercommerce\klaviyoconnect\models\EventProperties;
+use yii\base\Exception;
 use GuzzleHttp\Client;
 
 class Api extends Base
