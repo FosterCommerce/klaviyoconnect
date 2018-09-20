@@ -3,7 +3,9 @@ namespace fostercommerce\klaviyoconnect\fields;
 
 use Craft;
 use craft\base\Field;
+use craft\base\ElementInterface;
 use fostercommerce\klaviyoconnect\Plugin;
+use GuzzleHttp\Exception\ClientException;
 
 class ListsField extends Field
 {
@@ -13,13 +15,18 @@ class ListsField extends Field
         return Craft::t('klaviyoconnect', 'Klaviyo Lists');
     }
 
-    public function getInputHtml($values, \craft\base\ElementInterface $element = NULL): string
+    public function getInputHtml($values, ElementInterface $element = NULL): string
     {
-        $lists = Plugin::getInstance()->api->getLists();
-        $listOptions = array();
+        try {
+            $lists = Plugin::getInstance()->api->getLists();
+        } catch (ClientException $e) {
+            $lists = [];
+        }
 
         $allLists = Plugin::getInstance()->settings->klaviyoListsAll;
         $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
+
+        $listOptions = array();
 
         foreach ($lists as $list) {
             if ($allLists || in_array($list->id, $availableLists)) {
@@ -42,7 +49,7 @@ class ListsField extends Field
         ));
     }
 
-    public function normalizeValue($values, \craft\base\ElementInterface $element = NULL)
+    public function normalizeValue($values, ElementInterface $element = NULL)
     {
         if ($values && !is_array($values)) {
             $o = json_decode($values);
@@ -55,7 +62,14 @@ class ListsField extends Field
             }
         }
         $modified = array();
-        $lists = Plugin::getInstance()->api->getLists();
+
+        try {
+            $lists = Plugin::getInstance()->api->getLists();
+            $lists = [];
+        } catch (ClientException $e) {
+            $lists = [];
+        }
+
         if (!empty($values)) {
             foreach ($lists as $list) {
                 if (in_array($list->id, $values)) {
