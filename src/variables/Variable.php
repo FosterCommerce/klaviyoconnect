@@ -42,6 +42,6 @@ class Variable
 
     public function defaultProfileMapping()
     {
-      return $this->profileMapping();
+        return $this->profileMapping();
     }
 }

@@ -27,25 +27,25 @@ class Plugin extends \craft\base\Plugin
             'cart' => \fostercommerce\klaviyoconnect\services\Cart::class,
         ]);
 
-        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
+        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function (RegisterComponentTypesEvent $event) {
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListField::class;
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListsField::class;
         });
 
-        Event::on(User::class, User::EVENT_AFTER_SAVE, function(Event $event) {
+        Event::on(User::class, User::EVENT_AFTER_SAVE, function (Event $event) {
             Plugin::getInstance()->events->onSaveUser($event);
         });
 
         // Cart is an incomplete Order
-        Event::on(Order::class, Order::EVENT_AFTER_SAVE, function(Event $e) {
+        Event::on(Order::class, Order::EVENT_AFTER_SAVE, function (Event $e) {
             Plugin::getInstance()->events->onCartUpdated($e);
         });
 
-        Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function(Event $e) {
+        Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
             Plugin::getInstance()->events->onOrderCompleted($e);
         });
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
             $variable = $event->sender;
             $variable->set('klaviyoConnect', Variable::class);
         });

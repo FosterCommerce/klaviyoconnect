@@ -29,7 +29,7 @@ class Events extends Base
         return false;
     }
 
-    private function identifyUser ($user)
+    private function identifyUser($user)
     {
         $groups = $this->getSetting('klaviyoAvailableGroups');
         $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
@@ -58,8 +58,7 @@ class Events extends Base
     {
         if (Craft::$app->user) {
             $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
-        }
-        else {
+        } else {
             if ($order->email) {
                 $profile = Plugin::getInstance()->populateModel(Profile::class, ['email' => $order->email]);
             }

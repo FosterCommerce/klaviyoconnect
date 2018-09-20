@@ -4,5 +4,5 @@
 *.orig
 *Thumbs.db
 vendor/
-composer.lock
 .vscode
+.php_cs.cache

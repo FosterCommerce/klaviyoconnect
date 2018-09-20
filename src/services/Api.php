@@ -22,11 +22,13 @@ class Api extends Base
         ]);
     }
 
-    public function track($event,
+    public function track(
+        $event,
         Profile $profile,
         EventProperties $properties = null,
         $trackOnce = false,
-        $timestamp = null) {
+        $timestamp = null
+    ) {
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
@@ -126,7 +128,8 @@ class Api extends Base
     public function addProfileToList(
         KlaviyoList &$list,
         Profile &$profile,
-        $confirmOptIn = true) {
+        $confirmOptIn = true
+    ) {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
         }

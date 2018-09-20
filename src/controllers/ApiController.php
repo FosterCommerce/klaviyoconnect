@@ -66,7 +66,7 @@ class ApiController extends Controller
 
         if (array_key_exists('list', $_POST)) {
             $lists[] = $_POST['list'];
-        } else if (array_key_exists('lists', $_POST) && sizeof($_POST['lists']) > 0) {
+        } elseif (array_key_exists('lists', $_POST) && sizeof($_POST['lists']) > 0) {
             foreach ($_POST['lists'] as $listId) {
                 if (!empty($listId)) {
                     $lists[] = $listId;

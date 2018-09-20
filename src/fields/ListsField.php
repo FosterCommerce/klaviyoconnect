@@ -10,13 +10,12 @@ use GuzzleHttp\Exception\ClientException;
 
 class ListsField extends Field
 {
-
     public static function displayName(): string
     {
         return Craft::t('klaviyoconnect', 'Klaviyo Lists');
     }
 
-    public function getInputHtml($values, ElementInterface $element = NULL): string
+    public function getInputHtml($values, ElementInterface $element = null): string
     {
         try {
             $lists = Plugin::getInstance()->api->getLists();
@@ -48,7 +47,7 @@ class ListsField extends Field
         ));
     }
 
-    public function normalizeValue($values, ElementInterface $element = NULL)
+    public function normalizeValue($values, ElementInterface $element = null)
     {
         if ($values && !is_array($values)) {
             $o = json_decode($values);
