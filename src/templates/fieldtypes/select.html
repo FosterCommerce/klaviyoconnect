@@ -1,7 +1,11 @@
 {% from "_includes/forms" import select %}
 
-{{ select({
-    name:    name,
-    options: options,
-    value:   value,
-}) }}
+{% if options|length == 0 %}
+  No lists available
+{% else %}
+  {{ select({
+      name:    name,
+      options: options,
+      value:   value,
+  }) }}
+{% endif %}

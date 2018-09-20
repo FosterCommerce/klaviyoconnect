@@ -4,6 +4,7 @@ namespace fostercommerce\klaviyoconnect\fields;
 use Craft;
 use craft\base\Field;
 use craft\base\ElementInterface;
+use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\ClientException;
 
@@ -35,11 +36,9 @@ class ListsField extends Field
         }
 
         $ids = array();
-        $values = is_array($values) ? $values : array();
         if (!is_null($values)) {
-            foreach ($values as $value) {
-                $ids[] = $value->id;
-            }
+            $values = is_array($values) ? $values : array();
+            $ids = ArrayHelper::getColumn($values, 'id');
         }
 
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/checkboxgroup', array(
@@ -65,7 +64,6 @@ class ListsField extends Field
 
         try {
             $lists = Plugin::getInstance()->api->getLists();
-            $lists = [];
         } catch (ClientException $e) {
             $lists = [];
         }
