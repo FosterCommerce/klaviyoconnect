@@ -1,116 +1,154 @@
 # Actions
 
-## [`POST`] klaviyoconnect/api/identify
+You can use Klaviyo Connect plugin actions (in forms and links, see Templating Examples) to perform various Klaviyo actions from your Craft templates.
 
-The Identify API is used to track properties about an individual without tracking an associated event.
+## `POST` Actions
 
-### Form Parameters
+### `klaviyoconnect/api/identify`
 
-- `email` _Required_
+This action is used to track properties about an individual without tracking an associated event.
 
-An email address to identify a person's profile on Klaviyo
+### `klaviyoconnect/api/update-profile`
 
-- `extra[]` _Optional_
-
-Associative arrary of extra properties to be assigned to a profile in Klaviyo.
-
-**Klaviyo-specific Profile properties** _Optional_
-
-See [Special Identify Properties](https://www.klaviyo.com/docs/http-api) in Klaviyo's API docs.
-
-The following properties can be passed to controllers to populate a persons profile:
-
-- `id`
-- `first_name`
-- `last_name`
-- `phone_number`
-- `title`
-- `organization`
-- `city`
-- `region`
-- `country`
-- `zip`
-- `image`
-
-## [`POST`] klaviyoconnect/api/update-profile
-
-Adds a profile to a list or multiple lists and/or tracks an event.
+This action is used to add a user to a list or multiple lists and/or track events from a user.
 
 Calls the `identify` API too.
 
-### Profile Parameters
+#### Form Parameters
 
-- `email` _Required_
+These apply to both actions.
+
+`email` _Required_
 
 An email address to identify a person's profile on Klaviyo
 
-- `extra[]` _Optional_
+`extra[]` _Optional_
 
 Associative arrary of extra properties to be assigned to a profile in Klaviyo.
 
-**Klaviyo-specific Profile properties** _Optional_
+**Klaviyo-specific Profile properties** - _Optional_
 
 See [Special Identify Properties](https://www.klaviyo.com/docs/http-api) in Klaviyo's API docs.
 
 The following properties can be passed to controllers to populate a persons profile:
 
-- `id`
-- `first_name`
-- `last_name`
-- `phone_number`
-- `title`
-- `organization`
-- `city`
-- `region`
-- `country`
-- `zip`
-- `image`
+`id`
 
-### List Form Parameters
+`first_name`
 
-If either `list` or `lists[]` is present, the profile will be added to the specified lists.
+`last_name`
 
-`list` _Required_ - A Klaviyo list ID.
+`phone_number`
 
-`lists[]` _Required_- Array of Klaviyo list IDs.
+`title`
 
-`confirmOptIn` _Optional_ [Default: `"1"`] - Whether or not Klaviyo should send an email to the person confirming opt-in.
+`organization`
 
-### Event Form Parameters
+`city`
 
-If event parameters are present, Klaviyos tracking API will be called.
+`region`
 
-`event[name]` - The name of the event to track.
+`country`
 
-`event[event_id]` - The ID to associate with an event, e.g. Order ID.
+`zip`
 
-`event[value]` - Value associated with an event, e.g. Total Cost.
+`image`
 
-`event[extra][]` - Associative arrary of extra properties to be assigned to the event in Klaviyo.
+**List Form Parameters**
 
-## [`GET`] actions/klaviyoconnect/cart/restore?number=<cart number>
+List form parameters can be passed to Klaviyo as either a single list or multiple lists.
 
-Restores a previously active cart
+One of the list fields needs to be present to add a user to a list and is required:
 
-Example:
+`list` - _Required_
+
+Klaviyo list ID.
 
 ```
-https://mysite.com/actions/klaviyoconnect/cart/restore?number=9e3b4f8f3904a0e07311378bb144a102
+<input type="hidden" name="list" value="{{ entry.listField.id }}" />
 ```
 
+- OR -
 
-## Extra Form Parameters
+`lists[]` - _Required_
 
-`klaviyoProfileMapping`
+Array of Klaviyo List IDs (Note: array syntax in field name)
 
-Set the profile mapping function to set profile data. Default mappings include:
+```
+<select name="lists[]" multiple>
+  {% for list in entry.listsField %}
+    <option value="{{ list.id }}">{{ list.name }}</option>
+  {% endfor %}
+</select>
+```
 
-See [Mapping](Mapping.md) for built-in custom mappings.
+`confirmOptIn` - _Optional_ [Default: `"1"`]
 
-See [Hooks](Hooks.md) for custom profile mapping.
+In Klaviyo, confirming an opt-in is similar to a double opt-in. This parameter tells Klaviyo if it should send an confirmation email to the person. Set it to 0 to prevent opt-in confirmation emails from being sent. Be smart about GDPR compliance.
 
-`forward`
+**Event Form Parameters**
 
-Indicates that the controller should forward requests to the specified action once complete.
+If event form parameters are present, Klaviyo's tracking API will be called to track the event and associate it to the user.
 
-If `forward` is not set, the POST will follow the `redirect` value if present.
+`event[name]` - _Required_
+
+The name of the event to track.
+
+```
+<input type="hidden" name="event[name]" value="Completed Order" />
+```
+
+`event[event_id]` - _Required_
+
+The ID to associate with an event, e.g. Order ID.
+
+```
+<input type="hidden" name="event[event_id]" value="{{ order.number }}" />
+```
+
+`event[value]` - _Required_
+
+Value associated with an event, e.g. Total Cost.
+
+```
+<input type="hidden" name="event[value]" value="{{ order.totalPrice }}" />
+```
+
+`event[extra][]` - _Optional_
+
+Associative arrary of extra properties to be assigned to the event in Klaviyo.
+
+```
+<input type="hidden" name="event[extra][Discount]" value="{{ order.totalDiscount }}" />
+```
+
+**Extra Form Parameters**
+
+The following extra parameters can be used in POST actions.
+
+`klaviyoProfileMapping` - _Optional_
+
+Specify a profile mapping manually within your template. If this field is not present the default mapping set in the plugins configuration section will be used.
+
+```
+<input type="hidden" name="klaviyoProfileMapping" value="formdata_mapping" />
+```
+
+`forward` - _Optional_
+
+Tells the plugin to forward the POST request to a specified action once complete. If the `forward` form parameter is not included, the POST will follow the Craft Commerce `redirect` field, if present.
+
+```
+<input type="hidden" name="forward" value="/commerce/cart/update-cart" />
+```
+
+## `GET` Actions
+
+### `actions/klaviyoconnect/cart/restore?number=<cart number>`
+
+Restores a previously active cart. Best used in a Klaviyo generated email to a specific customer.
+
+```
+<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number={{ cart.number }}">Get Your Cart</a>
+```
+
