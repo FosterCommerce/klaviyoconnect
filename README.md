@@ -24,7 +24,7 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 - [Field Types](docs/FieldTypes.md)
 - [Actions](docs/Actions.md)
 - [Profile Mappings](docs/Mapping.md)
-- [Hooks](docs/Hooks.md)
+- [Events](docs/Events.md)
 
 ## Examples
 
