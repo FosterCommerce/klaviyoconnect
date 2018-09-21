@@ -56,7 +56,7 @@ class Events extends Base
 
     private function trackOrder($eventName, $order)
     {
-        if (Craft::$app->user) {
+        if (Craft::$app->user->getIdentity()) {
             $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
         } else {
             if ($order->email) {
