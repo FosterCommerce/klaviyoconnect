@@ -32,4 +32,4 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 
 ## Klaviyo Set Up
 
-- [Klaviyo Special Properties](docs/KlaviyoNotes.md)
+- [Klaviyo Set Up](docs/KlaviyoNotes.md)
