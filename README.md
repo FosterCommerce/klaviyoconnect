@@ -30,6 +30,6 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 
 - [Templating](docs/Templating.md)
 
-## Notes
+## Klaviyo Set Up
 
 - [Klaviyo Special Properties](docs/KlaviyoNotes.md)
