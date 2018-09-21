@@ -6,7 +6,7 @@
 
 ## Add cart items to a Klaviyo email content section
 
-1. From the Klaviyo email content editor, clikc "View source" in text editor toolbar.
+From the Klaviyo email content editor, click "View source" in text editor toolbar.
 
 Enter your code. Here's an example:
 
