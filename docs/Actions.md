@@ -64,7 +64,7 @@ One of the list fields needs to be present to add a user to a list and is requir
 
 Klaviyo list ID.
 
-```
+```html
 <input type="hidden" name="list" value="{{ entry.listField.id }}" />
 ```
 
@@ -74,7 +74,7 @@ Klaviyo list ID.
 
 Array of Klaviyo List IDs (Note: array syntax in field name)
 
-```
+```twig
 <select name="lists[]" multiple>
   {% for list in entry.listsField %}
     <option value="{{ list.id }}">{{ list.name }}</option>
@@ -94,7 +94,7 @@ If event form parameters are present, Klaviyo's tracking API will be called to t
 
 The name of the event to track.
 
-```
+```html
 <input type="hidden" name="event[name]" value="Completed Order" />
 ```
 
@@ -102,7 +102,7 @@ The name of the event to track.
 
 The ID to associate with an event, e.g. Order ID.
 
-```
+```html
 <input type="hidden" name="event[event_id]" value="{{ order.number }}" />
 ```
 
@@ -110,7 +110,7 @@ The ID to associate with an event, e.g. Order ID.
 
 Value associated with an event, e.g. Total Cost.
 
-```
+```html
 <input type="hidden" name="event[value]" value="{{ order.totalPrice }}" />
 ```
 
@@ -118,7 +118,7 @@ Value associated with an event, e.g. Total Cost.
 
 Associative arrary of extra properties to be assigned to the event in Klaviyo.
 
-```
+```html
 <input type="hidden" name="event[extra][Discount]" value="{{ order.totalDiscount }}" />
 ```
 
@@ -130,7 +130,7 @@ The following extra parameters can be used in POST actions.
 
 Specify a profile mapping manually within your template. If this field is not present the default mapping set in the plugins configuration section will be used.
 
-```
+```html
 <input type="hidden" name="klaviyoProfileMapping" value="formdata_mapping" />
 ```
 
@@ -138,7 +138,7 @@ Specify a profile mapping manually within your template. If this field is not pr
 
 Tells the plugin to forward the POST request to a specified action once complete. If the `forward` form parameter is not included, the POST will follow the Craft Commerce `redirect` field, if present.
 
-```
+```html
 <input type="hidden" name="forward" value="/commerce/cart/update-cart" />
 ```
 

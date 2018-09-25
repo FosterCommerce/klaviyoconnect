@@ -2,47 +2,86 @@
 
 Klaviyo Connect provides the following events you can use in your own custom plugin, to define your own custom mappings.
 
-## `klaviyoConnect_addProfileMapping`
+## `addProfileMapping`
 
-Add a custom mapping for user profiles. Requires an associative array be returned.
+Add a custom mapping for user profiles.
+
+### `class ProfileMapping`
 
 - `name`
 - `description`
-- `handle` - A handle which Klaviyo can associate the mapping with
-- `method` - The method in your plugin to call to execute the mapping
+- `handle` - A unique handle which Klaviyo Connect can associate the mapping with
+- `method` - The method in your plugin to call to execute the mapping. Receives array of form parameters as an argument.
 
 ### Example
 
-```
-function klaviyoConnect_addProfileMapping()
-{
-    return [
-        'name' => 'My Custom Mapping',
-        'handle' => 'my_mapping',
-        'description' => 'My custom mapping',
-        'method' => 'myPlugin.myMapping'
-    ];
-}
+```php
+use fostercommerce\klaviyoconnect\services\Map;
+use fostercommerce\klaviyoconnect\events\AddProfileMappingEvent;
+use fostercommerce\klaviyoconnect\models\Profile;
+use fostercommerce\klaviyoconnect\models\ProfileMapping;
+use yii\base\Event;
+
+...
+
+Event::on(
+  Map::class,
+  Map::EVENT_ADD_PROFILE_MAPPING,
+  function (AddProfileMappingEvent $e) {
+    // Define your mapping
+    $myMapping = new ProfileMapping([
+      'name' => 'My Custom Profile Mapping',
+      'handle' => 'mycustom_mapping',
+      'description' => 'A custom profile mapping',
+      'method' => function ($params) {
+        $profile = new Profile();
+        // Perform profile mapping...
+        return $profile;
+      }
+    ]);
+
+    // Add it to list of mappings
+    $e->mappings[] = $myMapping;
+  }
+);
 ```
 
-## `klaviyoConnect_trackEventMapping($eventName)`
+Use your custom mappings as you would the built-in ones:
+
+```html
+<input type="hidden" name="klaviyoProfileMapping" value="mycustom_mapping" />
+```
+
+## `trackEventMapping($eventName)`
 
 Add a custom mapper to set extra properties on an event. See the `extra` parameter in Event Form Parameters in [Actions](Actions.md)
 
+### `class TrackEventMappingEvent`
+
+- `extraProps` - Extra properties to pass through to Klaviyo with the tracked event.
+
 ### Example
 
-```
-function klaviyoConnect_addProfileMapping()
-{
-    return [
-        'Order_ID' => $order->id,
-        'Order_Number' => $order->number,
-        'Item_Total' => $order->itemTotal,
-        'Total_Price' => $order->totalPrice,
-        'Item_Count' => $order->totalQty,
+```php
+use fostercommerce\klaviyoconnect\controllers\ApiController;
+use fostercommerce\klaviyoconnect\events\TrackEventMappingEvent;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+
+...
+
+Event::on(
+  ApiController::class,
+  ApiController::EVENT_TRACK_EVENT_MAPPING,
+  function (TrackEventMappingEvent $e) {
+    // Add your extra event properties to the tracking data
+    $e->extraProps = [
+      'Foo' => 'Bar',
     ];
-}
+  }
+);
 ```
+
+**Note:** Using this will overwrite any existing data in the `EventProperties::extra` field.
 
 ## Klaviyo Special Properties
 

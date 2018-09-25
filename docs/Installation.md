@@ -10,7 +10,7 @@ Go to the Plugin Store in your project’s Control Panel and search for Klaviyo 
 
 Open your terminal and run the following commands:
 
-```
+```bash
 # go to the project directory
 cd /path/to/my-project
 

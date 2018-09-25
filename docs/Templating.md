@@ -2,7 +2,7 @@
 
 ## Add a user to a Klaviyo List _(hard-coded values)_
 
-```
+```html
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <!-- Add to the list -->
@@ -14,7 +14,7 @@
 ```
 ## Add a user to Klaviyo List _(using the Klaviyo List Field from a global entry)_
 
-```
+```twig
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <input type="hidden" name="list" value="{{ global.myKlaviyoList.id }}">
@@ -26,7 +26,7 @@
 
 ## Add a user to multiple Klaviyo Lists _(using the Klaviyo Lists Field from a global entry)_
 
-```
+```twig
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     {% for id, name in global.myKlaviyoLists %}
@@ -40,7 +40,7 @@
 
 ## Track Event
 
-```
+```html
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <!-- Event to track -->
@@ -56,7 +56,7 @@
 
 ## Track an event and add a user to a Klaviyo List
 
-```
+```html
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
     <!-- Add to the list -->
@@ -75,7 +75,7 @@
 
 ## Identify a user
 
-```
+```html
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/identify">
     <label>Email</label><input type="email" name="email" />
@@ -85,7 +85,7 @@
 
 ## Forward a POST request after Klaviyo Connect has identified a user
 
-```
+```twig
 <form method="POST">
     <input type="hidden" name="action" value="klaviyoconnect/api/identify">
     <input type="hidden" name="forward" value="commerce/cart/update-cart">

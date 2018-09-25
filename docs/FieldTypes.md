@@ -6,7 +6,7 @@ Klaviyo Connect includes two field types which you can include in your entries t
 
 A drop down select field to select one list.
 
-```
+```twig
 {# Get the list ID #}
 {{ entry.customFieldName.id }}
 
@@ -18,7 +18,7 @@ A drop down select field to select one list.
 
 A checkbox group to allow for selecting multiple lists.
 
-```
+```twig
 {% for list in entry.customFieldName %}
   {{ list.id }}
   {{ list.name }}

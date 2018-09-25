@@ -10,7 +10,7 @@ From the Klaviyo email content editor, click "View source" in text editor toolba
 
 Enter your code. Here's an example:
 
-```
+```twig
 <ul>
 {% for Item in event.Line_Items %}
 	<li><a href="https://www.example.com{{ Item.URL }}">{{ Item.Title }}</a></li>
