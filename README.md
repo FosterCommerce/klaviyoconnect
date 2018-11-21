@@ -29,6 +29,7 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 ## Examples
 
 - [Templating](docs/Templating.md)
+- [Product Feed](docs/Feed.md)
 
 ## Klaviyo Set Up
 
