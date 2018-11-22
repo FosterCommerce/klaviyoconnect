@@ -22,7 +22,7 @@ return [
                         'id' => $entry->id,
                         'title' => $entry->title,
                         'sku' => $variant->sku,
-                        'url' => UrlHelper::url($variant->getUrl()),
+                        'url' => UrlHelper::url("/products/{$entry->id}"),
                     ];
                 },
                 'pretty' => true,
@@ -44,31 +44,31 @@ return [
             "id": "2",
             "title": "A New Toga",
             "sku": "ANT-001",
-            "url": "http://commerce.foster.test/?variant=3"
+            "url": "http://commerce.foster.test/products/2"
         },
         {
             "id": "10",
             "title": "The Last Knee-High",
             "sku": "LKH-001",
-            "url": "http://commerce.foster.test/?variant=11"
+            "url": "http://commerce.foster.test/products/10"
         },
         {
             "id": "8",
             "title": "The Fleece Awakens",
             "sku": "TFA-001",
-            "url": "http://commerce.foster.test/?variant=9"
+            "url": "http://commerce.foster.test/products/8"
         },
         {
             "id": "6",
             "title": "Romper For A Red Eye",
             "sku": "RRE-001",
-            "url": "http://commerce.foster.test/?variant=7"
+            "url": "http://commerce.foster.test/products/6"
         },
         {
             "id": "4",
             "title": "Parka With Stripes On Back",
             "sku": "PSB-001",
-            "url": "http://commerce.foster.test/?variant=5"
+            "url": "http://commerce.foster.test/products/4"
         }
     ]
 }
