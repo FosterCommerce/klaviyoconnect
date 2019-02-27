@@ -54,7 +54,7 @@ class Events extends Base
         $this->trackOrder('Completed Order', $event->sender);
     }
 
-    protected function trackOrder($eventName, $order)
+    public function trackOrder($eventName, $order)
     {
         if (Craft::$app->user->getIdentity()) {
             $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
