@@ -8,7 +8,10 @@ use fostercommerce\klaviyoconnect\events\TrackEventMappingEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use craft\web\Controller;
+use craft\commerce\Plugin as Commerce;
+use craft\commerce\elements\Order;
 use yii\base\Event;
+use yii\web\NotFoundHttpException;
 use GuzzleHttp\Exception\RequestException;
 
 class ApiController extends Controller
@@ -39,22 +42,40 @@ class ApiController extends Controller
         $event = $request->getParam('event');
         if ($event) {
             if (array_key_exists('name', $event)) {
-                $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
-                $profile = $this->mapProfile();
+                if (array_key_exists('trackOrder', $event)) {
+                    $profile = $this->mapProfile();
+                    if (array_key_exists('orderId', $event)) {
+                        $order = Order::find()
+                            ->id($event['orderId'])
+                            ->one();
 
-                $trackEventMappingEvent = new TrackEventMappingEvent(['name' => $event['name']]);
-                Event::trigger(static::class, self::EVENT_TRACK_EVENT_MAPPING, $trackEventMappingEvent);
+                        if (!$order) {
+                            throw new NotFoundHttpException("Order with ID {$orderId} could not be found");
+                        }
+                    } else {
+                        // Use the current cart
+                        $order = Commerce::getInstance()->carts->getCart();
+                    }
 
-                $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+                    Plugin::getInstance()->events->trackOrder($event['name'], $order, $profile);
+                } else {
+                    $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
+                    $profile = $this->mapProfile();
 
-                if (sizeof($trackEventMappingEvent->extraProps) > 0) {
-                    $eventProperties->setAttribute('extra', $trackEventMappingEvent->extraProps);
-                }
+                    $trackEventMappingEvent = new TrackEventMappingEvent(['name' => $event['name']]);
+                    Event::trigger(static::class, self::EVENT_TRACK_EVENT_MAPPING, $trackEventMappingEvent);
 
-                try {
-                    Plugin::getInstance()->api->track($event['name'], $profile, $eventProperties, $trackOnce);
-                } catch (RequestException $e) {
-                    // Swallow. Klaviyo responds with a 200.
+                    $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+
+                    if (sizeof($trackEventMappingEvent->extraProps) > 0) {
+                        $eventProperties->setAttribute('extra', $trackEventMappingEvent->extraProps);
+                    }
+
+                    try {
+                        Plugin::getInstance()->api->track($event['name'], $profile, $eventProperties, $trackOnce);
+                    } catch (RequestException $e) {
+                        // Swallow. Klaviyo responds with a 200.
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ namespace fostercommerce\klaviyoconnect\models;
 use Craft;
 use craft\base\Model;
 
-class Profile extends Model
+class Profile extends Base
 {
     const SPECIAL_PROPERTIES = [
         'id', 'email', 'first_name', 'last_name', 'phone_number',
@@ -25,6 +25,11 @@ class Profile extends Model
     public $zip;
     public $image;
     public $extra;
+
+    protected function getSpecialProperties(): Array
+    {
+        return self::SPECIAL_PROPERTIES;
+    }
 
     public function __toString()
     {

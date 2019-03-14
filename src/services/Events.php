@@ -6,12 +6,18 @@ use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
 use fostercommerce\klaviyoconnect\models\EventProperties;
+use fostercommerce\klaviyoconnect\events\AddOrderDetailsEvent;
+use fostercommerce\klaviyoconnect\events\AddOrderLineItemDetailsEvent;
 use yii\base\Event;
 use Klaviyo;
 use GuzzleHttp\Exception\RequestException;
 
 class Events extends Base
 {
+    const ADD_ORDER_DETAILS = 'addOrderDetails';
+
+    const ADD_ORDER_LINE_ITEM_DETAILS = 'addOrderLineItemDetails';
+
     public function onSaveUser(Event $event)
     {
         $this->identifyUser($event->sender);
@@ -51,27 +57,47 @@ class Events extends Base
 
     public function onOrderCompleted(Event $event)
     {
-        $this->trackOrder('Completed Order', $event->sender);
+        $this->trackOrder('Placed Order', $event->sender);
     }
 
-    public function trackOrder($eventName, $order)
+    public function trackOrder($eventName, $order, $profile = null)
     {
-        if (Craft::$app->user->getIdentity()) {
-            $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
-        } else {
-            if ($order->email) {
-                $profile = Plugin::getInstance()->populateModel(Profile::class, ['email' => $order->email]);
+        if (!$profile) {
+            if (Craft::$app->user->getIdentity()) {
+                $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
+            } else {
+                if ($order->email) {
+                    $profile = Plugin::getInstance()->populateModel(Profile::class, ['email' => $order->email]);
+                }
             }
         }
 
-        if (isset($profile)) {
+        if ($profile) {
+            $orderDetails = $this->getOrderDetails($order);
             $event = [
                 'event_id' => $order->id,
-                'extra' => $this->getOrderDetails($order),
+                'value' => $order->getTotalPrice(),
+                'extra' => $orderDetails,
             ];
             $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+
             try {
                 Plugin::getInstance()->api->track($eventName, $profile, $eventProperties);
+
+                if ($eventName === 'Placed Order') {
+                    foreach ($orderDetails['Items'] as $item) {
+                        $event = [
+                            'event_id' => $order->id.'_'.$item['Slug'],
+                            'value' => $item['RowTotal'],
+                            'extra' => $item,
+                        ];
+
+                        $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+
+                        Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties);
+                    }
+                }
+
             } catch (RequestException $e) {
                 // Swallow. Klaviyo responds with a 200.
             }
@@ -88,10 +114,11 @@ class Events extends Base
             $product = $lineItem->purchasable->product;
 
             $lineItemProperties = [
-                'Title' => $product->title,
-                'URL' => $product->getUrl(),
-                'Price' => $lineItem->price,
-                'Line_Price' => $lineItem->subtotal,
+                'ProductName' => $product->title,
+                'Slug' => $lineItem->purchasable->product->slug,
+                'ProductURL' => $product->getUrl(),
+                'ItemPrice' => $lineItem->price,
+                'RowTotal' => $lineItem->subtotal,
                 'Quantity' => $lineItem->qty,
                 'SKU' => $lineItem->purchasable->sku,
             ];
@@ -102,22 +129,34 @@ class Events extends Base
                 $images = $product->$productImageField->find();
                 if (sizeof($images) > 0) {
                     $image = $images[0];
-                    $lineItemProperties['Image'] = $image->getUrl($settings->productImageFieldTransformation);
+                    $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
                 }
             }
 
-            $lineItemsProperties[] = $lineItemProperties;
+            $addLineItemDetailsEvent = new AddOrderLineItemDetailsEvent([
+                'properties' => $lineItemProperties,
+                'order' => $order,
+                'lineItem' => $lineItem,
+            ]);
+            Event::trigger(static::class, self::ADD_ORDER_LINE_ITEM_DETAILS, $addLineItemDetailsEvent);
+
+            $lineItemsProperties[] = $addLineItemDetailsEvent->properties;
         }
 
         $extraProperties = [
-            'Order_ID' => $order->id,
-            'Order_Number' => $order->number,
-            'Item_Total' => $order->itemTotal,
-            'Total_Price' => $order->totalPrice,
-            'Item_Count' => $order->totalQty,
-            'Line_Items' => $lineItemsProperties,
+            'OrderID' => $order->id,
+            'OrderNumber' => $order->number,
+            'TotalPrice' => $order->totalPrice,
+            'TotalQuantity' => $order->totalQty,
+            'Items' => $lineItemsProperties,
         ];
 
-        return $extraProperties;
+        $addOrderDetailsEvent = new AddOrderDetailsEvent([
+            'properties' => $extraProperties,
+            'order' => $order,
+        ]);
+        Event::trigger(static::class, self::ADD_ORDER_DETAILS, $addOrderDetailsEvent);
+
+        return $addOrderDetailsEvent->properties;
     }
 }
