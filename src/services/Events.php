@@ -73,7 +73,7 @@ class Events extends Base
         }
 
         if ($profile) {
-            $orderDetails = $this->getOrderDetails($order);
+            $orderDetails = $this->getOrderDetails($order, $eventName);
             $event = [
                 'event_id' => $order->id,
                 'value' => $order->getTotalPrice(),
@@ -104,7 +104,7 @@ class Events extends Base
         }
     }
 
-    protected function getOrderDetails($order)
+    protected function getOrderDetails($order, $event = '')
     {
         $settings = Plugin::getInstance()->settings;
 
@@ -137,6 +137,7 @@ class Events extends Base
                 'properties' => $lineItemProperties,
                 'order' => $order,
                 'lineItem' => $lineItem,
+                'event' => $event,
             ]);
             Event::trigger(static::class, self::ADD_ORDER_LINE_ITEM_DETAILS, $addLineItemDetailsEvent);
 
@@ -154,6 +155,7 @@ class Events extends Base
         $addOrderDetailsEvent = new AddOrderDetailsEvent([
             'properties' => $extraProperties,
             'order' => $order,
+            'event' => $event,
         ]);
         Event::trigger(static::class, self::ADD_ORDER_DETAILS, $addOrderDetailsEvent);
 

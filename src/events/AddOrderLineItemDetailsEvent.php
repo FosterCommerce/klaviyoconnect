@@ -8,4 +8,5 @@ class AddOrderLineItemDetailsEvent extends Event
     public $properties = array();
     public $order = null;
     public $lineItem = null;
+    public $event = null;
 }

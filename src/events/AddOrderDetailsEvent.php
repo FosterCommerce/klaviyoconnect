@@ -7,4 +7,5 @@ class AddOrderDetailsEvent extends Event
 {
     public $properties = array();
     public $order = null;
+    public $event = null;
 }
