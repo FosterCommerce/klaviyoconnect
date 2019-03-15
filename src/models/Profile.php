@@ -24,7 +24,6 @@ class Profile extends Base
     public $country;
     public $zip;
     public $image;
-    public $extra;
 
     protected function getSpecialProperties(): Array
     {

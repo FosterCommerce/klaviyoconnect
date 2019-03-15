@@ -11,7 +11,6 @@ class EventProperties extends Base
     public $name;
     public $event_id;
     public $value;
-    public $extra;
 
     protected function getSpecialProperties(): Array
     {

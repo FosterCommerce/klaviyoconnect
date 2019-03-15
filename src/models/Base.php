@@ -6,6 +6,7 @@ use craft\base\Model;
 
 abstract class Base extends Model
 {
+    public $extra;
 
     protected abstract function getSpecialProperties(): Array;
 
@@ -17,10 +18,18 @@ abstract class Base extends Model
         $specialProps = $this->getSpecialProperties();
 
         foreach ($arr as $key => $value) {
-            if (in_array($key, $specialProps)) {
-                $mapped["\${$key}"] = $value;
-            } else {
-                $mapped[$key] = $value;
+            if ($value) {
+                if (in_array($key, $specialProps)) {
+                    $mapped["\${$key}"] = $value;
+                } else {
+                    if ($key === 'extra') {
+                        foreach ($value as $extraKey => $extraValue) {
+                            $mapped[$extraKey] = $extraValue;
+                        }
+                    } else {
+                        $mapped[$key] = $value;
+                    }
+                }
             }
         }
 
