@@ -12,7 +12,9 @@
     <input type="submit" value="Submit"/>
 </form>
 ```
-## Add a user to Klaviyo List _(using the Klaviyo List Field from a global entry)_
+## Add a user to Klaviyo List
+
+_using the Klaviyo List Field from a global entry_
 
 ```twig
 <form method="POST">
@@ -24,7 +26,9 @@
 </form>
 ```
 
-## Add a user to multiple Klaviyo Lists _(using the Klaviyo Lists Field from a global entry)_
+## Add a user to multiple Klaviyo Lists
+
+_Using the Klaviyo Lists Field from a global entry_
 
 ```twig
 <form method="POST">

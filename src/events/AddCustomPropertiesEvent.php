@@ -3,9 +3,8 @@ namespace fostercommerce\klaviyoconnect\events;
 
 use yii\base\Event;
 
-class AddOrderDetailsEvent extends Event
+class AddCustomPropertiesEvent extends Event
 {
+    public $name;
     public $properties = array();
-    public $order = null;
-    public $event = null;
 }

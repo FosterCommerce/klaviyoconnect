@@ -4,7 +4,7 @@ namespace fostercommerce\klaviyoconnect\controllers;
 
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
-use fostercommerce\klaviyoconnect\events\TrackEventMappingEvent;
+use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use craft\web\Controller;
@@ -16,7 +16,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class ApiController extends Controller
 {
-    const EVENT_TRACK_EVENT_MAPPING = 'trackEventMapping';
+    const ADD_CUSTOM_PROPERTIES = 'addCustomProperties';
 
     protected $allowAnonymous = true;
 
@@ -57,18 +57,18 @@ class ApiController extends Controller
                         $order = Commerce::getInstance()->carts->getCart();
                     }
 
-                    Plugin::getInstance()->events->trackOrder($event['name'], $order, $profile);
+                    Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile);
                 } else {
                     $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
                     $profile = $this->mapProfile();
 
-                    $trackEventMappingEvent = new TrackEventMappingEvent(['name' => $event['name']]);
-                    Event::trigger(static::class, self::EVENT_TRACK_EVENT_MAPPING, $trackEventMappingEvent);
+                    $addCustomPropertiesEvent = new AddCustomPropertiesEvent(['name' => $event['name']]);
+                    Event::trigger(static::class, self::ADD_CUSTOM_PROPERTIES, $addCustomPropertiesEvent);
 
-                    $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+                    $eventProperties = new EventProperties($event);
 
-                    if (sizeof($trackEventMappingEvent->properties) > 0) {
-                        $eventProperties->setCustomProperties($trackEventMappingEvent->properties);
+                    if (sizeof($addCustomPropertiesEvent->properties) > 0) {
+                        $eventProperties->setCustomProperties($addCustomPropertiesEvent->properties);
                     }
 
                     try {
@@ -129,7 +129,7 @@ class ApiController extends Controller
         $this->requirePostRequest();
         $profile = $this->mapProfile();
         try {
-            Plugin::getInstance()->api->identify($profile);
+            Plugin::getInstance()->track->identifyUser($profileParams);
         } catch (RequestException $e) {
             // Swallow. Klaviyo responds with a 200.
         }
@@ -149,11 +149,25 @@ class ApiController extends Controller
     private function mapProfile()
     {
         $request = Craft::$app->getRequest();
-        $mapping = $request->getParam('klaviyoProfileMapping');
-        if (!$mapping) {
-            $mapping = '';
+        $profileParams = $request->getParam('profile');
+
+        if (!$profileParams) {
+            $profileParams = [];
         }
-        $profile = Plugin::getInstance()->map->map($mapping, $request->getBodyParams());
-        return $profile;
+
+        if ($request->getParam('email') && !$profileParams['email']) {
+            $profileParams['email'] = $request->getParam('email');
+        }
+
+        $currentUser = Craft::$app->getUser()->getIdentity();
+
+        if ($currentUser) {
+            return $profileParams = array_merge(
+                Plugin::getInstance()->map->mapUser($currentUser),
+                $profileParams
+            );
+        }
+
+        return $profileParams;
     }
 }

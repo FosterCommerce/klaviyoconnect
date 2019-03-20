@@ -29,19 +29,4 @@ class Variable
     {
         return $this->error;
     }
-
-    public function profileMappings()
-    {
-        return Plugin::getInstance()->map->getProfileMappings();
-    }
-
-    public function profileMapping($handle = '')
-    {
-        return Plugin::getInstance()->map->getProfileMapping($handle);
-    }
-
-    public function defaultProfileMapping()
-    {
-        return $this->profileMapping();
-    }
 }

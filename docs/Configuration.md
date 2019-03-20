@@ -26,16 +26,6 @@ Once you have saved your API Keys, this field will be automatically populated wi
 
 Optional. Select which user groups you would like to limit tracking to. Default is all guests and users.
 
-## Default Profile Mapping
-
-Klaviyo Connect will use this default site-wide mapping when one isn't explicitly set in your template code. The mappings included are:
-
-### Form-Data Profile Mapping
-Useful when you want to track all users, even if they are not logged in or have not registered. With this mapping you can use form fields in your templates to send Klaviyo information about them. Most common settings.
-
-### User Model Profile Mapping
-If you only want to track logged in registered users, this mapping will map their user data (names, email, etc.) to Klaviyo fields.
-
 ## Cart URL
 
 The URL to your store's cart.

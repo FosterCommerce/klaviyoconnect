@@ -22,7 +22,7 @@ class Plugin extends \craft\base\Plugin
 
         $this->setComponents([
             'api' => \fostercommerce\klaviyoconnect\services\Api::class,
-            'events' => \fostercommerce\klaviyoconnect\services\Events::class,
+            'track' => \fostercommerce\klaviyoconnect\services\Track::class,
             'map' => \fostercommerce\klaviyoconnect\services\Map::class,
             'cart' => \fostercommerce\klaviyoconnect\services\Cart::class,
         ]);
@@ -33,16 +33,16 @@ class Plugin extends \craft\base\Plugin
         });
 
         Event::on(User::class, User::EVENT_AFTER_SAVE, function (Event $event) {
-            Plugin::getInstance()->events->onSaveUser($event);
+            Plugin::getInstance()->track->onSaveUser($event);
         });
 
         // Cart is an incomplete Order
         Event::on(Order::class, Order::EVENT_AFTER_SAVE, function (Event $e) {
-            Plugin::getInstance()->events->onCartUpdated($e);
+            Plugin::getInstance()->track->onCartUpdated($e);
         });
 
         Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
-            Plugin::getInstance()->events->onOrderCompleted($e);
+            Plugin::getInstance()->track->onOrderCompleted($e);
         });
 
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
@@ -61,19 +61,5 @@ class Plugin extends \craft\base\Plugin
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/settings', [
             'settings' => $this->getSettings()
         ]);
-    }
-
-    public function populateModel($modelClass, $params)
-    {
-        $model = new $modelClass();
-        $fields = $model->fields();
-
-        foreach ($fields as $field) {
-            if (isset($params[$field])) {
-                $model->$field = $params[$field];
-            }
-        }
-
-        return $model;
     }
 }

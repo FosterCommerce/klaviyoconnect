@@ -1,5 +1,24 @@
 # Release Notes for KlaviyoConnect
 
+## 3.0.0 - In progress
+
+### Removed
+
+- Profile mappings and related events, variables, etc
+
+### Updated
+
+- Restructured data sent to Klaviyo
+- Custom properties are added to the root of models instead of to the `$extra` property
+- User profile mapping is based on logged in user and data sent with the `profile[]` form parameter
+- Replaced `events` service with `track`
+- Renamed events to align with Klaviyo language (`AddProfilePropertiesEvent`, `AddCustomPropertiesEvent`, etc)
+
+## Added
+
+- Order and Line Item events for users to add custom properties onto event bodies
+- Profile event to add custom properties to user profiles
+
 ## 2.0.6 - 2019-02-28
 
 - Changed `trackOrder` and `getOrderDetails` visibility.

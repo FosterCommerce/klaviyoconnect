@@ -2,63 +2,56 @@
 
 You can use Klaviyo Connect plugin actions (in forms and links, see Templating Examples) to perform various Klaviyo actions from your Craft templates.
 
-## `POST` Actions
-
-### `klaviyoconnect/api/identify`
+## Identify `POST klaviyoconnect/api/identify`
 
 This action is used to track properties about an individual without tracking an associated event.
 
-### `klaviyoconnect/api/update-profile`
+See the Profile Form Parameters in the Update Profile action.
+
+## Update Profile `POST klaviyoconnect/api/update-profile`
 
 This action is used to add a user to a list or multiple lists and/or track events from a user.
 
 Calls the `identify` API too.
 
-#### Form Parameters
+### Profile Form Parameters
 
 These apply to both actions.
 
-`email` _Required_
+`email` or `profile[email]` _Required_
 
 An email address to identify a person's profile on Klaviyo
 
-`extra[]` _Optional_
+If `profile[email]` is not present, `email` will be used.
 
-Associative arrary of extra properties to be assigned to a profile in Klaviyo.
+```html
+<input type="hidden" name="profile[email]" value="hi@mysite.com" />
+```
 
-**Klaviyo-specific Profile properties** - _Optional_
+#### Custom Event Properties
 
-See [Special Identify Properties](https://www.klaviyo.com/docs/http-api) in Klaviyo's API docs.
+If you'd like to pass through custom profile properties, add them into the `profile` array.
 
-The following properties can be passed to controllers to populate a persons profile:
+`profile[PropertyName]`
 
-`id`
+```twig
+<input type="hidden" name="profile[LastLogin]" value="{{ currentUser.lastLoginDate|date('Y-m-d\TH:i:sP') }}" />
+```
 
-`first_name`
+#### Klaviyo-specific Profile properties
 
-`last_name`
+See [Klaviyo Notes](./KlaviyoNotes.md#klaviyo-special-properties) and [Special Identify Properties](https://www.klaviyo.com/docs/http-api) in Klaviyo's API docs.
 
-`phone_number`
+```twig
+<input type="hidden" name="profile[first_name]" value="{{ currentUser.firstName }}" />
+<input type="hidden" name="profile[last_name]" value="{{ currentUser.lastName }}" />
+```
 
-`title`
-
-`organization`
-
-`city`
-
-`region`
-
-`country`
-
-`zip`
-
-`image`
-
-**List Form Parameters**
+### List Parameters
 
 List form parameters can be passed to Klaviyo as either a single list or multiple lists.
 
-One of the list fields needs to be present to add a user to a list and is required:
+Either `list` or `lists[]` needs to be present to add a user to a list:
 
 `list` - _Required_
 
@@ -68,11 +61,9 @@ Klaviyo list ID.
 <input type="hidden" name="list" value="{{ entry.listField.id }}" />
 ```
 
-- OR -
-
 `lists[]` - _Required_
 
-Array of Klaviyo List IDs (Note: array syntax in field name)
+Array of Klaviyo List IDs
 
 ```twig
 <select name="lists[]" multiple>
@@ -86,7 +77,7 @@ Array of Klaviyo List IDs (Note: array syntax in field name)
 
 In Klaviyo, confirming an opt-in is similar to a double opt-in. This parameter tells Klaviyo if it should send an confirmation email to the person. Set it to 0 to prevent opt-in confirmation emails from being sent. Be smart about GDPR compliance.
 
-**Event Form Parameters**
+### Tracking Event Parameters
 
 If event form parameters are present, Klaviyo's tracking API will be called to track the event and associate it to the user.
 
@@ -98,7 +89,7 @@ The name of the event to track.
 <input type="hidden" name="event[name]" value="Completed Order" />
 ```
 
-`event[event_id]` - _Required_
+`event[event_id]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
 
 The ID to associate with an event, e.g. Order ID.
 
@@ -106,7 +97,7 @@ The ID to associate with an event, e.g. Order ID.
 <input type="hidden" name="event[event_id]" value="{{ order.number }}" />
 ```
 
-`event[value]` - _Required_
+`event[value]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
 
 Value associated with an event, e.g. Total Cost.
 
@@ -114,25 +105,37 @@ Value associated with an event, e.g. Total Cost.
 <input type="hidden" name="event[value]" value="{{ order.totalPrice }}" />
 ```
 
-`event[extra][]` - _Optional_
+#### Custom Event Properties
+
+If you'd like to pass through custom event properties, add them into the `event` array.
+
+`event[PropertyName]` - _Optional_
 
 Associative arrary of extra properties to be assigned to the event in Klaviyo.
 
 ```html
-<input type="hidden" name="event[extra][Discount]" value="{{ order.totalDiscount }}" />
+<input type="hidden" name="event[Foo]" value="Bar" />
 ```
 
-**Extra Form Parameters**
+#### Extra Form Parameters
 
 The following extra parameters can be used in POST actions.
 
-`klaviyoProfileMapping` - _Optional_
+`event[trackOrder]`
 
-Specify a profile mapping manually within your template. If this field is not present the default mapping set in the plugins configuration section will be used.
+When present, will trigger the order tracking logic as apposed to regular event tracking. If `event[orderId]` is set, that specific order will be used, otherwise the customer's current cart will be used.
+
+This is useful in situations where the built-in order tracking is not sufficient, for example, tracking partial payments.
 
 ```html
-<input type="hidden" name="klaviyoProfileMapping" value="formdata_mapping" />
+<input type="hidden" name="event[name]" value="Partial Payment" />
+<input type="hidden" name="event[trackOrder]" value="1" />
+<input type="hidden" name="event[orderId]" value="543" />
 ```
+
+`event[orderId]`
+
+The ID of the order to track.
 
 `forward` - _Optional_
 
@@ -142,13 +145,11 @@ Tells the plugin to forward the POST request to a specified action once complete
 <input type="hidden" name="forward" value="/commerce/cart/update-cart" />
 ```
 
-## `GET` Actions
-
-### `actions/klaviyoconnect/cart/restore?number=<cart number>`
+## `GET actions/klaviyoconnect/cart/restore?number=abc123`
 
 Restores a previously active cart. Best used in a Klaviyo generated email to a specific customer.
 
-```
-<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number={{ cart.number }}">Get Your Cart</a>
+```html
+<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number={{ cart.number }}">Go to your cart</a>
 ```
 

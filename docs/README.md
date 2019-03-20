@@ -21,7 +21,6 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 
 - [Field Types](FieldTypes.md)
 - [Actions](Actions.md)
-- [Profile Mappings](Mapping.md)
 - [Events](Events.md)
 
 ## Examples
@@ -29,9 +28,9 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 - [Templating](Templating.md)
 - [Product Feed](Feed.md)
 
-## Klaviyo Set Up
+## Klaviyo
 
-- [Klaviyo Set Up](KlaviyoNotes.md)
+- [Notes](KlaviyoNotes.md)
 
 ## Support
 

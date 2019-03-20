@@ -2,7 +2,7 @@
 
 Klaviyo Connect includes two field types which you can include in your entries to specify lists in your Klaviyo account. You can then use these values in your templates when setting up forms to gather user data and assign them to these lists.
 
-## Klaviyo List
+## Klaviyo List `KlaviyoList`
 
 A drop down select field to select one list.
 
@@ -14,7 +14,7 @@ A drop down select field to select one list.
 {{ entry.customFieldName.name }}
 ```
 
-## Klaviyo Lists
+## Klaviyo Lists `KlaviyoLists`
 
 A checkbox group to allow for selecting multiple lists.
 

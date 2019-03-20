@@ -6,7 +6,6 @@ use craft\base\Model;
 
 class EventProperties extends Base
 {
-    public $name;
     public $event_id;
     public $value;
 

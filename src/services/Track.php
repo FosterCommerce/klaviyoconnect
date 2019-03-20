@@ -6,21 +6,30 @@ use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
 use fostercommerce\klaviyoconnect\models\EventProperties;
-use fostercommerce\klaviyoconnect\events\AddOrderDetailsEvent;
-use fostercommerce\klaviyoconnect\events\AddOrderLineItemDetailsEvent;
+use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
 use yii\base\Event;
 use Klaviyo;
 use GuzzleHttp\Exception\RequestException;
 
-class Events extends Base
+class Track extends Base
 {
-    const ADD_ORDER_DETAILS = 'addOrderDetails';
+    const ADD_ORDER_CUSTOM_PROPERTIES = 'addOrderCustomProperties';
 
-    const ADD_ORDER_LINE_ITEM_DETAILS = 'addOrderLineItemDetails';
+    const ADD_LINE_ITEM_CUSTOM_PROPERTIES = 'addLineItemCustomProperties';
+
+    const ADD_PROFILE_PROPERTIES = 'addProfileProperties';
 
     public function onSaveUser(Event $event)
     {
-        $this->identifyUser($event->sender);
+        $user = $event->sender;
+        $groups = $this->getSetting('klaviyoAvailableGroups');
+        $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
+
+        if ($this->isInGroup($groups, $userGroups)) {
+            $this->identifyUser(Plugin::getInstance()->map->mapUser($user));
+        }
     }
 
     private function isInGroup($selectedGroups, $userGroups)
@@ -35,19 +44,24 @@ class Events extends Base
         return false;
     }
 
-    private function identifyUser($user)
+    private function createProfile($param, $eventName = null, $context = null)
     {
-        $groups = $this->getSetting('klaviyoAvailableGroups');
-        $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
+        $profile = new Profile($params);
 
-        if ($this->isInGroup($groups, $userGroups)) {
-            Plugin::getInstance()->api->identify(new Profile([
-                'id' => $user->id,
-                'email' => $user->email,
-                'first_name' => $user->firstName,
-                'last_name' => $user->lastName,
-            ]));
-        }
+        $event = new AddProfilePropertiesEvent([
+            'profile' => $profile,
+            'event' => $eventName,
+            'context' => $context,
+        ]);
+        Event::trigger(static::class, self::ADD_PROFILE_PROPERTIES, $event);
+
+        $profile->setCustomProperties($event->properties);
+        return $profile;
+    }
+
+    public function identifyUser($params)
+    {
+        Plugin::getInstance()->api->identify($this->createProfile($params));
     }
 
     public function onCartUpdated(Event $event)
@@ -63,11 +77,11 @@ class Events extends Base
     public function trackOrder($eventName, $order, $profile = null)
     {
         if (!$profile) {
-            if (Craft::$app->user->getIdentity()) {
-                $profile = Plugin::getInstance()->map->map('usermodel_mapping', array());
+            if ($currentUser = Craft::$app->user->getIdentity()) {
+                $profile = Plugin::getInstance()->map->mapUser($currentUser);
             } else {
                 if ($order->email) {
-                    $profile = Plugin::getInstance()->populateModel(Profile::class, ['email' => $order->email]);
+                    $profile = ['email' => $order->email];
                 }
             }
         }
@@ -78,7 +92,7 @@ class Events extends Base
                 'event_id' => $order->id,
                 'value' => $order->getTotalPrice(),
             ];
-            $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+            $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
 
             try {
@@ -91,8 +105,16 @@ class Events extends Base
                             'value' => $item['RowTotal'],
                         ];
 
-                        $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+                        $eventProperties = new EventProperties($event);
                         $eventProperties->setCustomProperties($item);
+
+                        $profile = $this->createProfile(
+                            $profile,
+                            [
+                                'order' => $order,
+                                'eventProperties' => $eventProperties,
+                            ]
+                        );
 
                         Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties);
                     }
@@ -132,15 +154,15 @@ class Events extends Base
                 }
             }
 
-            $addLineItemDetailsEvent = new AddOrderLineItemDetailsEvent([
+            $addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
                 'properties' => $lineItemProperties,
                 'order' => $order,
                 'lineItem' => $lineItem,
                 'event' => $event,
             ]);
-            Event::trigger(static::class, self::ADD_ORDER_LINE_ITEM_DETAILS, $addLineItemDetailsEvent);
+            Event::trigger(static::class, self::ADD_LINE_ITEM_CUSTOM_PROPERTIES, $addLineItemCustomPropertiesEvent);
 
-            $lineItemsProperties[] = $addLineItemDetailsEvent->properties;
+            $lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
         }
 
         $customProperties = [
@@ -151,13 +173,13 @@ class Events extends Base
             'Items' => $lineItemsProperties,
         ];
 
-        $addOrderDetailsEvent = new AddOrderDetailsEvent([
+        $addOrderCustomPropertiesEvent = new AddOrderCustomPropertiesEvent([
             'properties' => $customProperties,
             'order' => $order,
             'event' => $event,
         ]);
-        Event::trigger(static::class, self::ADD_ORDER_DETAILS, $addOrderDetailsEvent);
+        Event::trigger(static::class, self::ADD_ORDER_CUSTOM_PROPERTIES, $addOrderCustomPropertiesEvent);
 
-        return $addOrderDetailsEvent->properties;
+        return $addOrderCustomPropertiesEvent->properties;
     }
 }
