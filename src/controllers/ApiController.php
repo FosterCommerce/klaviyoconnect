@@ -67,8 +67,8 @@ class ApiController extends Controller
 
                     $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
 
-                    if (sizeof($trackEventMappingEvent->extraProps) > 0) {
-                        $eventProperties->setAttribute('extra', $trackEventMappingEvent->extraProps);
+                    if (sizeof($trackEventMappingEvent->properties) > 0) {
+                        $eventProperties->setCustomProperties($trackEventMappingEvent->properties);
                     }
 
                     try {

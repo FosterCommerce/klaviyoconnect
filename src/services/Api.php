@@ -57,10 +57,9 @@ class Api extends Base
             throw new Exception('You must identify a user by email or ID.');
         }
 
-        $mapped = $profile->toArray(Profile::SPECIAL_PROPERTIES);
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
-            'properties' => $mapped,
+            'properties' => $profile->toArray(),
         );
 
         return $this->callServerApi('identify', $params);

@@ -6,12 +6,6 @@ use craft\base\Model;
 
 class Profile extends Base
 {
-    const SPECIAL_PROPERTIES = [
-        'id', 'email', 'first_name', 'last_name', 'phone_number',
-        'title', 'organization', 'city', 'region', 'country', 'zip',
-        'image',
-    ];
-
     public $id;
     public $email;
     public $first_name;
@@ -24,11 +18,6 @@ class Profile extends Base
     public $country;
     public $zip;
     public $image;
-
-    protected function getSpecialProperties(): Array
-    {
-        return self::SPECIAL_PROPERTIES;
-    }
 
     public function __toString()
     {

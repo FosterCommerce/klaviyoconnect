@@ -58,7 +58,7 @@ Add a custom mapper to set extra properties on an event. See the `extra` paramet
 
 ### `class TrackEventMappingEvent`
 
-- `extraProps` - Extra properties to pass through to Klaviyo with the tracked event.
+- `properties` - Custom properties to pass through to Klaviyo with the tracked event.
 
 ### Example
 
@@ -73,8 +73,8 @@ Event::on(
   ApiController::class,
   ApiController::EVENT_TRACK_EVENT_MAPPING,
   function (TrackEventMappingEvent $e) {
-    // Add your extra event properties to the tracking data
-    $e->extraProps = [
+    // Add your custom event properties to the tracking data
+    $e->properties = [
       'Foo' => 'Bar',
     ];
   }

@@ -7,5 +7,5 @@ class TrackEventMappingEvent extends Event
 {
     public $name;
     public $eventId;
-    public $extraProps = array();
+    public $properties = array();
 }

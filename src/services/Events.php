@@ -77,9 +77,9 @@ class Events extends Base
             $event = [
                 'event_id' => $order->id,
                 'value' => $order->getTotalPrice(),
-                'extra' => $orderDetails,
             ];
             $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+            $eventProperties->setCustomProperties($orderDetails);
 
             try {
                 Plugin::getInstance()->api->track($eventName, $profile, $eventProperties);
@@ -89,10 +89,10 @@ class Events extends Base
                         $event = [
                             'event_id' => $order->id.'_'.$item['Slug'],
                             'value' => $item['RowTotal'],
-                            'extra' => $item,
                         ];
 
                         $eventProperties = Plugin::getInstance()->populateModel(EventProperties::class, $event);
+                        $eventProperties->setCustomProperties($item);
 
                         Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties);
                     }
@@ -123,7 +123,6 @@ class Events extends Base
                 'SKU' => $lineItem->purchasable->sku,
             ];
 
-
             $productImageField = $settings->productImageField;
             if (isset($product->$productImageField)) {
                 $images = $product->$productImageField->find();
@@ -144,7 +143,7 @@ class Events extends Base
             $lineItemsProperties[] = $addLineItemDetailsEvent->properties;
         }
 
-        $extraProperties = [
+        $customProperties = [
             'OrderID' => $order->id,
             'OrderNumber' => $order->number,
             'TotalPrice' => $order->totalPrice,
@@ -153,7 +152,7 @@ class Events extends Base
         ];
 
         $addOrderDetailsEvent = new AddOrderDetailsEvent([
-            'properties' => $extraProperties,
+            'properties' => $customProperties,
             'order' => $order,
             'event' => $event,
         ]);
