@@ -10,27 +10,14 @@ Then within your Klaviyo account create the appropriate automated "flows" for th
 
 __Perfect for recovering abandoned carts, welcoming first-time shoppers, or marketing to purchasers of specific products.__
 
-# Requirements
+## Documentation
 
-This plugin requires Craft 3.x and Commerce 2.x or later
+Visit the [Klaviyo Connect Plugin page](https://klaviyoconnect.fostercommerce.com).
 
-## Get Started
+## Support
 
-- [Installation](docs/Installation.md)
-- [Configuration](docs/Configuration.md)
+Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
 
-## Features
-
-- [Field Types](docs/FieldTypes.md)
-- [Actions](docs/Actions.md)
-- [Profile Mappings](docs/Mapping.md)
-- [Events](docs/Events.md)
-
-## Examples
-
-- [Templating](docs/Templating.md)
-- [Product Feed](docs/Feed.md)
-
-## Klaviyo Set Up
-
-- [Klaviyo Set Up](docs/KlaviyoNotes.md)
+<a href="https://fostercommerce.com" target="_blank">
+  <img width="160" height="40" src="./docs/images/fostercommerce.svg">
+</a>

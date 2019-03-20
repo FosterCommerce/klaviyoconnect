@@ -1,5 +1,3 @@
-# Klaviyo Connect
-
 A [Craft CMS](https://craftcms.com/) plugin for [Klaviyo](https://www.klaviyo.com).
 
 Take advantage of [Klaviyo](https://www.klaviyo.com) to drive more sales with super-targeted, highly-relevant email marketing campaigns.
@@ -34,3 +32,7 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 ## Klaviyo Set Up
 
 - [Klaviyo Set Up](KlaviyoNotes.md)
+
+## Support
+
+Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
