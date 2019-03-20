@@ -6,3 +6,4 @@
 vendor/
 .vscode
 .php_cs.cache
+node_modules

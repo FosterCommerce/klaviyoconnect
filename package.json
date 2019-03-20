@@ -1,0 +1,12 @@
+{
+  "name": "klaviyoconnect",
+  "repository": "git@github.com:FosterCommerce/klaviyoconnect.git",
+  "author": "Tyrone Tudehope <tyronetudehope@gmail.com>",
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "dependencies": {
+    "vuepress": "^1.0.0-alpha.44"
+  }
+}
