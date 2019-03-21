@@ -4,7 +4,6 @@ namespace fostercommerce\klaviyoconnect\controllers;
 
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
-use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use craft\web\Controller;
@@ -16,11 +15,9 @@ use GuzzleHttp\Exception\RequestException;
 
 class ApiController extends Controller
 {
-    const ADD_CUSTOM_PROPERTIES = 'addCustomProperties';
-
     protected $allowAnonymous = true;
 
-    public function actionUpdateProfile()
+    public function actionTrack()
     {
         $this->requirePostRequest();
 
@@ -60,22 +57,15 @@ class ApiController extends Controller
                     Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile);
                 } else {
                     $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
-                    $profile = $this->mapProfile();
-
-                    $addCustomPropertiesEvent = new AddCustomPropertiesEvent(['name' => $event['name']]);
-                    Event::trigger(static::class, self::ADD_CUSTOM_PROPERTIES, $addCustomPropertiesEvent);
 
                     $eventProperties = new EventProperties($event);
 
-                    if (sizeof($addCustomPropertiesEvent->properties) > 0) {
-                        $eventProperties->setCustomProperties($addCustomPropertiesEvent->properties);
-                    }
-
-                    try {
-                        Plugin::getInstance()->api->track($event['name'], $profile, $eventProperties, $trackOnce);
-                    } catch (RequestException $e) {
-                        // Swallow. Klaviyo responds with a 200.
-                    }
+                    Plugin::getInstance()->track->trackEvent(
+                        $event['name'],
+                        $this->mapProfile(),
+                        $eventProperties,
+                        $trackOnce
+                    );
                 }
             }
         }
@@ -129,7 +119,7 @@ class ApiController extends Controller
         $this->requirePostRequest();
         $profile = $this->mapProfile();
         try {
-            Plugin::getInstance()->track->identifyUser($profileParams);
+            Plugin::getInstance()->track->identifyUser($profile);
         } catch (RequestException $e) {
             // Swallow. Klaviyo responds with a 200.
         }
@@ -155,7 +145,7 @@ class ApiController extends Controller
             $profileParams = [];
         }
 
-        if ($request->getParam('email') && !$profileParams['email']) {
+        if ($request->getParam('email') && !isset($profileParams['email'])) {
             $profileParams['email'] = $request->getParam('email');
         }
 

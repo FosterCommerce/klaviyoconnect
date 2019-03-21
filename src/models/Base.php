@@ -7,12 +7,15 @@ use yii\base\UnknownPropertyException;
 
 abstract class Base extends Model
 {
+    private $customAttributes = [];
+
     public function __set($name, $value)
     {
         try {
             parent::__set($name, $value);
         } catch (UnknownPropertyException $e) {
             $this->$name = $value;
+            $this->customAttributes[] = $name;
         }
     }
 
@@ -37,18 +40,27 @@ abstract class Base extends Model
     {
         $arr = parent::toArray($fields, $expand, $recursive);
 
-        $specialProps = $this->getSpecialProperties();
+        $specialProps = $this->attributes();
 
         $mapped = [];
-        foreach ($arr as $key => $value) {
-            if ($value) {
-                if (in_array($key, $specialProps)) {
-                    $mapped["\${$key}"] = $value;
-                } else {
-                    $mapped[$key] = $value;
-                }
-            }
+        foreach ($arr as $name => $value) {
+            $mapped["\${$name}"] = $value;
         }
+
+        foreach ($this->customAttributes as $name) {
+            $mapped[$name] = $this->$name;
+        }
+
+        // $mapped = [];
+        // foreach ($arr as $key => $value) {
+        //     if ($value) {
+        //         if (in_array($key, $specialProps)) {
+        //             $mapped["\${$key}"] = $value;
+        //         } else {
+        //             $mapped[$key] = $value;
+        //         }
+        //     }
+        // }
 
         return $mapped;
     }

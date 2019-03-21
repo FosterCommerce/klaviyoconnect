@@ -6,6 +6,7 @@ use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
 use fostercommerce\klaviyoconnect\models\EventProperties;
+use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
@@ -15,6 +16,8 @@ use GuzzleHttp\Exception\RequestException;
 
 class Track extends Base
 {
+    const ADD_CUSTOM_PROPERTIES = 'addCustomProperties';
+
     const ADD_ORDER_CUSTOM_PROPERTIES = 'addOrderCustomProperties';
 
     const ADD_LINE_ITEM_CUSTOM_PROPERTIES = 'addLineItemCustomProperties';
@@ -44,7 +47,7 @@ class Track extends Base
         return false;
     }
 
-    private function createProfile($param, $eventName = null, $context = null)
+    private function createProfile($params, $eventName = null, $context = null)
     {
         $profile = new Profile($params);
 
@@ -74,6 +77,24 @@ class Track extends Base
         $this->trackOrder('Placed Order', $event->sender);
     }
 
+    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce)
+    {
+        $profile = $this->createProfile($profileParams);
+
+        $addCustomPropertiesEvent = new AddCustomPropertiesEvent(['name' => $eventName]);
+        Event::trigger(static::class, self::ADD_CUSTOM_PROPERTIES, $addCustomPropertiesEvent);
+
+        if (sizeof($addCustomPropertiesEvent->properties) > 0) {
+            $eventProperties->setCustomProperties($addCustomPropertiesEvent->properties);
+        }
+
+        try {
+            Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $trackOnce);
+        } catch (RequestException $e) {
+            // Swallow. Klaviyo responds with a 200.
+        }
+    }
+
     public function trackOrder($eventName, $order, $profile = null)
     {
         if (!$profile) {
@@ -96,6 +117,15 @@ class Track extends Base
             $eventProperties->setCustomProperties($orderDetails);
 
             try {
+                $profile = $this->createProfile(
+                    $profile,
+                    $eventName,
+                    [
+                        'order' => $order,
+                        'eventProperties' => $eventProperties,
+                    ]
+                );
+
                 Plugin::getInstance()->api->track($eventName, $profile, $eventProperties);
 
                 if ($eventName === 'Placed Order') {
@@ -107,14 +137,6 @@ class Track extends Base
 
                         $eventProperties = new EventProperties($event);
                         $eventProperties->setCustomProperties($item);
-
-                        $profile = $this->createProfile(
-                            $profile,
-                            [
-                                'order' => $order,
-                                'eventProperties' => $eventProperties,
-                            ]
-                        );
 
                         Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties);
                     }

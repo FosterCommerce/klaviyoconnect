@@ -8,7 +8,7 @@ This action is used to track properties about an individual without tracking an 
 
 See the Profile Form Parameters in the Update Profile action.
 
-## Update Profile `POST klaviyoconnect/api/update-profile`
+## Update Profile `POST klaviyoconnect/api/track`
 
 This action is used to add a user to a list or multiple lists and/or track events from a user.
 

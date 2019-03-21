@@ -12,15 +12,15 @@ Add custom properties on to tracking events.
 ### Example
 
 ```php
-use fostercommerce\klaviyoconnect\controllers\ApiController;
+use fostercommerce\klaviyoconnect\services\Track;
 use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 
 // ...
 
 Event::on(
-  ApiController::class,
-  ApiController::EVENT_ADD_EVENT_DETAILS,
+  Track::class,
+  Track::ADD_CUSTOM_PROPERTIES,
   function (AddCustomPropertiesEvent $e) {
     $eventName = $e->name;
 
@@ -98,7 +98,7 @@ Event::on(
 );
 ```
 
-## `AddLineItemCustomPropertiesEvent`
+## `AddProfilePropertiesEvent`
 
 Add custom properties onto the individual line items which form part of the order tracking events.
 

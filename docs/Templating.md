@@ -4,7 +4,7 @@
 
 ```html
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/track">
     <!-- Add to the list -->
     <input type="hidden" name="list" value="FOO123">
     <input type="hidden" name="confirmOptIn" value="0" />
@@ -18,7 +18,7 @@ _using the Klaviyo List Field from a global entry_
 
 ```twig
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/track">
     <input type="hidden" name="list" value="{{ global.myKlaviyoList.id }}">
     <input type="hidden" name="confirmOptIn" value="0" />
     <label>Email</label><input type="email" name="email" />
@@ -32,7 +32,7 @@ _Using the Klaviyo Lists Field from a global entry_
 
 ```twig
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/track">
     {% for id, name in global.myKlaviyoLists %}
       <input type="hidden" name="lists[]" value="{{ id }}" />
     {% endfor %}
@@ -46,7 +46,7 @@ _Using the Klaviyo Lists Field from a global entry_
 
 ```html
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/track">
     <!-- Event to track -->
     <input type="hidden" name="event[name]" value="Event Foo" />
     <input type="hidden" name="event[event_id]" value="a1b2c3" />
@@ -62,7 +62,7 @@ _Using the Klaviyo Lists Field from a global entry_
 
 ```html
 <form method="POST">
-    <input type="hidden" name="action" value="klaviyoconnect/api/update-profile">
+    <input type="hidden" name="action" value="klaviyoconnect/api/track">
     <!-- Add to the list -->
     <input type="hidden" name="list" value="FOO123">
     <input type="hidden" name="confirmOptIn" value="0" />
