@@ -13,6 +13,7 @@
 - User profile mapping is based on logged in user and data sent with the `profile[]` form parameter
 - Replaced `events` service with `track`
 - Renamed events to align with Klaviyo language (`AddProfilePropertiesEvent`, `AddCustomPropertiesEvent`, etc)
+- Changed `api/update-profile` to `api/track`
 
 ## Added
 
