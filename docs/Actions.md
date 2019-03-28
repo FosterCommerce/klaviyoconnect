@@ -2,13 +2,13 @@
 
 You can use Klaviyo Connect plugin actions (in forms and links, see Templating Examples) to perform various Klaviyo actions from your Craft templates.
 
-## Identify `POST klaviyoconnect/api/identify`
+## Identify `POST /klaviyoconnect/api/identify`
 
 This action is used to track properties about an individual without tracking an associated event.
 
 See the Profile Form Parameters in the Update Profile action.
 
-## Update Profile `POST klaviyoconnect/api/track`
+## Update Profile `POST /klaviyoconnect/api/track`
 
 This action is used to add a user to a list or multiple lists and/or track events from a user.
 
@@ -25,6 +25,8 @@ An email address to identify a person's profile on Klaviyo
 If `profile[email]` is not present, `email` will be used.
 
 ```html
+<input type="hidden" name="email" value="hi@mysite.com" />
+<!-- or -->
 <input type="hidden" name="profile[email]" value="hi@mysite.com" />
 ```
 
@@ -145,11 +147,24 @@ Tells the plugin to forward the POST request to a specified action once complete
 <input type="hidden" name="forward" value="/commerce/cart/update-cart" />
 ```
 
-## `GET actions/klaviyoconnect/cart/restore?number=abc123`
+## Restore Cart `GET /klaviyoconnect/cart/restore`
 
 Restores a previously active cart. Best used in a Klaviyo generated email to a specific customer.
 
+### Parameters
+
+`number` - _Required_
+
+The cart number of the cart you wish to restore.
+
 ```html
-<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number={{ cart.number }}">Go to your cart</a>
+<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number=10a6a60e178f6d19ad58b2184001217b">Restore your cart</a>
 ```
 
+In Klaviyo, if you've set up a flow based on the Started Checkout event, for example, you could create an email template to restore users' carts:
+
+```twig
+<a href="https://mysite.com/actions/klaviyoconnect/cart/restore?number={{ event.OrderNumber }}">Go to your cart</a>
+```
+
+See Klaviyo's [Template Tags & Syntax](https://www.klaviyo.com/docs/email-tags) documentation.

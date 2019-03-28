@@ -18,6 +18,6 @@ Visit the [Klaviyo Connect Plugin page](https://klaviyoconnect.fostercommerce.co
 
 Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
 
-<a href="https://fostercommerce.com" target="_blank">
+<a href="https://fostercommerce.com" style="display: inline-block; margin-top: 1.25em;" target="_blank">
   <img width="160" height="40" src="./docs/images/fostercommerce.svg">
 </a>

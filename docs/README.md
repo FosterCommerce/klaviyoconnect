@@ -25,7 +25,9 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 
 ## Examples
 
-- [Templating](Templating.md)
+- [Template Examples](Templating.md)
+  - [Twig Templates](Templating.html#twig-templates)
+  - [Klaviyo Email Templates](Templating.html#klaviyo-email-templates)
 - [Product Feed](Feed.md)
 
 ## Klaviyo
@@ -35,3 +37,7 @@ This plugin requires Craft 3.x and Commerce 2.x or later
 ## Support
 
 Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
+
+<a href="https://fostercommerce.com" style="display: inline-block; margin-top: 1.25em;">
+  <img width="160" height="40" src="./images/fostercommerce.svg">
+</a>

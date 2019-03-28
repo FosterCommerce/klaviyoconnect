@@ -16,6 +16,7 @@
 - Changed `api/update-profile` to `api/track`
 - Fixed error when adding a user to a Klaviyo list
 - Added `addToLists` to Track service
+- Added docs site
 
 ## Added
 
