@@ -5,7 +5,6 @@ namespace fostercommerce\klaviyoconnect\controllers;
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\EventProperties;
-use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use craft\web\Controller;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\elements\Order;
@@ -74,37 +73,25 @@ class ApiController extends Controller
     private function addProfileToLists()
     {
         $lists = array();
+        $request = Craft::$app->getRequest();
 
-        if (array_key_exists('list', $_POST)) {
-            $lists[] = $_POST['list'];
-        } elseif (array_key_exists('lists', $_POST) && sizeof($_POST['lists']) > 0) {
-            foreach ($_POST['lists'] as $listId) {
-                if (!empty($listId)) {
-                    $lists[] = $listId;
+        if ($listId = $request->getParam('list')) {
+            $lists[] = $listId;
+        } elseif ($listIds = $request->getParam('lists')) {
+            if (is_array($listIds) && sizeof($listIds) > 0) {
+                foreach ($listIds as $listId) {
+                    if (!empty($listId)) {
+                        $lists[] = $listId;
+                    }
                 }
             }
         }
 
         if (sizeof($lists) > 0) {
             $profile = $this->mapProfile();
-            $confirmOptIn = true;
+            $confirmOptIn = $request->getParam('confirmOptIn');
 
-            if (array_key_exists('confirmOptIn', $_POST)) {
-                if (!is_null($_POST['confirmOptIn'])) {
-                    $confirmOptIn = (bool) $_POST['confirmOptIn'];
-                }
-            }
-
-            foreach ($lists as $listId) {
-                $list = new KlaviyoList();
-                $list->id = $listId;
-
-                try {
-                    Plugin::getInstance()->api->addProfileToList($list, $profile, $confirmOptIn);
-                } catch (RequestException $e) {
-                    // Swallow. Klaviyo responds with a 200.
-                }
-            }
+            Plugin::getInstance()->track->addToLists($lists, $profile, $confirmOptIn);
         }
     }
 

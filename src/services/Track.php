@@ -5,6 +5,7 @@ use Craft;
 use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
+use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
@@ -75,6 +76,27 @@ class Track extends Base
     public function onOrderCompleted(Event $event)
     {
         $this->trackOrder('Placed Order', $event->sender);
+    }
+
+    public function addToLists($listIds, $profileParams, $confirmOptIn = true)
+    {
+        $profile = $this->createProfile($profileParams);
+
+        if (!is_null($confirmOptIn)) {
+            $confirmOptIn = (bool) $confirmOptIn;
+        } else {
+            $confirmOptIn = true;
+        }
+
+        foreach ($listIds as $listId) {
+            $list = new KlaviyoList(['id' => $listId]);
+
+            try {
+                Plugin::getInstance()->api->addProfileToList($list, $profile, $confirmOptIn);
+            } catch (RequestException $e) {
+                // Swallow. Klaviyo responds with a 200.
+            }
+        }
     }
 
     public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce)

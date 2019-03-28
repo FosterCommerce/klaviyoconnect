@@ -14,6 +14,8 @@
 - Replaced `events` service with `track`
 - Renamed events to align with Klaviyo language (`AddProfilePropertiesEvent`, `AddCustomPropertiesEvent`, etc)
 - Changed `api/update-profile` to `api/track`
+- Fixed error when adding a user to a Klaviyo list
+- Added `addToLists` to Track service
 
 ## Added
 
