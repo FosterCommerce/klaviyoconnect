@@ -1,6 +1,6 @@
 # Release Notes for KlaviyoConnect
 
-## 3.0.0 - In progress
+## 3.0.0 - 2019-03-28
 
 ### Removed
 
