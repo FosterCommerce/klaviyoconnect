@@ -2,6 +2,8 @@
 
 In Klaviyo, product feeds are added via [Catalog Sources](https://www.klaviyo.com/catalog/sources). This view is hidden for custom API plugins like this one, but still accessible and usable here: [https://www.klaviyo.com/catalog/sources](https://www.klaviyo.com/catalog/sources). Once you've created your JSON feed, add it to a new [Catalog Source](https://www.klaviyo.com/catalog/sources/create) to make the products within it available to your Klaviyo emails. Confirm your product feed is working on the [Catalog page](https://www.klaviyo.com/catalog/items).
 
+[Download Klaviyo's documentation for Custom Catalogs](https://help.klaviyo.com/attachments/token/mZ2rjQfoEcLjs5OMrXyIeOiK3/?name=Klaviyo+Custom+Catalog.zip)
+
 ## JSON Feed
 
 - Install Craft's [Element API](https://github.com/craftcms/element-api) plugin
