@@ -114,28 +114,6 @@
   </div>
 </div>
 
-{% set mappings = craft.klaviyoConnect.profileMappings %}
-<div class="field" id="klaviyoDefaultProfileMapping-field">
-  <div class="heading">
-    <label for="klaviyoDefaultProfileMapping">Default Profile Mapping </label>
-    <p class="instructions">{{ "Klaviyo Connect will use this mapping when one isn't explicitly set in a POST." | t }}</p>
-  </div>
-  <div class="input">
-    <div class="select">
-      <select id="klaviyoDefaultProfileMapping" name="klaviyoDefaultProfileMapping">
-        {% for mapping in mappings %}
-          <option
-            value="{{ mapping['handle'] }}"
-            {% if settings.klaviyoDefaultProfileMapping == mapping.handle %}selected{% endif %}
-          >
-            {{ mapping.name }} - {{ mapping.description }}
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-</div>
-
 <div class="field" id="cartUrl-field">
   <div class="heading">
     <label for="cartUrl">Cart URL</label>
