@@ -1,5 +1,14 @@
 # Release Notes for KlaviyoConnect
 
+## 3.0.1 - 2018-04-01
+
+### Updated
+
+- Fixed `profileMappings` on Settings page
+- Ensure Craft Commerce is installed and enabled before adding event listeners
+- Check for Craft Commerce before tracking order events
+- Check for Craft Commerce when calling the restore cart action
+
 ## 3.0.0 - 2019-03-28
 
 ### Removed

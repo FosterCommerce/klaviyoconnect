@@ -13,12 +13,16 @@ class CartController extends Controller
 
     public function actionRestore()
     {
-        $number = Craft::$app->getRequest()->getParam('number');
-        Plugin::getInstance()->cart->restore($number);
-        $cartUrl = Plugin::getInstance()->settings->cartUrl;
-        if (strlen($cartUrl) === 0) {
-            throw new HttpException(400, 'Cart URL is required. Settings -> Klaviyo Connect -> Cart URL');
+        if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+            $number = Craft::$app->getRequest()->getParam('number');
+            Plugin::getInstance()->cart->restore($number);
+            $cartUrl = Plugin::getInstance()->settings->cartUrl;
+            if (strlen($cartUrl) === 0) {
+                throw new HttpException(400, 'Cart URL is required. Settings -> Klaviyo Connect -> Cart URL');
+            }
+            return $this->redirect($cartUrl);
         }
-        return $this->redirect($cartUrl);
+
+        throw new HttpException(400, 'Craft Commerce needs to be installed and enabled to restore carts.');
     }
 }

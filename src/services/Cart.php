@@ -3,14 +3,14 @@ namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
-use craft\commerce\Plugin as CommercePlugin;
+use craft\commerce\Plugin as Commerce;
 use yii\web\HttpException;
 
 class Cart extends Base
 {
     public function restore($number)
     {
-        $commerceInstance = CommercePlugin::getInstance();
+        $commerceInstance = Commerce::getInstance();
 
         $order = $commerceInstance->orders->getOrderByNumber($number);
 

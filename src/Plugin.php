@@ -36,14 +36,15 @@ class Plugin extends \craft\base\Plugin
             Plugin::getInstance()->track->onSaveUser($event);
         });
 
-        // Cart is an incomplete Order
-        Event::on(Order::class, Order::EVENT_AFTER_SAVE, function (Event $e) {
-            Plugin::getInstance()->track->onCartUpdated($e);
-        });
+        if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+            Event::on(Order::class, Order::EVENT_AFTER_SAVE, function (Event $e) {
+                Plugin::getInstance()->track->onCartUpdated($e);
+            });
 
-        Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
-            Plugin::getInstance()->track->onOrderCompleted($e);
-        });
+            Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
+                Plugin::getInstance()->track->onOrderCompleted($e);
+            });
+        }
 
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
             $variable = $event->sender;

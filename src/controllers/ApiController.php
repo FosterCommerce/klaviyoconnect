@@ -39,21 +39,31 @@ class ApiController extends Controller
         if ($event) {
             if (array_key_exists('name', $event)) {
                 if (array_key_exists('trackOrder', $event)) {
-                    $profile = $this->mapProfile();
-                    if (array_key_exists('orderId', $event)) {
-                        $order = Order::find()
-                            ->id($event['orderId'])
-                            ->one();
+                    if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+                        $profile = $this->mapProfile();
+                        if (array_key_exists('orderId', $event)) {
+                            $order = Order::find()
+                                ->id($event['orderId'])
+                                ->one();
 
-                        if (!$order) {
-                            throw new NotFoundHttpException("Order with ID {$orderId} could not be found");
+                            if (!$order) {
+                                throw new NotFoundHttpException("Order with ID {$orderId} could not be found");
+                            }
+                        } else {
+                            // Use the current cart
+                            $order = Commerce::getInstance()->carts->getCart();
                         }
-                    } else {
-                        // Use the current cart
-                        $order = Commerce::getInstance()->carts->getCart();
-                    }
 
-                    Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile);
+                        Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile);
+                    } else {
+                        Craft::warning(
+                            Craft::t(
+                                'klaviyoconnect',
+                                'Skipping order tracking; Craft Commerce needs to be installed and enabled to track order events.'
+                            ),
+                            __METHOD__
+                        );
+                    }
                 } else {
                     $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
 

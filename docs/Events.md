@@ -32,72 +32,6 @@ Event::on(
 );
 ```
 
-## `AddOrderCustomPropertiesEvent`
-
-Add custom properties onto order tracking events.
-
-- `event` - Event name
-- `order` - The Commerce Order object
-- `properties` - Custom properties to pass through to Klaviyo with the tracked event.
-
-### Example
-
-```php
-use fostercommerce\klaviyoconnect\services\Track;
-use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
-use fostercommerce\klaviyoconnect\models\EventProperties;
-
-// ...
-
-Event::on(
-  Track::class,
-  Track::ADD_ORDER_CUSTOM_PROPERTIES,
-  function (AddCustomPropertiesEvent $e) {
-    $eventName = $e->event;
-    $order = $e->order;
-
-    // Add your custom event properties to the tracking data
-    $e->properties = [
-      'TotalPaid' => $order->getTotalPaid(),
-    ];
-  }
-);
-```
-
-## `AddLineItemCustomPropertiesEvent`
-
-Add custom properties onto the individual line items which form part of the order tracking events.
-
-- `event` - Event name
-- `order` - The Commerce Order object
-- `lineItem` - The Commerce LineItem object
-- `properties` - Custom properties to pass through to Klaviyo with the tracked event.
-
-### Example
-
-```php
-use fostercommerce\klaviyoconnect\services\Track;
-use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
-use fostercommerce\klaviyoconnect\models\EventProperties;
-
-// ...
-
-Event::on(
-  Track::class,
-  Track::ADD_LINE_ITEM_CUSTOM_PROPERTIES,
-  function (AddLineItemCustomPropertiesEvent $e) {
-    $eventName = $e->event;
-    $order = $e->order;
-    $lineItem = $e->lineItem;
-
-    // Add your custom event properties to the tracking data
-    $e->properties = [
-      'SubTotal' => $lineItem->purchasable->product->title,
-    ];
-  }
-);
-```
-
 ## `AddProfilePropertiesEvent`
 
 Add custom properties onto the individual line items which form part of the order tracking events.
@@ -134,3 +68,72 @@ Event::on(
 );
 ```
 
+## `AddOrderCustomPropertiesEvent`
+
+**Requires Craft Commerce**
+
+Add custom properties onto order tracking events.
+
+- `event` - Event name
+- `order` - The Commerce Order object
+- `properties` - Custom properties to pass through to Klaviyo with the tracked event.
+
+### Example
+
+```php
+use fostercommerce\klaviyoconnect\services\Track;
+use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+
+// ...
+
+Event::on(
+  Track::class,
+  Track::ADD_ORDER_CUSTOM_PROPERTIES,
+  function (AddCustomPropertiesEvent $e) {
+    $eventName = $e->event;
+    $order = $e->order;
+
+    // Add your custom event properties to the tracking data
+    $e->properties = [
+      'TotalPaid' => $order->getTotalPaid(),
+    ];
+  }
+);
+```
+
+## `AddLineItemCustomPropertiesEvent`
+
+**Requires Craft Commerce**
+
+Add custom properties onto the individual line items which form part of the order tracking events.
+
+- `event` - Event name
+- `order` - The Commerce Order object
+- `lineItem` - The Commerce LineItem object
+- `properties` - Custom properties to pass through to Klaviyo with the tracked event.
+
+### Example
+
+```php
+use fostercommerce\klaviyoconnect\services\Track;
+use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+
+// ...
+
+Event::on(
+  Track::class,
+  Track::ADD_LINE_ITEM_CUSTOM_PROPERTIES,
+  function (AddLineItemCustomPropertiesEvent $e) {
+    $eventName = $e->event;
+    $order = $e->order;
+    $lineItem = $e->lineItem;
+
+    // Add your custom event properties to the tracking data
+    $e->properties = [
+      'SubTotal' => $lineItem->purchasable->product->title,
+    ];
+  }
+);
+```
