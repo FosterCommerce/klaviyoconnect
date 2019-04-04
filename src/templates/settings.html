@@ -67,13 +67,13 @@
 {% endif %}
 </div>
 
-{% includecss %}
+{% css %}
   .klaviyoListsAll-label {
     font-weight: bold;
   }
-{% endincludecss %}
+{% endcss %}
 
-{% includejs %}
+{% js %}
   var checkAll = document.querySelector('.klaviyoListsAll');
   var checkboxes = document.querySelectorAll('.klaviyoAvailableLists');
   if (checkAll && checkboxes) {
@@ -90,7 +90,7 @@
       };
     });
   }
-{% endincludejs %}
+{% endjs %}
 
 <div class="field" id="klaviyoAvailableGroups-field">
   <div class="heading">
