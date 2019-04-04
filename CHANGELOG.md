@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 3.0.3 - 2019-04-04
+
+### Updated
+
+- Fetch the first product image for each line item
+
 ## 3.0.2 - 2019-04-04
 
 ### Updated

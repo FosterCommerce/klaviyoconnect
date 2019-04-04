@@ -191,9 +191,7 @@ class Track extends Base
 
             $productImageField = $settings->productImageField;
             if (isset($product->$productImageField)) {
-                $images = $product->$productImageField->find();
-                if (sizeof($images) > 0) {
-                    $image = $images[0];
+                if ($image = $product->$productImageField->one()) {
                     $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
                 }
             }
