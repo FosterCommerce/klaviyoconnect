@@ -1,6 +1,12 @@
 # Release Notes for KlaviyoConnect
 
-## 3.0.1 - 2018-04-01
+## 3.0.2 - 2019-04-04
+
+### Updated
+
+- Replaced deprecated `includecss` and `includejs` Twig tags
+
+## 3.0.1 - 2019-04-01
 
 ### Updated
 
