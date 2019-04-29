@@ -177,8 +177,10 @@ class Track extends Base
         $lineItemsProperties = array();
 
         foreach ($order->lineItems as $lineItem) {
+            $lineItemProperties = [];
+
+            // Add regular Product purchasable properties
             $product = $lineItem->purchasable->product ?? [];
-    
             if ($product) {
                 $lineItemProperties = [
                     'ProductName' => $product->title,
@@ -197,16 +199,19 @@ class Track extends Base
                     }
                 }
 
-                $addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
-                    'properties' => $lineItemProperties,
-                    'order' => $order,
-                    'lineItem' => $lineItem,
-                    'event' => $event,
-                ]);
-                Event::trigger(static::class, self::ADD_LINE_ITEM_CUSTOM_PROPERTIES, $addLineItemCustomPropertiesEvent);
-
-                $lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
             }
+
+            // Add any additional user-defined properties
+            $addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
+                'properties' => $lineItemProperties,
+                'order' => $order,
+                'lineItem' => $lineItem,
+                'event' => $event,
+            ]);
+
+            Event::trigger(static::class, self::ADD_LINE_ITEM_CUSTOM_PROPERTIES, $addLineItemCustomPropertiesEvent);
+
+            $lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
         }
 
         $customProperties = [

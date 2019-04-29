@@ -115,6 +115,8 @@ Add custom properties onto the individual line items which form part of the orde
 
 ### Example
 
+#### Adding properties from regular Craft Commerce purchasables
+
 ```php
 use fostercommerce\klaviyoconnect\services\Track;
 use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
@@ -130,10 +132,37 @@ Event::on(
     $order = $e->order;
     $lineItem = $e->lineItem;
 
-    // Add your custom event properties to the tracking data
-    $e->properties = [
-      'SubTotal' => $lineItem->purchasable->product->title,
-    ];
+    if (isset($lineItem->purchasable->product)) {
+        // Add your custom event properties to the tracking data
+        $e->properties = [
+          'MyField' => $lineItem->purchasable->product->myProductField,
+        ];
+    }
   }
 );
 ```
+
+#### Adding properties from non-standard purchasables
+
+```php
+use fostercommerce\klaviyoconnect\services\Track;
+use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+
+// ...
+
+Event::on(
+  Track::class,
+  Track::ADD_LINE_ITEM_CUSTOM_PROPERTIES,
+  function (AddLineItemCustomPropertiesEvent $e) {
+    $eventName = $e->event;
+    $order = $e->order;
+    $lineItem = $e->lineItem;
+
+    if (isset($lineItem->purchasable->voucher)) {
+        // Add your custom event properties to the tracking data
+    }
+  }
+);
+```
+
