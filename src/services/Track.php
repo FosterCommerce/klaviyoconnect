@@ -177,34 +177,36 @@ class Track extends Base
         $lineItemsProperties = array();
 
         foreach ($order->lineItems as $lineItem) {
-            $product = $lineItem->purchasable->product;
+            $product = $lineItem->purchasable->product ?? [];
+    
+            if ($product) {
+                $lineItemProperties = [
+                    'ProductName' => $product->title,
+                    'Slug' => $lineItem->purchasable->product->slug,
+                    'ProductURL' => $product->getUrl(),
+                    'ItemPrice' => $lineItem->price,
+                    'RowTotal' => $lineItem->subtotal,
+                    'Quantity' => $lineItem->qty,
+                    'SKU' => $lineItem->purchasable->sku,
+                ];
 
-            $lineItemProperties = [
-                'ProductName' => $product->title,
-                'Slug' => $lineItem->purchasable->product->slug,
-                'ProductURL' => $product->getUrl(),
-                'ItemPrice' => $lineItem->price,
-                'RowTotal' => $lineItem->subtotal,
-                'Quantity' => $lineItem->qty,
-                'SKU' => $lineItem->purchasable->sku,
-            ];
-
-            $productImageField = $settings->productImageField;
-            if (isset($product->$productImageField)) {
-                if ($image = $product->$productImageField->one()) {
-                    $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
+                $productImageField = $settings->productImageField;
+                if (isset($product->$productImageField)) {
+                    if ($image = $product->$productImageField->one()) {
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
+                    }
                 }
+
+                $addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
+                    'properties' => $lineItemProperties,
+                    'order' => $order,
+                    'lineItem' => $lineItem,
+                    'event' => $event,
+                ]);
+                Event::trigger(static::class, self::ADD_LINE_ITEM_CUSTOM_PROPERTIES, $addLineItemCustomPropertiesEvent);
+
+                $lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
             }
-
-            $addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
-                'properties' => $lineItemProperties,
-                'order' => $order,
-                'lineItem' => $lineItem,
-                'event' => $event,
-            ]);
-            Event::trigger(static::class, self::ADD_LINE_ITEM_CUSTOM_PROPERTIES, $addLineItemCustomPropertiesEvent);
-
-            $lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
         }
 
         $customProperties = [
