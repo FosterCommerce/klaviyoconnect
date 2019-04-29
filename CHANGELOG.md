@@ -1,5 +1,13 @@
 # Release Notes for KlaviyoConnect
 
+## 3.0.4 - 2019-04-29
+
+### Updated
+
+- `Track::createProfile` is now protected
+- Fix an error when a line item's purchasable has no Product attached
+- Users can now listen to the `Track::ADD_LINE_ITEM_CUSTOM_PROPERTIES` event for any line item regardless whether it has a Product attached or not
+
 ## 3.0.3 - 2019-04-04
 
 ### Updated
