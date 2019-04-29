@@ -48,7 +48,7 @@ class Track extends Base
         return false;
     }
 
-    private function createProfile($params, $eventName = null, $context = null)
+    protected function createProfile($params, $eventName = null, $context = null)
     {
         $profile = new Profile($params);
 
