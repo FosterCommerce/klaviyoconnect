@@ -9,7 +9,6 @@
     <input type="hidden" name="action" value="/klaviyoconnect/api/track">
     <!-- Add to the list -->
     <input type="hidden" name="list" value="FOO123">
-    <input type="hidden" name="confirmOptIn" value="0" />
     <label>
       Email
       <input type="email" name="email" />
@@ -24,7 +23,6 @@ _Using a Klaviyo List Field from a global entry_
 <form method="POST">
     <input type="hidden" name="action" value="/klaviyoconnect/api/track">
     <input type="hidden" name="list" value="{{ global.myKlaviyoList.id }}">
-    <input type="hidden" name="confirmOptIn" value="0" />
     <label>Email</label><input type="email" name="email" />
     <input type="submit" value="Submit"/>
 </form>
@@ -40,7 +38,6 @@ _Using the Klaviyo Lists Field from a global entry_
     {% for id, name in global.myKlaviyoLists %}
       <input type="hidden" name="lists[]" value="{{ id }}" />
     {% endfor %}
-    <input type="hidden" name="confirmOptIn" value="0" />
     <label>
       Email
       <input type="email" name="email" />
@@ -75,7 +72,6 @@ _Using the Klaviyo Lists Field from a global entry_
     <input type="hidden" name="action" value="/klaviyoconnect/api/track">
     <!-- Add to the list -->
     <input type="hidden" name="list" value="FOO123">
-    <input type="hidden" name="confirmOptIn" value="0" />
     <!-- Event to track -->
     <input type="hidden" name="event[name]" value="Event Foo" />
     <input type="hidden" name="event[event_id]" value="a1b2c3" />
@@ -111,7 +107,6 @@ _Using the Klaviyo Lists Field from a global entry_
     {{ redirectInput('/thankyou') }}
     <!-- Add to the list -->
     <input type="hidden" name="list" value="foo123">
-    <input type="hidden" name="confirmOptIn" value="0" />
 
     <!-- Profile properties -->
     <label>

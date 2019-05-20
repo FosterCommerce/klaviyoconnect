@@ -75,10 +75,6 @@ Array of Klaviyo List IDs
 </select>
 ```
 
-`confirmOptIn` - _Optional_ [Default: `"1"`]
-
-In Klaviyo, confirming an opt-in is similar to a double opt-in. This parameter tells Klaviyo if it should send an confirmation email to the person. Set it to 0 to prevent opt-in confirmation emails from being sent. Be smart about GDPR compliance.
-
 ### Tracking Event Parameters
 
 If event form parameters are present, Klaviyo's tracking API will be called to track the event and associate it to the user.

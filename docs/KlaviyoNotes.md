@@ -45,6 +45,9 @@ new Profile([
 - `$country` - country they live in
 - `$zip` - postal code where they live
 - `$image` - url to a photo of the person
+- `$consent` - This identifies which types of consent a subscriber has given. Consent is stored as a list array and may contain several properties, like Email and Web. There are five supported values for consent, which correspond to different methods you can use for marketing to your subscribers: `"email"`, `"web"`, `"mobile"`, `"sms"`, `"directmail"`
+- `$consent_method` - This identifies the method that a subscriber used to opt in
+- `$consent_timestamp` - This is a timestamp recording precisely when the user submitted the form and granted consent. This is added automatically by Klaviyo if it is not present in the Profile data
 
 ### Event Properties
 

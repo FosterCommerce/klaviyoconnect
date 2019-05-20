@@ -1,5 +1,19 @@
 # Release Notes for KlaviyoConnect
 
+## 3.1.0 - 2019-05-20
+
+### Removed
+
+- Removed `Base::getSpecialProperties()`
+- Removed `confirmOptIn` from add to list code
+
+### Updated
+
+- Updated Klaviyo List API calls to V2
+
+### Added
+- Added GDPR consent related fields on the `Profile` model
+
 ## 3.0.4 - 2019-04-29
 
 ### Updated
