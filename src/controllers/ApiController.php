@@ -99,9 +99,8 @@ class ApiController extends Controller
 
         if (sizeof($lists) > 0) {
             $profile = $this->mapProfile();
-            $confirmOptIn = $request->getParam('confirmOptIn');
 
-            Plugin::getInstance()->track->addToLists($lists, $profile, $confirmOptIn);
+            Plugin::getInstance()->track->addToLists($lists, $profile);
         }
     }
 

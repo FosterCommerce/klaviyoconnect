@@ -78,21 +78,15 @@ class Track extends Base
         $this->trackOrder('Placed Order', $event->sender);
     }
 
-    public function addToLists($listIds, $profileParams, $confirmOptIn = true)
+    public function addToLists($listIds, $profileParams)
     {
         $profile = $this->createProfile($profileParams);
-
-        if (!is_null($confirmOptIn)) {
-            $confirmOptIn = (bool) $confirmOptIn;
-        } else {
-            $confirmOptIn = true;
-        }
 
         foreach ($listIds as $listId) {
             $list = new KlaviyoList(['id' => $listId]);
 
             try {
-                Plugin::getInstance()->api->addProfileToList($list, $profile, $confirmOptIn);
+                Plugin::getInstance()->api->addProfileToList($list, $profile);
             } catch (RequestException $e) {
                 // Swallow. Klaviyo responds with a 200.
             }

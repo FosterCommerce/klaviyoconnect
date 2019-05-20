@@ -10,15 +10,20 @@ use GuzzleHttp\Client;
 
 class Api extends Base
 {
-    private $host = 'https://a.klaviyo.com/api/v1/';
+    private $host = 'https://a.klaviyo.com/api';
     private $client = null;
+    private $clientV2 = null;
 
     private $cachedLists = null;
 
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => $this->host,
+            'base_uri' => "{$this->host}/v1/",
+        ]);
+
+        $this->clientV2 = new Client([
+            'base_uri' => "{$this->host}/v2/",
         ]);
     }
 
@@ -79,73 +84,61 @@ class Api extends Base
 
     public function getLists()
     {
+
         if (is_null($this->cachedLists)) {
-            $this->cachedLists = $this->getListsPaged();
+            $response = $this->clientV2->get('lists', [
+                'query' => [
+                    'api_key' => $this->getSetting('klaviyoApiKey'),
+                ],
+            ]);
+            $content = $this->getObjectResponse($response);
+
+            $lists = [];
+            foreach ($content as $list) {
+                $model = new KlaviyoList([
+                    'id' => $list->list_id,
+                    'name' => $list->list_name,
+                ]);
+                $lists[] = $model;
+            }
+
+            $this->cachedLists = $lists;
         }
 
         return $this->cachedLists;
     }
 
-    private function getListsPaged($page = 0, $lists = array(), $totalLists = 0)
-    {
-        $response = $this->client->request('GET', 'lists', [
-            'query' => [
-                'api_key' => $this->getSetting('klaviyoApiKey'),
-                'page' => $page,
-            ],
-        ]);
-        $content = $this->getObjectResponse($response);
-        foreach ($content->data as $list) {
-            $totalLists++;
-            if ($list->list_type === 'list') {
-                $model = new KlaviyoList([
-                    'id' => $list->id,
-                    'name' => $list->name,
-                ]);
-                $lists[] = $model;
-            }
-        }
-        if ($totalLists === $content->total) {
-            return $lists;
-        } else {
-            return $this->getListsPaged($page + 1, $lists, $totalLists);
-        }
-    }
-
     public function profileInList($listId, $email)
     {
-        $response = $this->client->request('GET', "list/{$listId}/members", [
+        $response = $this->clientV2->get("list/{$listId}/members", [
             'query' => [
                 'api_key' => $this->getSetting('klaviyoApiKey'),
-                'email' => $email,
+                'emails' => $email,
             ],
         ]);
         $content = $this->getObjectResponse($response);
         return sizeof($content->data) > 0;
     }
 
-    public function addProfileToList(
-        KlaviyoList &$list,
-        Profile &$profile,
-        $confirmOptIn = true
-    ) {
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile) {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
         }
 
         $params = [
             'api_key' => $this->getSetting('klaviyoApiKey'),
-            'email' => $profile->email,
-            'confirm_optin' => $confirmOptIn ? 'true' : 'false',
+            'profiles' => [],
         ];
 
         $mapped = $profile->toArray();
+        $email = $mapped['$email'];
         unset($mapped['$email']);
+        $mapped['email'] = $email;
         if (sizeof($mapped) > 0) {
-            $params['properties'] = json_encode($mapped);
+            $params['profiles'][] = $mapped;
         }
 
-        $response = $this->client->request('POST', "list/{$list->id}/members", ['form_params' => $params]);
+        $response = $this->clientV2->post("list/{$list->id}/members", ['json' => $params]);
         $content = $this->getObjectResponse($response);
         return $content;
     }
