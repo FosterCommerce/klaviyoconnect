@@ -19,7 +19,7 @@ class Variable
                 }
             } catch (RequestException $e) {
                 $response = json_decode($e->getResponse()->getBody()->getContents());
-                $this->error = [ $response->status => $response->message];
+                $this->error = [$e->getCode() => $response->message];
             }
         }
         return $this->lists;

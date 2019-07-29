@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 3.1.1 - 2019-07-29
+
+### Updated
+
+- Use response code for error message instead of relying on an error code in the Klaviyo API response body.
+
 ## 3.1.0 - 2019-05-20
 
 ### Removed
