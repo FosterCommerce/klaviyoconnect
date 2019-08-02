@@ -15,4 +15,5 @@ class Settings extends Model
     public $cartUrl = '/shop/cart';
     public $productImageField = 'productImage';
     public $productImageFieldTransformation = 'productThumbnail';
+    public $eventPrefix = '';
 }

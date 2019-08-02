@@ -38,6 +38,13 @@ class Api extends Base
             throw new Exception('You must identify a user by email or ID.');
         }
 
+        // Check if there's a prefix for events
+        $prefix = $this->getSetting('eventPrefix');
+
+        if ($prefix) {
+            $event = $eventPrefix . ' ' . $event;
+        }
+
         $params = array(
             'token' => $this->getSetting('klaviyoSiteId'),
             'event' => $event,
