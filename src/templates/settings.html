@@ -114,6 +114,18 @@
   </div>
 </div>
 
+<div class="field" id="eventPrefix-field">
+  <div class="heading">
+    <label for="cartUrl">Event Prefix</label>
+		<p class="instructions">{{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}</p>
+  </div>
+	<div class="input">
+    <input
+      class="text fullwidth" type="text" id="eventPrefix" name="eventPrefix"
+      value="{{ settings.eventPrefix }}">
+	</div>
+</div>
+
 <div class="field" id="cartUrl-field">
   <div class="heading">
     <label for="cartUrl">Cart URL</label>
