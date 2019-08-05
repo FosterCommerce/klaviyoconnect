@@ -39,9 +39,9 @@ class Api extends Base
         }
 
         // Check if there's a prefix for events
-        $prefix = $this->getSetting('eventPrefix');
+        $eventPrefix = $this->getSetting('eventPrefix');
 
-        if ($prefix) {
+        if ($eventPrefix) {
             $event = $eventPrefix . ' ' . $event;
         }
 
