@@ -26,6 +26,10 @@ Once you have saved your API Keys, this field will be automatically populated wi
 
 Optional. Select which user groups you would like to limit tracking to. Default is all guests and users.
 
+## Event Prefix
+
+If you'd like to add a prefix to all events. For example, you might like to have the 'Placed Order' event show in Klaviyo as `(CC) Placed Order`. Leave blank for no prefix.
+
 ## Cart URL
 
 The URL to your store's cart.
