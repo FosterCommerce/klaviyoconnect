@@ -9,6 +9,7 @@ use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
 use craft\web\twig\variables\CraftVariable;
+use fostercommerce\klaviyoconnect\queue\jobs\TrackOrderComplete;
 use fostercommerce\klaviyoconnect\variables\Variable;
 use yii\base\Event;
 
@@ -42,7 +43,10 @@ class Plugin extends \craft\base\Plugin
             });
 
             Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
-                Plugin::getInstance()->track->onOrderCompleted($e);
+                Craft::$app->getQueue()->delay(10)->push(new TrackOrderComplete([
+                    'name' => $e->name,
+                    'orderId' => $e->sender->id,
+                ]));
             });
         }
 
