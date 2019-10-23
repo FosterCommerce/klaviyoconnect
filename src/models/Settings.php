@@ -16,4 +16,9 @@ class Settings extends Model
     public $productImageField = 'productImage';
     public $productImageFieldTransformation = 'productThumbnail';
     public $eventPrefix = '';
+
+    // Tracking Event Options
+    public $trackSaveUser = true;
+    public $trackCommerceCartUpdated = true;
+    public $trackCommerceOrderCompleted = true;
 }
