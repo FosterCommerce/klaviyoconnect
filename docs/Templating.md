@@ -65,6 +65,25 @@ _Using the Klaviyo Lists Field from a global entry_
 </form>
 ```
 
+### Tracking an event with a custom timestamp
+
+
+```html
+<form method="POST">
+    <input type="hidden" name="action" value="/klaviyoconnect/api/track">
+    <input type="hidden" name="event[name]" value="My Event" />
+    <input type="hidden" name="event[event_id]" value="some-id" />
+    <!-- The timestamp to set the event to in Klaviyo -->
+    <input type="hidden" name="event[timestamp]" value="2019-12-02T00:30:00" />
+    <label>
+      Email
+      <input type="email" name="email" />
+    </label>
+    <input type="submit" value="Submit"/>
+</form>
+```
+
+
 ### Track an event and add a user to a Klaviyo List
 
 ```html
