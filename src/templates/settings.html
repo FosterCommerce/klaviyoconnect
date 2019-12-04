@@ -1,28 +1,27 @@
 {% import "_includes/forms" as forms %}
 
-<div class="field" id="klaviyoSiteId-field">
-  <div class="heading">
-    <label for="klaviyoSiteId">Public API Key / Site ID</label>
-    <p class="instructions">{{ "See Klaviyo -> Account -> Settings -> API Keys" | t }}</p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="klaviyoSiteId" name="klaviyoSiteId"
-      value="{{ settings.klaviyoSiteId }}">
-  </div>
-</div>
+{{ forms.autosuggestField({
+    label: 'Public API Key / Site ID'|t('klaviyoconnect'),
+    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyoconnect'),
+    id: 'klaviyoSiteId',
+    name: 'klaviyoSiteId',
+    value: settings.klaviyoSiteId,
+    errors: settings.getErrors('klaviyoSiteId'),
+    class: 'ltr',
+    suggestEnvVars: true,
+}) }}
 
-<div class="field" id="klaviyoApiKey-field">
-  <div class="heading">
-    <label for="klaviyoApiKey">Private API Key</label>
-    <p class="instructions">{{ "See Klaviyo -> Account -> Settings -> API Keys" | t }}</p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="klaviyoApiKey" name="klaviyoApiKey"
-      value="{{ settings.klaviyoApiKey }}">
-  </div>
-</div>
+{{ forms.autosuggestField({
+    label: 'Private API Key'|t('klaviyoconnect'),
+    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyoconnect'),
+    id: 'klaviyoApiKey',
+    name: 'klaviyoApiKey',
+    value: settings.klaviyoApiKey,
+    errors: settings.getErrors('klaviyoApiKey'),
+    class: 'ltr',
+    suggestEnvVars: true,
+}) }}
+
 
 <div class="field" id="klaviyoAvailableLists-field">
   <div class="heading">

@@ -1,5 +1,12 @@
 # Release Notes for KlaviyoConnect
 
+## 3.1.2 - 2019-12-04
+
+### Updated
+
+- Allow tracking events with a timestamp.
+- Allow using environment variables for public and private keys in plugin config.
+
 ## 3.1.1 - 2019-07-29
 
 ### Updated

@@ -1,6 +1,7 @@
 <?php
 namespace fostercommerce\klaviyoconnect\services;
 
+use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use yii\base\Component;
 
@@ -13,6 +14,9 @@ abstract class Base extends Component
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;
         }
-        return $this->settings->$name;
+
+        $value = $this->settings->$name;
+        $value = Craft::parseEnv($value);
+        return $value;
     }
 }

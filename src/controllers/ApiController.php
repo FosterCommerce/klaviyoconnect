@@ -38,6 +38,12 @@ class ApiController extends Controller
         $event = $request->getParam('event');
         if ($event) {
             if (array_key_exists('name', $event)) {
+                $timestamp = null;
+                if (array_key_exists('timestamp', $event)) {
+                    $timestamp = $event['timestamp'];
+                    unset($event['timestamp']);
+                }
+
                 if (array_key_exists('trackOrder', $event)) {
                     if(Craft::$app->plugins->isPluginEnabled('commerce')) {
                         $profile = $this->mapProfile();
@@ -54,7 +60,7 @@ class ApiController extends Controller
                             $order = Commerce::getInstance()->carts->getCart();
                         }
 
-                        Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile);
+                        Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile, $timestamp);
                     } else {
                         Craft::warning(
                             Craft::t(
@@ -73,9 +79,18 @@ class ApiController extends Controller
                         $event['name'],
                         $this->mapProfile(),
                         $eventProperties,
-                        $trackOnce
+                        $trackOnce,
+                        $timestamp
                     );
                 }
+            } else {
+                Craft::warning(
+                    Craft::t(
+                        'klaviyoconnect',
+                        'Skipping event tracking; An event name is required.'
+                    ),
+                    __METHOD__
+                );
             }
         }
     }

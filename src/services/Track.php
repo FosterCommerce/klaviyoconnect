@@ -93,7 +93,7 @@ class Track extends Base
         }
     }
 
-    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce)
+    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce, $timestamp = null)
     {
         $profile = $this->createProfile($profileParams);
 
@@ -105,13 +105,13 @@ class Track extends Base
         }
 
         try {
-            Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $trackOnce);
+            Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $trackOnce, $timestamp);
         } catch (RequestException $e) {
             // Swallow. Klaviyo responds with a 200.
         }
     }
 
-    public function trackOrder($eventName, $order, $profile = null)
+    public function trackOrder($eventName, $order, $profile = null, $timestamp = null)
     {
         if (!$profile) {
             if ($currentUser = Craft::$app->user->getIdentity()) {
@@ -142,7 +142,7 @@ class Track extends Base
                     ]
                 );
 
-                Plugin::getInstance()->api->track($eventName, $profile, $eventProperties);
+                Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
 
                 if ($eventName === 'Placed Order') {
                     foreach ($orderDetails['Items'] as $item) {
@@ -154,7 +154,7 @@ class Track extends Base
                         $eventProperties = new EventProperties($event);
                         $eventProperties->setCustomProperties($item);
 
-                        Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties);
+                        Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
                     }
                 }
 
