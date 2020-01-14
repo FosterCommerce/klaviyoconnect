@@ -16,7 +16,11 @@ abstract class Base extends Component
         }
 
         $value = $this->settings->$name;
-        $value = Craft::parseEnv($value);
+
+        if (is_string($value)) {
+            $value = Craft::parseEnv($value);
+        }
+        
         return $value;
     }
 }

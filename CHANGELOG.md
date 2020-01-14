@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 3.1.3 - 2020-01-24
+
+### Updated
+
+- Fix an error that occurs when saving a user due to `klaviyoAvailableGroups` setting being an array.
+
 ## 3.1.2 - 2019-12-04
 
 ### Updated
