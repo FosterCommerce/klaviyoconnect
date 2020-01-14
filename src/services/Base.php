@@ -11,7 +11,7 @@ abstract class Base extends Component
 
     protected function getSetting($name)
     {
-        if (is_null($this->settings)) {
+        if (is_string($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;
         }
 
