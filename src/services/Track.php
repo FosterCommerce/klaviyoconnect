@@ -14,6 +14,7 @@ use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
 use yii\base\Event;
 use Klaviyo;
 use GuzzleHttp\Exception\RequestException;
+use DateTime;
 
 class Track extends Base
 {
@@ -125,8 +126,9 @@ class Track extends Base
 
         if ($profile) {
             $orderDetails = $this->getOrderDetails($order, $eventName);
+            $dateTime = new DateTime();
             $event = [
-                'event_id' => $order->id,
+                'event_id' => $order->id.'_'.$dateTime->getTimestamp(),
                 'value' => $order->getTotalPrice(),
             ];
             $eventProperties = new EventProperties($event);
@@ -147,7 +149,7 @@ class Track extends Base
                 if ($eventName === 'Placed Order') {
                     foreach ($orderDetails['Items'] as $item) {
                         $event = [
-                            'event_id' => $order->id.'_'.$item['Slug'],
+                            'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
                             'value' => $item['RowTotal'],
                         ];
 
