@@ -79,6 +79,14 @@ class Api extends Base
 
     private function callServerApi($path, $params)
     {
+        if($path === 'track' && $params['properties']) {
+            $items = $params['properties']['Items'] ?? null;
+
+            if($items && is_string($items)) {
+                $params['properties']['Items'] = json_decode($items);
+            }
+        }
+      
         $response = $this->client->request('GET', "/api/{$path}?data={$this->encode($params)}");
         $body = (string) $response->getBody();
         return $response->getStatusCode() === 200 && $body === '1';

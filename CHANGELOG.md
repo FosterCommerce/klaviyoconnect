@@ -1,5 +1,12 @@
 # Release Notes for KlaviyoConnect
 
+## 3.2.0 - 2020-09-18
+
+### Updated
+
+- Merged #27
+- Fix line items when passed as a string (such as through hidden fields in Twig) to `json_decode` the string before sending to Klaviyo.
+
 ## 3.1.3 - 2020-01-24
 
 ### Updated

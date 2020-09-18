@@ -5,6 +5,7 @@
 *Thumbs.db
 vendor/
 .vscode
+.idea
 .php_cs.cache
 node_modules
 docs/.vuepress/dist
