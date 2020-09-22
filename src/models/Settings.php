@@ -21,4 +21,5 @@ class Settings extends Model
     public $trackSaveUser = true;
     public $trackCommerceCartUpdated = true;
     public $trackCommerceOrderCompleted = true;
+    public $trackCommerceStatusUpdated = true;
 }

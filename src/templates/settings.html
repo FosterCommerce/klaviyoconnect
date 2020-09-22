@@ -174,3 +174,10 @@
   checked: settings.trackCommerceOrderCompleted,
   instructions: 'Track in Klaviyo when order is completed'
 }) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Status Updates",
+  name: 'trackCommerceStatusUpdated',
+  checked: settings.trackCommerceStatusUpdated,
+  instructions: 'Track in Klaviyo when order status is updated'
+}) }}

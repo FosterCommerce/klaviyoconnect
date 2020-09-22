@@ -59,9 +59,13 @@ class Plugin extends \craft\base\Plugin
                 });
             }
 
-            Event::on(OrderHistories::class, OrderHistories::EVENT_ORDER_STATUS_CHANGE, function (OrderStatusEvent $e) {
-                Plugin::getInstance()->track->onStatusChanged($e);
-            });
+            if ($settings->trackCommerceStatusUpdated) {
+                Event::on(OrderHistories::class,
+                    OrderHistories::EVENT_ORDER_STATUS_CHANGE,
+                    function (OrderStatusEvent $e) {
+                        Plugin::getInstance()->track->onStatusChanged($e);
+                    });
+            }
         }
 
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
