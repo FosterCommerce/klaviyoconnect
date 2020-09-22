@@ -83,10 +83,8 @@ class Track extends Base
 
     public function onStatusChanged(Event $event)
     {
-        $status = $event->orderHistory->getNewStatus();
         $order = $event->orderHistory->getOrder();
-
-        $this->trackOrder("$status Order", $order);
+        $this->trackOrder("Status Changed", $order, null, null, $event);
     }
 
     public function addToLists($listIds, $profileParams)
@@ -122,7 +120,7 @@ class Track extends Base
         }
     }
 
-    public function trackOrder($eventName, $order, $profile = null, $timestamp = null)
+    public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null)
     {
         if ($order->email) {
             $profile = ['email' => $order->email];
@@ -141,6 +139,13 @@ class Track extends Base
             ];
             $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
+
+            if($eventName === 'Status Changed') {
+                $orderHistory = $fullEvent->orderHistory;
+                $status = $orderHistory->getNewStatus()->name;
+                $eventProperties->setCustomProperties(['Reason' => $orderHistory->message]);
+                $eventName = "$status Order";
+            }
 
             try {
                 $profile = $this->createProfile(
@@ -171,7 +176,8 @@ class Track extends Base
                 // Swallow. Klaviyo responds with a 200.
             }
         } else {
-            throw new Exception('Profile not found.');
+            // Swallow.
+            // This is likely a logged out user adding an item to their cart.
         }
     }
 
