@@ -1,5 +1,12 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.0 - 2020-09-22
+
+### Updated
+
+- Fix bug where events triggered by admins cause admin account to get tracked in Klaviyo.
+- Add tracking for order status changes
+
 ## 3.2.0 - 2020-09-18
 
 ### Updated
