@@ -144,7 +144,8 @@ class Track extends Base
                 $orderHistory = $fullEvent->orderHistory;
                 $status = $orderHistory->getNewStatus()->name;
                 $eventProperties->setCustomProperties(['Reason' => $orderHistory->message]);
-                $eventName = "$status Order";
+
+                $eventName = $status === 'Refunded' ? "Refunded Order" : "Updated Order to $status";
             }
 
             try {
