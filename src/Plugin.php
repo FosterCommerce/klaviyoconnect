@@ -5,6 +5,8 @@ use Craft;
 use craft\services\Users;
 use craft\elements\User;
 use craft\commerce\elements\Order;
+use craft\commerce\events\OrderStatusEvent;
+use craft\commerce\services\OrderHistories;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
@@ -56,6 +58,10 @@ class Plugin extends \craft\base\Plugin
                     ]));
                 });
             }
+
+            Event::on(OrderHistories::class, OrderHistories::EVENT_ORDER_STATUS_CHANGE, function (OrderStatusEvent $e) {
+                Plugin::getInstance()->track->onStatusChanged($e);
+            });
         }
 
         Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {

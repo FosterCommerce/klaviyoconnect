@@ -11,10 +11,12 @@ use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
+use Stripe\Order;
 use yii\base\Event;
 use Klaviyo;
 use GuzzleHttp\Exception\RequestException;
 use DateTime;
+use yii\db\Exception;
 
 class Track extends Base
 {
@@ -79,6 +81,14 @@ class Track extends Base
         $this->trackOrder('Placed Order', $event->sender);
     }
 
+    public function onStatusChanged(Event $event)
+    {
+        $status = $event->orderHistory->getNewStatus();
+        $order = $event->orderHistory->getOrder();
+
+        $this->trackOrder("$status Order", $order);
+    }
+
     public function addToLists($listIds, $profileParams)
     {
         $profile = $this->createProfile($profileParams);
@@ -114,14 +124,12 @@ class Track extends Base
 
     public function trackOrder($eventName, $order, $profile = null, $timestamp = null)
     {
-        if (!$profile) {
-            if ($currentUser = Craft::$app->user->getIdentity()) {
-                $profile = Plugin::getInstance()->map->mapUser($currentUser);
-            } else {
-                if ($order->email) {
-                    $profile = ['email' => $order->email];
-                }
-            }
+        if ($order->email) {
+            $profile = ['email' => $order->email];
+        }
+
+        if (!$profile && $currentUser = Craft::$app->user->getIdentity()) {
+            $profile = Plugin::getInstance()->map->mapUser($currentUser);
         }
 
         if ($profile) {
@@ -150,7 +158,7 @@ class Track extends Base
                     foreach ($orderDetails['Items'] as $item) {
                         $event = [
                             'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
-                            'value' => $item['RowTotal'],
+                            'value' => $order->getTotalPrice(),
                         ];
 
                         $eventProperties = new EventProperties($event);
@@ -159,10 +167,11 @@ class Track extends Base
                         Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
                     }
                 }
-
             } catch (RequestException $e) {
                 // Swallow. Klaviyo responds with a 200.
             }
+        } else {
+            throw new Exception('Profile not found.');
         }
     }
 
