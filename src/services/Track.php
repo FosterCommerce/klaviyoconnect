@@ -171,7 +171,8 @@ class Track extends Base
                 // Swallow. Klaviyo responds with a 200.
             }
         } else {
-            throw new Exception('Profile not found.');
+            // Swallow.
+            // This is likely a logged out user adding an item to their cart.
         }
     }
 
