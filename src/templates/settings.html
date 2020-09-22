@@ -181,3 +181,10 @@
   checked: settings.trackCommerceStatusUpdated,
   instructions: 'Track in Klaviyo when order status is updated'
 }) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Refunds",
+  name: 'trackCommerceRefunded',
+  checked: settings.trackCommerceRefunded,
+  instructions: 'Track in Klaviyo when a refund or partial refund is given'
+}) }}

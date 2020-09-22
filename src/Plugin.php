@@ -8,6 +8,8 @@ use craft\commerce\elements\Order;
 use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\services\OrderHistories;
 use craft\events\RegisterComponentTypesEvent;
+use craft\commerce\events\RefundTransactionEvent;
+use craft\commerce\services\Payments;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
 use craft\web\twig\variables\CraftVariable;
@@ -64,7 +66,17 @@ class Plugin extends \craft\base\Plugin
                     OrderHistories::EVENT_ORDER_STATUS_CHANGE,
                     function (OrderStatusEvent $e) {
                         Plugin::getInstance()->track->onStatusChanged($e);
-                    });
+                    }
+                );
+            }
+
+            if ($settings->trackCommerceRefunded) {
+                Event::on(Payments::class,
+                    Payments::EVENT_AFTER_REFUND_TRANSACTION,
+                    function (RefundTransactionEvent $e) {
+                        Plugin::getInstance()->track->onOrderRefunded($e);
+                    }
+                );
             }
         }
 

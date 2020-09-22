@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\commerce\events\RefundTransactionEvent;
 use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
@@ -87,6 +88,12 @@ class Track extends Base
         $this->trackOrder("Status Changed", $order, null, null, $event);
     }
 
+    public function onOrderRefunded(RefundTransactionEvent $event)
+    {
+        $order = $event->transaction->getOrder();
+        $this->trackOrder("Refunded Order", $order, null, null, $event);
+    }
+
     public function addToLists($listIds, $profileParams)
     {
         $profile = $this->createProfile($profileParams);
@@ -133,12 +140,19 @@ class Track extends Base
         if ($profile) {
             $orderDetails = $this->getOrderDetails($order, $eventName);
             $dateTime = new DateTime();
+
             $event = [
                 'event_id' => $order->id.'_'.$dateTime->getTimestamp(),
-                'value' => $order->getTotalPrice(),
+                'value' => $order->totalPaid
             ];
             $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
+
+            if($eventName === 'Refunded Order') {
+                $children = $fullEvent->transaction->childTransactions;
+                $message = $children[count($children) - 1]->note;
+                $eventProperties->setCustomProperties(['Reason' => $message]);
+            }
 
             if($eventName === 'Status Changed') {
                 $orderHistory = $fullEvent->orderHistory;
@@ -164,7 +178,7 @@ class Track extends Base
                     foreach ($orderDetails['Items'] as $item) {
                         $event = [
                             'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
-                            'value' => $order->getTotalPrice(),
+                            'value' => $$order->totalPaid, // change here too
                         ];
 
                         $eventProperties = new EventProperties($event);
