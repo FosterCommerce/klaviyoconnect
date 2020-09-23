@@ -116,13 +116,15 @@
 <div class="field" id="eventPrefix-field">
   <div class="heading">
     <label for="cartUrl">Event Prefix</label>
-		<p class="instructions">{{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}</p>
+    <p class="instructions">
+      {{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}
+    </p>
   </div>
-	<div class="input">
+  <div class="input">
     <input
       class="text fullwidth" type="text" id="eventPrefix" name="eventPrefix"
       value="{{ settings.eventPrefix }}">
-	</div>
+  </div>
 </div>
 
 <div class="field" id="cartUrl-field">
@@ -158,7 +160,7 @@
     <input
       class="text fullwidth" type="text" id="productImageFieldTransformation" name="productImageFieldTransformation"
       value="{{ settings.productImageFieldTransformation }}">
-	</div>
+  </div>
 </div>
 
 {{ forms.checkboxField({
@@ -189,23 +191,79 @@
   instructions: 'Track in Klaviyo when a refund or partial refund is given'
 }) }}
 
-<button id="sync-orders">Sync Orders</button>
+<hr />
+
+<div class="field">
+  <div class="heading">
+    <label>Send Orders to Klaviyo</label>
+    <p class="instructions">
+      {{ "Sends historical order data to Klaviyo for a date range." | t }}
+    </p>
+  </div>
+
+  <div id="kaviyoconnect-date-range">
+    <input type="hidden" name="startDate" data-start-date>
+    <input type="hidden" name="endDate" data-end-date>
+
+    {% set dateRangeHtml %}<div data-date-range-picker></div>{% endset %}
+
+    {{ forms.field({
+    label: 'Date Range'|t('app'),
+    }, dateRangeHtml) }}
+  </div>
+</div>
+
+<div class="field">
+  <div class="input">
+    <p id="sync-orders-error" class="error hidden">
+      <strong>{{ "You must select a date range" | t }}</strong>
+    </p>
+
+    <button id="sync-orders" class="btn submit">
+      {{ "Send Order Data to Klaviyo" | t }}
+    </button>
+  </div>
+</div>
 
 <script type="text/javascript">
   const button = document.getElementById('settings-sync-orders');
+  const dateContainer = document.getElementById('settings-kaviyoconnect-date-range');
+  const startDate = dateContainer.querySelector('[data-start-date]');
+  const endDate = dateContainer.querySelector('[data-end-date]');
+  const picker = dateContainer.querySelector('[data-date-range-picker]');
+  const options = {
+    onChange: (start, end) => {
+      startDate.value = '';
+      endDate.value = '';
+
+      if (start) {
+        startDate.value = start.getTime() / 1000;
+      }
+
+      if (end) {
+        endDate.value = end.getTime() / 1000;
+      }
+    }
+  };
 
   button.addEventListener('click', e => {
     const request = new XMLHttpRequest();
 
     e.preventDefault();
 
-    request.onreadystatechange = function() {
-      if (this.readyState === 4 && this.status === 200) {
-        console.log(this.responseText);
-      }
-    };
+    if(startDate.value.trim().length && endDate.value.trim().length) {
+      request.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+          console.log(this.responseText);
+        }
+      };
 
-    request.open('GET', '/admin/klaviyoconnect/sync-orders', true);
-    request.send();
+      request.open('GET', '/admin/klaviyoconnect/sync-orders', true);
+      request.send();
+    } else {
+      document.getElementById('settings-sync-orders-error').classList.remove('hidden');
+    }
   });
 </script>
+
+{% js %}Craft.ui.createDateRangePicker(options).appendTo(picker){% endjs %}

@@ -1,14 +1,11 @@
 <?php
 namespace fostercommerce\klaviyoconnect\queue\jobs;
 
-use fostercommerce\klaviyoconnect\Plugin;
-
-use craft\commerce\elements\Order;
-
 use Craft;
 use craft\queue\BaseJob;
-
+use craft\commerce\elements\Order;
 use yii\base\Event;
+use fostercommerce\klaviyoconnect\Plugin;
 
 class SyncOrders extends BaseJob
 {
