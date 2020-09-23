@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect;
 
 use Craft;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\Users;
 use craft\elements\User;
 use craft\commerce\elements\Order;
@@ -13,6 +14,7 @@ use craft\commerce\services\Payments;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
 use craft\web\twig\variables\CraftVariable;
+use craft\web\UrlManager;
 use fostercommerce\klaviyoconnect\queue\jobs\TrackOrderComplete;
 use fostercommerce\klaviyoconnect\variables\Variable;
 use yii\base\Event;
@@ -33,6 +35,14 @@ class Plugin extends \craft\base\Plugin
         ]);
 
         $settings = $this->getSettings();
+
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['klaviyoconnect/sync-orders'] = 'klaviyoconnect/api/sync-orders';
+            }
+        );
 
         Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function (RegisterComponentTypesEvent $event) {
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListField::class;

@@ -188,3 +188,24 @@
   checked: settings.trackCommerceRefunded,
   instructions: 'Track in Klaviyo when a refund or partial refund is given'
 }) }}
+
+<button id="sync-orders">Sync Orders</button>
+
+<script type="text/javascript">
+  const button = document.getElementById('settings-sync-orders');
+
+  button.addEventListener('click', e => {
+    const request = new XMLHttpRequest();
+
+    e.preventDefault();
+
+    request.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {
+        console.log(this.responseText);
+      }
+    };
+
+    request.open('GET', '/admin/klaviyoconnect/sync-orders', true);
+    request.send();
+  });
+</script>
