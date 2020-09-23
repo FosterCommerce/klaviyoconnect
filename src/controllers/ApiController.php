@@ -34,12 +34,18 @@ class ApiController extends Controller
     }
 
     public function actionSyncOrders() {
-        $orders = Order::find()->all();
+        $params = $this->request->queryParams;
+        $start  = is_numeric($params['start']) ? $params['start'] : null;
+        $end    = is_numeric($params['end']) ? $params['end'] : null;
 
-        foreach ($orders as $order) {
-            Craft::$app->getQueue()->delay(10)->push(new SyncOrders([
-                'orderId' => $order->id
-            ]));
+        if($start && $end) {
+            $orders = Order::find()->dateCreated(['and', ">= {$start}", "<= {$end}"])->all();
+
+            foreach ($orders as $order) {
+                Craft::$app->getQueue()->delay(10)->push(new SyncOrders([
+                    'orderId' => $order->id
+                ]));
+            }
         }
     }
 

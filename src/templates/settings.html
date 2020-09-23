@@ -231,17 +231,20 @@
   const startDate = dateContainer.querySelector('[data-start-date]');
   const endDate = dateContainer.querySelector('[data-end-date]');
   const picker = dateContainer.querySelector('[data-date-range-picker]');
+  let startTime, endTime;
   const options = {
     onChange: (start, end) => {
       startDate.value = '';
       endDate.value = '';
 
       if (start) {
-        startDate.value = start.getTime() / 1000;
+        startTime = start.getTime() / 1000;
+        startDate.value = startTime;
       }
 
       if (end) {
-        endDate.value = end.getTime() / 1000;
+        endTime = end.getTime() / 1000;
+        endDate.value = endTime;
       }
     }
   };
@@ -251,14 +254,16 @@
 
     e.preventDefault();
 
-    if(startDate.value.trim().length && endDate.value.trim().length) {
+    if(startDate.value.length && endDate.value.length) {
+      const url = `/admin/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
+
       request.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
           console.log(this.responseText);
         }
       };
 
-      request.open('GET', '/admin/klaviyoconnect/sync-orders', true);
+      request.open('GET', url, true);
       request.send();
     } else {
       document.getElementById('settings-sync-orders-error').classList.remove('hidden');
