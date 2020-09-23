@@ -257,12 +257,6 @@
     if(startDate.value.length && endDate.value.length) {
       const url = `/admin/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
 
-      request.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-          console.log(this.responseText);
-        }
-      };
-
       request.open('GET', url, true);
       request.send();
     } else {

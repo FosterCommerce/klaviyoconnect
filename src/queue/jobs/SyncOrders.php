@@ -26,7 +26,7 @@ class SyncOrders extends BaseJob
             $order = Order::find()->id($this->orderId)->one();
 
             if ($order) {
-                //
+                Plugin::getInstance()->track->trackOrder('Placed Order', $order);
             }
         }
 

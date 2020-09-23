@@ -147,11 +147,20 @@ class Track extends Base
             ];
             $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
+            $success = true;
 
             if($eventName === 'Refunded Order') {
                 $children = $fullEvent->transaction->childTransactions;
-                $message = $children[count($children) - 1]->note;
-                $eventProperties->setCustomProperties(['Reason' => $message]);
+                $child    = $children[count($children) - 1];
+
+                if($child->status === 'success') {
+                    $message = $child->note;
+                    $eventProperties->setCustomProperties(['Reason' => $message]);
+
+                    $eventName === 'Refund Issued';
+                } else {
+                    $success = false;
+                }
             }
 
             if($eventName === 'Status Changed') {
@@ -159,36 +168,38 @@ class Track extends Base
                 $status = $orderHistory->getNewStatus()->name;
                 $eventProperties->setCustomProperties(['Reason' => $orderHistory->message]);
 
-                $eventName = $status === 'Refunded' ? "Refunded Order" : "Updated Order to $status";
+                $eventName = "$status Order";
             }
 
-            try {
-                $profile = $this->createProfile(
-                    $profile,
-                    $eventName,
-                    [
-                        'order' => $order,
-                        'eventProperties' => $eventProperties,
-                    ]
-                );
+            if($success) {
+                try {
+                    $profile = $this->createProfile(
+                        $profile,
+                        $eventName,
+                        [
+                            'order' => $order,
+                            'eventProperties' => $eventProperties,
+                        ]
+                    );
 
-                Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
+                    Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
 
-                if ($eventName === 'Placed Order') {
-                    foreach ($orderDetails['Items'] as $item) {
-                        $event = [
-                            'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
-                            'value' => $$order->totalPaid, // change here too
-                        ];
+                    if ($eventName === 'Placed Order') {
+                        foreach ($orderDetails['Items'] as $item) {
+                            $event = [
+                                'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
+                                'value' => $order->totalPaid,
+                            ];
 
-                        $eventProperties = new EventProperties($event);
-                        $eventProperties->setCustomProperties($item);
+                            $eventProperties = new EventProperties($event);
+                            $eventProperties->setCustomProperties($item);
 
-                        Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
+                            Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
+                        }
                     }
+                } catch (RequestException $e) {
+                    // Swallow. Klaviyo responds with a 200.
                 }
-            } catch (RequestException $e) {
-                // Swallow. Klaviyo responds with a 200.
             }
         } else {
             // Swallow.

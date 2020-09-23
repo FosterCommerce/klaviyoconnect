@@ -39,7 +39,7 @@ class ApiController extends Controller
         $end    = is_numeric($params['end']) ? $params['end'] : null;
 
         if($start && $end) {
-            $orders = Order::find()->dateCreated(['and', ">= {$start}", "<= {$end}"])->all();
+            $orders = Order::find()->isCompleted()->dateCreated(['and', ">= {$start}", "<= {$end}"])->all();
 
             foreach ($orders as $order) {
                 Craft::$app->getQueue()->delay(10)->push(new SyncOrders([
