@@ -10,7 +10,7 @@ __Perfect for recovering abandoned carts, welcoming first-time shoppers, or mark
 
 # Requirements
 
-This plugin requires Craft 3.x and Commerce 2.x or later
+This plugin requires Craft 3.x and Commerce 2.x
 
 ## Get Started
 

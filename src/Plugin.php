@@ -13,9 +13,11 @@ use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\services\Payments;
 use craft\services\Fields;
 use craft\events\UserGroupsAssignEvent;
+use craft\services\Utilities;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use fostercommerce\klaviyoconnect\queue\jobs\TrackOrderComplete;
+use fostercommerce\klaviyoconnect\utilities\KCUtilities;
 use fostercommerce\klaviyoconnect\variables\Variable;
 use yii\base\Event;
 
@@ -35,6 +37,14 @@ class Plugin extends \craft\base\Plugin
         ]);
 
         $settings = $this->getSettings();
+
+        Event::on(
+            Utilities::class,
+            Utilities::EVENT_REGISTER_UTILITY_TYPES,
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = KCUtilities::class;
+            }
+        );
 
         Event::on(
             UrlManager::class,

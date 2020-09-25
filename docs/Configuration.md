@@ -41,3 +41,19 @@ The handle of the asset field you use for product images. These images will then
 ## Image Transform
 
 The handle of the native Craft image transform you would like to use on the above product images.
+
+## Track Commerce Cart Updated
+
+Track in Klaviyo when the cart is updated.
+
+## Track Commerce Order Complete
+
+Track in Klaviyo when order is completed.
+
+## Track Commerce Order Status Updates
+
+Track in Klaviyo when order status is updated.
+
+## Track Commerce Order Refunds
+
+Track in Klaviyo when a refund or partial refund is given.
