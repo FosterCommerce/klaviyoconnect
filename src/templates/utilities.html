@@ -1,0 +1,75 @@
+{% import "_includes/forms" as forms %}
+
+<div class="field">
+	<div class="heading">
+		<label>Send Orders to Klaviyo</label>
+		<p class="instructions">
+			{{ "Sends historical order data to Klaviyo for a date range." | t }}
+		</p>
+	</div>
+
+	<div id="kaviyoconnect-date-range">
+		<input type="hidden" name="startDate" data-start-date>
+		<input type="hidden" name="endDate" data-end-date>
+
+		{% set dateRangeHtml %}<div data-date-range-picker></div>{% endset %}
+
+		{{ forms.field({
+			label: 'Date Range'|t('app'),
+		}, dateRangeHtml) }}
+	</div>
+</div>
+
+<div class="field">
+	<div class="input">
+		<p id="sync-orders-error" class="error hidden">
+			<strong>{{ "You must select a date range" | t }}</strong>
+		</p>
+
+		<button id="sync-orders" class="btn submit">
+			{{ "Send Order Data to Klaviyo" | t }}
+		</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	const button = document.getElementById('sync-orders');
+	const dateContainer = document.getElementById('kaviyoconnect-date-range');
+	const startDate = dateContainer.querySelector('[data-start-date]');
+	const endDate = dateContainer.querySelector('[data-end-date]');
+	const picker = dateContainer.querySelector('[data-date-range-picker]');
+	let startTime, endTime;
+	const options = {
+		onChange: (start, end) => {
+			startDate.value = '';
+			endDate.value = '';
+
+			if (start) {
+				startTime = start.getTime() / 1000;
+				startDate.value = startTime;
+			}
+
+			if (end) {
+				endTime = end.getTime() / 1000;
+				endDate.value = endTime;
+			}
+		}
+	};
+
+	button.addEventListener('click', e => {
+		const request = new XMLHttpRequest();
+
+		e.preventDefault();
+
+		if(startDate.value.length && endDate.value.length) {
+			const url = `/admin/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
+
+			request.open('GET', url, true);
+			request.send();
+		} else {
+			document.getElementById('sync-orders-error').classList.remove('hidden');
+		}
+	});
+</script>
+
+{% js %}Craft.ui.createDateRangePicker(options).appendTo(picker){% endjs %}
