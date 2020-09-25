@@ -19,7 +19,7 @@ class KCUtilities extends Utility
 
     public static function iconPath(): string
     {
-        return 'icon.svg';
+        return Craft::getAlias('@fostercommerce/klaviyoconnect/icon-mask.svg');
     }
 
     public static function contentHtml(): string
