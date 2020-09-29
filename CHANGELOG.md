@@ -1,11 +1,17 @@
 # Release Notes for KlaviyoConnect
 
-## 4.0.0 - 2020-09-22
+## 4.0.0 - 2020-09-29
+
+### Added
+
+- Add tracking for order status changes
+- Add tracking for refund transactions
+- Add ability to disable tracking for specific events
+- Add ability to push historical Commerce orders to Klaviyo
 
 ### Updated
-
 - Fix bug where events triggered by admins cause admin account to get tracked in Klaviyo.
-- Add tracking for order status changes
+- Fix bug with line item formatting on events where they would show up as strings instead of arrays.
 
 ## 3.2.0 - 2020-09-18
 
