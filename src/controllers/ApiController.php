@@ -5,6 +5,7 @@ namespace fostercommerce\klaviyoconnect\controllers;
 use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\EventProperties;
+use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
 use craft\web\Controller;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\elements\Order;
@@ -29,6 +30,22 @@ class ApiController extends Controller
             return $this->asJson('success');
         } else {
             return $this->forwardOrRedirect();
+        }
+    }
+
+    public function actionSyncOrders() {
+        $params = $this->request->queryParams;
+        $start  = is_numeric($params['start']) ? $params['start'] : null;
+        $end    = is_numeric($params['end']) ? $params['end'] : null;
+
+        if($start && $end) {
+            $orders = Order::find()->isCompleted()->dateCreated(['and', ">= {$start}", "<= {$end}"])->all();
+
+            foreach ($orders as $order) {
+                Craft::$app->getQueue()->delay(10)->push(new SyncOrders([
+                    'orderId' => $order->id
+                ]));
+            }
         }
     }
 

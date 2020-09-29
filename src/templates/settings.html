@@ -116,13 +116,15 @@
 <div class="field" id="eventPrefix-field">
   <div class="heading">
     <label for="cartUrl">Event Prefix</label>
-		<p class="instructions">{{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}</p>
+    <p class="instructions">
+      {{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}
+    </p>
   </div>
-	<div class="input">
+  <div class="input">
     <input
       class="text fullwidth" type="text" id="eventPrefix" name="eventPrefix"
       value="{{ settings.eventPrefix }}">
-	</div>
+  </div>
 </div>
 
 <div class="field" id="cartUrl-field">
@@ -158,7 +160,7 @@
     <input
       class="text fullwidth" type="text" id="productImageFieldTransformation" name="productImageFieldTransformation"
       value="{{ settings.productImageFieldTransformation }}">
-	</div>
+  </div>
 </div>
 
 {{ forms.checkboxField({
@@ -173,4 +175,18 @@
   name: 'trackCommerceOrderCompleted',
   checked: settings.trackCommerceOrderCompleted,
   instructions: 'Track in Klaviyo when order is completed'
+}) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Status Updates",
+  name: 'trackCommerceStatusUpdated',
+  checked: settings.trackCommerceStatusUpdated,
+  instructions: 'Track in Klaviyo when order status is updated'
+}) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Refunds",
+  name: 'trackCommerceRefunded',
+  checked: settings.trackCommerceRefunded,
+  instructions: 'Track in Klaviyo when a refund or partial refund is given'
 }) }}

@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\commerce\events\RefundTransactionEvent;
 use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\models\Profile;
@@ -11,10 +12,12 @@ use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
+use Stripe\Order;
 use yii\base\Event;
 use Klaviyo;
 use GuzzleHttp\Exception\RequestException;
 use DateTime;
+use yii\db\Exception;
 
 class Track extends Base
 {
@@ -79,6 +82,18 @@ class Track extends Base
         $this->trackOrder('Placed Order', $event->sender);
     }
 
+    public function onStatusChanged(Event $event)
+    {
+        $order = $event->orderHistory->getOrder();
+        $this->trackOrder("Status Changed", $order, null, null, $event);
+    }
+
+    public function onOrderRefunded(RefundTransactionEvent $event)
+    {
+        $order = $event->transaction->getOrder();
+        $this->trackOrder("Refunded Order", $order, null, null, $event);
+    }
+
     public function addToLists($listIds, $profileParams)
     {
         $profile = $this->createProfile($profileParams);
@@ -112,57 +127,83 @@ class Track extends Base
         }
     }
 
-    public function trackOrder($eventName, $order, $profile = null, $timestamp = null)
+    public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null)
     {
-        if (!$profile) {
-            if ($currentUser = Craft::$app->user->getIdentity()) {
-                $profile = Plugin::getInstance()->map->mapUser($currentUser);
-            } else {
-                if ($order->email) {
-                    $profile = ['email' => $order->email];
-                }
-            }
+        if ($order->email) {
+            $profile = ['email' => $order->email];
+        }
+
+        if (!$profile && $currentUser = Craft::$app->user->getIdentity()) {
+            $profile = Plugin::getInstance()->map->mapUser($currentUser);
         }
 
         if ($profile) {
             $orderDetails = $this->getOrderDetails($order, $eventName);
             $dateTime = new DateTime();
+
             $event = [
                 'event_id' => $order->id.'_'.$dateTime->getTimestamp(),
-                'value' => $order->getTotalPrice(),
+                'value' => $order->totalPaid
             ];
             $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
+            $success = true;
 
-            try {
-                $profile = $this->createProfile(
-                    $profile,
-                    $eventName,
-                    [
-                        'order' => $order,
-                        'eventProperties' => $eventProperties,
-                    ]
-                );
+            if($eventName === 'Refunded Order') {
+                $children = $fullEvent->transaction->childTransactions;
+                $child    = $children[count($children) - 1];
 
-                Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
+                if($child->status === 'success') {
+                    $message = $child->note;
+                    $eventProperties->setCustomProperties(['Reason' => $message]);
 
-                if ($eventName === 'Placed Order') {
-                    foreach ($orderDetails['Items'] as $item) {
-                        $event = [
-                            'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
-                            'value' => $item['RowTotal'],
-                        ];
-
-                        $eventProperties = new EventProperties($event);
-                        $eventProperties->setCustomProperties($item);
-
-                        Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
-                    }
+                    $eventName === 'Refund Issued';
+                } else {
+                    $success = false;
                 }
-
-            } catch (RequestException $e) {
-                // Swallow. Klaviyo responds with a 200.
             }
+
+            if($eventName === 'Status Changed') {
+                $orderHistory = $fullEvent->orderHistory;
+                $status = $orderHistory->getNewStatus()->name;
+                $eventProperties->setCustomProperties(['Reason' => $orderHistory->message]);
+
+                $eventName = "$status Order";
+            }
+
+            if($success) {
+                try {
+                    $profile = $this->createProfile(
+                        $profile,
+                        $eventName,
+                        [
+                            'order' => $order,
+                            'eventProperties' => $eventProperties,
+                        ]
+                    );
+
+                    Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
+
+                    if ($eventName === 'Placed Order') {
+                        foreach ($orderDetails['Items'] as $item) {
+                            $event = [
+                                'event_id' => $order->id.'_'.$item['Slug'].'_'.$dateTime->getTimestamp(),
+                                'value' => $order->totalPaid,
+                            ];
+
+                            $eventProperties = new EventProperties($event);
+                            $eventProperties->setCustomProperties($item);
+
+                            Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
+                        }
+                    }
+                } catch (RequestException $e) {
+                    // Swallow. Klaviyo responds with a 200.
+                }
+            }
+        } else {
+            // Swallow.
+            // This is likely a logged out user adding an item to their cart.
         }
     }
 
