@@ -220,6 +220,7 @@ class Track extends Base
             $product = $lineItem->purchasable->product ?? [];
             if ($product) {
                 $lineItemProperties = [
+                    'value' => $lineItem->price * $lineItem->qty,
                     'ProductName' => $product->title,
                     'Slug' => $lineItem->purchasable->product->slug,
                     'ProductURL' => $product->getUrl(),
