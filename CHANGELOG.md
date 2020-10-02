@@ -1,61 +1,68 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.1 - 2020-10-01
+
+#### Added
+
+- Product Type with line item data sent with events
+
 ## 4.0.0 - 2020-09-29
 
-### Added
+#### Added
 
 - Add tracking for order status changes
 - Add tracking for refund transactions
 - Add ability to disable tracking for specific events
 - Add ability to push historical Commerce orders to Klaviyo
 
-### Updated
+#### Updated
+
 - Fix bug where events triggered by admins cause admin account to get tracked in Klaviyo.
 - Fix bug with line item formatting on events where they would show up as strings instead of arrays.
 
 ## 3.2.0 - 2020-09-18
 
-### Updated
+#### Updated
 
 - Merged #27
 - Fix line items when passed as a string (such as through hidden fields in Twig) to `json_decode` the string before sending to Klaviyo.
 
 ## 3.1.3 - 2020-01-24
 
-### Updated
+#### Updated
 
 - Fix an error that occurs when saving a user due to `klaviyoAvailableGroups` setting being an array.
 
 ## 3.1.2 - 2019-12-04
 
-### Updated
+#### Updated
 
 - Allow tracking events with a timestamp.
 - Allow using environment variables for public and private keys in plugin config.
 
 ## 3.1.1 - 2019-07-29
 
-### Updated
+#### Updated
 
 - Use response code for error message instead of relying on an error code in the Klaviyo API response body.
 
 ## 3.1.0 - 2019-05-20
 
-### Removed
+#### Removed
 
 - Removed `Base::getSpecialProperties()`
 - Removed `confirmOptIn` from add to list code
 
-### Updated
+#### Updated
 
 - Updated Klaviyo List API calls to V2
 
-### Added
+#### Added
 - Added GDPR consent related fields on the `Profile` model
 
 ## 3.0.4 - 2019-04-29
 
-### Updated
+#### Updated
 
 - `Track::createProfile` is now protected
 - Fix an error when a line item's purchasable has no Product attached
@@ -63,19 +70,19 @@
 
 ## 3.0.3 - 2019-04-04
 
-### Updated
+#### Updated
 
 - Fetch the first product image for each line item
 
 ## 3.0.2 - 2019-04-04
 
-### Updated
+#### Updated
 
 - Replaced deprecated `includecss` and `includejs` Twig tags
 
 ## 3.0.1 - 2019-04-01
 
-### Updated
+#### Updated
 
 - Fixed `profileMappings` on Settings page
 - Ensure Craft Commerce is installed and enabled before adding event listeners
@@ -84,11 +91,11 @@
 
 ## 3.0.0 - 2019-03-28
 
-### Removed
+#### Removed
 
 - Profile mappings and related events, variables, etc
 
-### Updated
+#### Updated
 
 - Restructured data sent to Klaviyo
 - Custom properties are added to the root of models instead of to the `$extra` property
@@ -100,12 +107,12 @@
 - Added `addToLists` to Track service
 - Added docs site
 
-## Added
+#### Added
 
 - Order and Line Item events for users to add custom properties onto event bodies
 - Profile event to add custom properties to user profiles
 
-## 2.0.6 - 2019-02-28
+### 2.0.6 - 2019-02-28
 
 - Changed `trackOrder` and `getOrderDetails` visibility.
 
