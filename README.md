@@ -14,6 +14,10 @@ __Perfect for recovering abandoned carts, welcoming first-time shoppers, or mark
 
 Visit the [Klaviyo Connect Plugin page](https://klaviyoconnect.fostercommerce.com).
 
+## Changelog
+
+Visit the [CHANGELOG](https://github.com/FosterCommerce/klaviyoconnect/blob/master/CHANGELOG.md).
+
 ## Support
 
 Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
