@@ -224,7 +224,7 @@ class Track extends Base
                     'ProductName' => $product->title,
                     'Slug' => $lineItem->purchasable->product->slug,
                     'ProductURL' => $product->getUrl(),
-                    'ProductType' => $product->type,
+                    'ProductType' => $product->type->name,
                     'ItemPrice' => $lineItem->price,
                     'RowTotal' => $lineItem->subtotal,
                     'Quantity' => $lineItem->qty,
