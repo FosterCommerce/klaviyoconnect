@@ -130,7 +130,11 @@ class Track extends Base
     public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null)
     {
         if ($order->email) {
-            $profile = ['email' => $order->email];
+            $profile = [
+                'email'      => $order->email,
+                'first_name' => $order->billingAddress->firstName,
+                'last_name'  => $order->billingAddress->lastName,
+            ];
         }
 
         if (!$profile && $currentUser = Craft::$app->user->getIdentity()) {
