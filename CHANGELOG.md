@@ -1,10 +1,26 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.3 - 2020-11-23
+
+### Added
+
+- Passes customer billing name to Klaviyo when the user completes an order as guest
+
+## 4.0.2 - 2020-10-02
+
+#### Fixed
+
+- Value of Product Type is now the `name` not the full object
+
 ## 4.0.1 - 2020-10-01
 
 #### Added
 
 - Product Type with line item data sent with events
+
+#### Fixed
+
+- Value on Ordered Product events
 
 ## 4.0.0 - 2020-09-29
 
