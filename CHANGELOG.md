@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.3 - 2020-11-23
+
+### Added
+
+- Passes customer billing name to Klaviyo when the user completes an order as guest
+
 ## 4.0.2 - 2020-10-02
 
 #### Fixed
