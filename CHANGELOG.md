@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.4 - 2021-01-11
+
+### Fixed
+
+- Fixes error when updating cart without a billing address
+
 ## 4.0.3 - 2020-11-23
 
 ### Added

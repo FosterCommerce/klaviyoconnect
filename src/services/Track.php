@@ -132,8 +132,8 @@ class Track extends Base
         if ($order->email) {
             $profile = [
                 'email'      => $order->email,
-                'first_name' => $order->billingAddress->firstName,
-                'last_name'  => $order->billingAddress->lastName,
+                'first_name' => $order->billingAddress->firstName ?? null,
+                'last_name'  => $order->billingAddress->lastName ?? null,
             ];
         }
 
