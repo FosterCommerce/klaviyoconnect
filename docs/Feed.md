@@ -15,9 +15,11 @@ You can use Twig to generate a JSON feed. Create a template like the following e
 
 {% set products = craft.products().hasVariant({ hasStock: true }).with(productImageField is defined ? [productImageField] : []).all() %}
 
+{% set feed = [] %}
+
 {% for product in products %}
     {% set variant = product.defaultVariant %}
-    {% set fields = {
+    {% set feedProduct = {
         'SKU'        : variant.sku,
         'ProductName': product.title,
         'ProductType': product.type,
@@ -27,11 +29,13 @@ You can use Twig to generate a JSON feed. Create a template like the following e
     } %}
 
     {% if productImageField is defined and product[productImageField]|length > 0 %}
-        {% set fields = fields|merge({
+        {% set feedProduct = feedProduct|merge({
             'ProductImage': product[productImageField][0].url,
         }) %}
     {% endif %}
 
-    {{ fields|json_encode }}
+    {% set feed = feed|merge([feedProduct]) %}
 {% endfor %}
+
+{{ feed|json_encode }}
 ```
