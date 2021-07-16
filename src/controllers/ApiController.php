@@ -131,8 +131,9 @@ class ApiController extends Controller
 
         if (sizeof($lists) > 0) {
             $profile = $this->mapProfile();
+            $useSubscribeEndpoint = (bool)$request->getParam('useSubscribeEndpoint');
 
-            Plugin::getInstance()->track->addToLists($lists, $profile);
+            Plugin::getInstance()->track->addToLists($lists, $profile, $useSubscribeEndpoint);
         }
     }
 

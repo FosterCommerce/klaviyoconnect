@@ -94,7 +94,7 @@ class Track extends Base
         $this->trackOrder("Refunded Order", $order, null, null, $event);
     }
 
-    public function addToLists($listIds, $profileParams)
+    public function addToLists($listIds, $profileParams, $useSubscribeEndpoint = false)
     {
         $profile = $this->createProfile($profileParams);
 
@@ -102,7 +102,7 @@ class Track extends Base
             $list = new KlaviyoList(['id' => $listId]);
 
             try {
-                Plugin::getInstance()->api->addProfileToList($list, $profile);
+                Plugin::getInstance()->api->addProfileToList($list, $profile, $useSubscribeEndpoint);
             } catch (RequestException $e) {
                 // Swallow. Klaviyo responds with a 200.
             }

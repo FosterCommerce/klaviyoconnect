@@ -119,7 +119,7 @@ Associative arrary of extra properties to be assigned to the event in Klaviyo.
 
 The following extra parameters can be used in POST actions.
 
-`event[trackOrder]`
+`event[trackOrder]` - _Optional_
 
 When present, will trigger the order tracking logic as apposed to regular event tracking. If `event[orderId]` is set, that specific order will be used, otherwise the customer's current cart will be used.
 
@@ -131,9 +131,9 @@ This is useful in situations where the built-in order tracking is not sufficient
 <input type="hidden" name="event[orderId]" value="543" />
 ```
 
-`event[orderId]`
+`event[orderId]` - _Optional_
 
-The ID of the order to track.
+The ID of the order to track. Requires `trackOrder` to be present.
 
 `forward` - _Optional_
 
@@ -141,6 +141,14 @@ Tells the plugin to forward the POST request to a specified action once complete
 
 ```html
 <input type="hidden" name="forward" value="/commerce/cart/update-cart" />
+```
+
+`useSubscribeEndpoint` - _Optional_
+
+Whether to use Klaviyo’s `subscribe` endpoint instead of `members` (which is the default). This has the benefit of [respecting the double opt-in setting of the list](https://apidocs.klaviyo.com/reference/lists-segments#add-members).
+
+```html
+<input type="hidden" name="useSubscribeEndpoint" value="1" />
 ```
 
 ## Restore Cart `GET /klaviyoconnect/cart/restore`

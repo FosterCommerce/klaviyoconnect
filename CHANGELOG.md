@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## Unreleased
+
+### Added
+
+- Added the `useSubscribeEndpoint` parameter to the `klaviyoconnect/api/track` action to make it possible to use Klaviyo’s `subscribe` endpoint instead of `members`, which has the benefit of respecting the double opt-in setting of the list
+
 ## 4.0.4 - 2021-01-11
 
 ### Fixed
