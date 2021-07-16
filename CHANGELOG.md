@@ -1,6 +1,6 @@
 # Release Notes for KlaviyoConnect
 
-## Unreleased
+## 4.0.5 - 2021-07-16
 
 ### Added
 
