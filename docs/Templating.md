@@ -220,6 +220,7 @@ fetch(
     email: 'YOUR USER EMAIL',
   },
   {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -250,6 +251,7 @@ fetch(
     email: 'YOUR USER EMAIL',
   },
   {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
