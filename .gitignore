@@ -9,3 +9,4 @@ vendor/
 .php_cs.cache
 node_modules
 docs/.vuepress/dist
+composer.lock
