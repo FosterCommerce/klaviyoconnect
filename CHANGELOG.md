@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.6 - 2021-08-23
+
+### Added
+
+- Added support for Guzzle 7.2
+
 ## 4.0.5 - 2021-07-16
 
 ### Added
