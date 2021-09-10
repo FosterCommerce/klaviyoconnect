@@ -236,11 +236,17 @@ class Track extends Base
                 ];
 
                 $productImageField = $settings->productImageField;
-                if (isset($product->$productImageField)) {
+                $variant = $lineItem->purchasable;
+
+                if (isset($variant->$productImageField)) {
+                    if ($image = $variant->$productImageField->one()) {
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
+                    };
+                } else if (isset($product->$productImageField)) {
                     if ($image = $product->$productImageField->one()) {
                         $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
-                    }
-                }
+                    };
+                };
 
             }
 
