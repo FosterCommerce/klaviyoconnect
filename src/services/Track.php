@@ -235,11 +235,20 @@ class Track extends Base
                     'SKU' => $lineItem->purchasable->sku,
                 ];
 
+                $variant = $lineItem->purchasable;
+                
                 $productImageField = $settings->productImageField;
-                if (isset($product->$productImageField)) {
-                    if ($image = $product->$productImageField->one()) {
-                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
+                
+                if ( $variant->$productImageField && is_iterable($variant->$productImageField) ) {
+                    if ($image = $variant->$productImageField->one()) {
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
                     }
+                } else {
+                    if ( $product->$productImageField && is_iterable($product->$productImageField) ) {
+                        if ($image = $product->$productImageField->one()) {
+                            $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
+                        }
+                    }   
                 }
 
             }
