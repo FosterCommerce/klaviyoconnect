@@ -239,7 +239,7 @@ class Track extends Base
                 
                 $productImageField = $settings->productImageField;
                 
-                if ( count($variant->$productImageField) && is_iterable($variant->$productImageField) ) {
+                if ( $variant->$productImageField && $variant->$productImageField->count() ) {
                     if ($image = $variant->$productImageField->one()) {
                         $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
                     }
