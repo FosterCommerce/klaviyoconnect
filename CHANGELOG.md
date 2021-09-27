@@ -1,5 +1,12 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.7 - 2021-09-27
+
+### Added
+
+- Klaviyo Connect will now use a variants product image if present before using
+  the products image ([#67](https://github.com/FosterCommerce/klaviyoconnect/pull/67))
+
 ## 4.0.6 - 2021-08-23
 
 ### Added
