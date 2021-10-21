@@ -238,12 +238,12 @@ class Track extends Base
                 $variant = $lineItem->purchasable;
                 
                 $productImageField = $settings->productImageField;
-                
-                if ( $variant->$productImageField && $variant->$productImageField->count() ) {
+
+                if ( isset($variant->$productImageField) && $variant->$productImageField->count() ) {
                     if ($image = $variant->$productImageField->one()) {
                         $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
                     }
-                } else if ( $product->$productImageField && $product->$productImageField->count() ) {
+                } else if ( isset($product->$productImageField) && $product->$productImageField->count() ) {
                     if ($image = $product->$productImageField->one()) {
                         $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
                     }

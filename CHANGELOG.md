@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.8 - 2021-10-21
+
+### Fixed
+
+- Fixes error with guest checkouts when custom product image field doesn't exist on products or variants
+
 ## 4.0.7 - 2021-09-27
 
 ### Added
