@@ -1,5 +1,7 @@
 # Klaviyo Connect
 
+![Screenshot](resources/img/new-plugin-header.png)
+
 A [Craft CMS](https://craftcms.com/) plugin for [Klaviyo](https://www.klaviyo.com).
 
 Take advantage of [Klaviyo](https://www.klaviyo.com) to drive more sales with super-targeted, highly-relevant email marketing campaigns.
