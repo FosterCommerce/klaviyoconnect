@@ -1,6 +1,5 @@
-# Klaviyo Connect
-
 ![Screenshot](resources/img/new-plugin-header.png)
+# Klaviyo Connect
 
 A [Craft CMS](https://craftcms.com/) plugin for [Klaviyo](https://www.klaviyo.com).
 
