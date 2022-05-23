@@ -15,9 +15,21 @@ use GuzzleHttp\Exception\RequestException;
 
 class ApiController extends Controller
 {
-    protected $allowAnonymous = true;
+    /**
+     * @var		bool	$allowAnonymous
+     */
+    protected bool $allowAnonymous = true;
 
-    public function actionTrack()
+    /**
+     * actionTrack.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	void
+     */
+    public function actionTrack(): mixed
     {
         $this->requirePostRequest();
 
@@ -33,7 +45,17 @@ class ApiController extends Controller
         }
     }
 
-    public function actionSyncOrders() {
+    /**
+     * actionSyncOrders.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	void
+     */
+    public function actionSyncOrders(): void 
+    {
         $params = $this->request->queryParams;
         $start  = is_numeric($params['start']) ? $params['start'] : null;
         $end    = is_numeric($params['end']) ? $params['end'] : null;
@@ -49,7 +71,16 @@ class ApiController extends Controller
         }
     }
 
-    private function trackEvent()
+    /**
+     * trackEvent.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @return	void
+     */
+    private function trackEvent(): void
     {
         $request = Craft::$app->getRequest();
         $event = $request->getParam('event');
@@ -112,7 +143,16 @@ class ApiController extends Controller
         }
     }
 
-    private function addProfileToLists()
+    /**
+     * addProfileToLists.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @return	void
+     */
+    private function addProfileToLists(): void
     {
         $lists = array();
         $request = Craft::$app->getRequest();
@@ -137,13 +177,31 @@ class ApiController extends Controller
         }
     }
 
-    public function actionIdentify()
+    /**
+     * actionIdentify.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	void
+     */
+    public function actionIdentify(): void
     {
         $this->identify();
         $this->forwardOrRedirect();
     }
 
-    private function identify()
+    /**
+     * identify.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @return	void
+     */
+    private function identify(): void
     {
         $this->requirePostRequest();
         $profile = $this->mapProfile();
@@ -154,7 +212,16 @@ class ApiController extends Controller
         }
     }
 
-    private function forwardOrRedirect()
+    /**
+     * forwardOrRedirect.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @return	mixed
+     */
+    private function forwardOrRedirect(): mixed
     {
         $request = Craft::$app->getRequest();
         $forwardUrl = $request->getParam('forward');
@@ -165,7 +232,16 @@ class ApiController extends Controller
         }
     }
 
-    private function mapProfile()
+    /**
+     * mapProfile.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @return	mixed
+     */
+    private function mapProfile(): mixed
     {
         $request = Craft::$app->getRequest();
         $profileParams = $request->getParam('profile');

@@ -5,6 +5,7 @@ use Craft;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Users;
 use craft\elements\User;
+use craft\base\Model;
 use craft\commerce\elements\Order;
 use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\services\OrderHistories;
@@ -32,9 +33,9 @@ use yii\base\Event;
  */
 class Plugin extends \craft\base\Plugin
 {
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -115,12 +116,12 @@ class Plugin extends \craft\base\Plugin
         });
     }
 
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new \fostercommerce\klaviyoconnect\models\Settings();
     }
 
-    public function settingsHtml()
+    public function settingsHtml(): ?string
     {
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/settings', [
             'settings' => $this->getSettings()

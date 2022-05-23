@@ -9,7 +9,16 @@ class Variable
     private $error = null;
     private $lists = null;
 
-    public function lists()
+    /**
+     * lists.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	mixed
+     */
+    public function lists(): mixed
     {
         if (is_null($this->lists)) {
             try {
@@ -25,7 +34,16 @@ class Variable
         return $this->lists;
     }
 
-    public function error()
+    /**
+     * error.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	mixed
+     */
+    public function error(): mixed
     {
         return $this->error;
     }

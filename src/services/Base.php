@@ -9,7 +9,17 @@ abstract class Base extends Component
 {
     private $settings = null;
 
-    protected function getSetting($name)
+    /**
+     * getSetting.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	protected
+     * @param	mixed	$name	
+     * @return	mixed
+     */
+    protected function getSetting($name): mixed
     {
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;

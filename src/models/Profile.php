@@ -37,22 +37,58 @@ class Profile extends Base
     public $consent_timestamp;
     public $consent_version;
 
-    public function __toString()
+    /**
+     * __toString.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	string
+     */
+    public function __toString(): string
     {
         return $this->id ? $this->id : $this->email;
     }
 
-    public function hasEmail()
+    /**
+     * hasEmail.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	bool
+     */
+    public function hasEmail(): bool
     {
         return isset($this->email) && !is_null($this->email);
     }
 
-    public function hasId()
+    /**
+     * hasId.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	bool
+     */
+    public function hasId(): bool
     {
         return isset($this->id) && !is_null($this->email);
     }
 
-    public function hasEmailOrId()
+    /**
+     * hasEmailOrId.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	bool
+     */
+    public function hasEmailOrId(): bool
     {
         return $this->hasEmail() || $this->hasId();
     }

@@ -6,12 +6,13 @@ use Craft;
 use fostercommerce\klaviyoconnect\Plugin;
 use craft\web\Controller;
 use yii\web\HttpException;
+use yii\web\Response;
 
 class CartController extends Controller
 {
-    protected $allowAnonymous = true;
+    protected bool $allowAnonymous = true;
 
-    public function actionRestore()
+    public function actionRestore(): Response
     {
         if(Craft::$app->plugins->isPluginEnabled('commerce')) {
             $number = Craft::$app->getRequest()->getParam('number');
