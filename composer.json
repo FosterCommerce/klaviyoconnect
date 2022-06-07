@@ -8,7 +8,7 @@
     ],
     "homepage": "https://fostercommerce.com",
     "require": {
-      "craftcms/cms": "^4.0.0",
+      "craftcms/cms": "^3.0|^4.0.0",
       "guzzlehttp/guzzle": "^6.3.0 || ^7.2.0"
     },
     "autoload": {
@@ -19,7 +19,8 @@
     "extra": {
       "handle": "klaviyoconnect",
       "name": "Klaviyo Connect",
-      "developer": "Foster Commerce"
+      "developer": "Foster Commerce",
+      "hasCpSettings" : true
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.13"
