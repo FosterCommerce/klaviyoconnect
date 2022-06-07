@@ -10,11 +10,31 @@ use GuzzleHttp\Exception\ClientException;
 
 class ListsField extends Field
 {
+    /**
+     * displayName.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public static
+     * @return	mixed
+     */
     public static function displayName(): string
     {
         return Craft::t('klaviyoconnect', 'Klaviyo Lists');
     }
 
+    /**
+     * getInputHtml.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed           	$values 	
+     * @param	elementinterface	$element	Default: null
+     * @return	mixed
+     */
     public function getInputHtml($values, ElementInterface $element = null): string
     {
         try {
@@ -47,7 +67,18 @@ class ListsField extends Field
         ));
     }
 
-    public function normalizeValue($values, ElementInterface $element = null)
+    /**
+     * normalizeValue.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed           	$values 	
+     * @param	elementinterface	$element	Default: null
+     * @return	mixed
+     */
+    public function normalizeValue($values, ElementInterface $element = null): mixed
     {
         if ($values && !is_array($values)) {
             $o = json_decode($values);

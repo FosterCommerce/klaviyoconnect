@@ -16,6 +16,15 @@ class Api extends Base
 
     private $cachedLists = null;
 
+    /**
+     * __construct.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	void
+     */
     public function __construct()
     {
         $this->client = new Client([
@@ -27,13 +36,22 @@ class Api extends Base
         ]);
     }
 
-    public function track(
-        $event,
-        Profile $profile,
-        EventProperties $properties = null,
-        $trackOnce = false,
-        $timestamp = null
-    ) {
+    /**
+     * track.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed          	$event     	
+     * @param	profile        	$profile   	
+     * @param	eventproperties	$properties	Default: null
+     * @param	boolean        	$trackOnce 	Default: false
+     * @param	mixed          	$timestamp 	Default: null
+     * @return	bool
+     */
+    public function track( $event, Profile $profile, EventProperties $properties = null, $trackOnce = false, $timestamp = null ): bool
+     {
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
         }
@@ -63,7 +81,17 @@ class Api extends Base
         return $this->callServerApi($trackOnce ? 'track-once' : 'track', $params);
     }
 
-    public function identify(Profile $profile)
+    /**
+     * identify.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	profile	$profile	
+     * @return	bool
+     */
+    public function identify(Profile $profile): bool
     {
         if (!$profile->hasEmailOrId()) {
             throw new Exception('You must identify a user by email or ID.');
@@ -77,7 +105,18 @@ class Api extends Base
         return $this->callServerApi('identify', $params);
     }
 
-    private function callServerApi($path, $params)
+    /**
+     * callServerApi.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @param	mixed	$path  	
+     * @param	mixed	$params	
+     * @return	bool
+     */
+    private function callServerApi($path, $params): bool
     {
         if($path === 'track' && $params['properties']) {
             $items = $params['properties']['Items'] ?? null;
@@ -92,12 +131,31 @@ class Api extends Base
         return $response->getStatusCode() === 200 && $body === '1';
     }
 
-    private function encode($params)
+    /**
+     * encode.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @param	mixed	$params	
+     * @return	string
+     */
+    private function encode($params): string
     {
         return urlencode(base64_encode(json_encode($params)));
     }
 
-    public function getLists()
+    /**
+     * getLists.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @return	mixed
+     */
+    public function getLists(): mixed
     {
 
         if (is_null($this->cachedLists)) {
@@ -123,7 +181,18 @@ class Api extends Base
         return $this->cachedLists;
     }
 
-    public function profileInList($listId, $email)
+    /**
+     * profileInList.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$listId	
+     * @param	mixed	$email 	
+     * @return	int
+     */
+    public function profileInList($listId, $email): int
     {
         $response = $this->clientV2->get("list/{$listId}/members", [
             'query' => [
@@ -135,7 +204,20 @@ class Api extends Base
         return sizeof($content->data) > 0;
     }
 
-    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false) {
+    /**
+     * addProfileToList.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	klaviyolist	&$list               	
+     * @param	profile    	&$profile            	
+     * @param	boolean    	$useSubscribeEndpoint	Default: false
+     * @return	mixed
+     */
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false): mixed
+    {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
         }
@@ -159,7 +241,17 @@ class Api extends Base
         return $content;
     }
 
-    private function getObjectResponse($response)
+    /**
+     * getObjectResponse.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @param	mixed	$response	
+     * @return	mixed
+     */
+    private function getObjectResponse($response): mixed
     {
         $content = $response->getBody()->getContents();
         if (isset($content)) {
