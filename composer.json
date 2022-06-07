@@ -19,8 +19,7 @@
     "extra": {
       "handle": "klaviyoconnect",
       "name": "Klaviyo Connect",
-      "developer": "Foster Commerce",
-      "hasCpSettings" : true
+      "developer": "Foster Commerce"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.13"
