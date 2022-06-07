@@ -94,6 +94,6 @@ class ListField extends Field
             }
         }
 
-        return null;
+        return $value;
     }
 }
