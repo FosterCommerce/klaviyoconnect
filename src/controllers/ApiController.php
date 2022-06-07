@@ -18,7 +18,7 @@ class ApiController extends Controller
     /**
      * @var		bool	$allowAnonymous
      */
-    protected bool $allowAnonymous = true;
+    protected array|int|bool $allowAnonymous = true;
 
     /**
      * actionTrack.
@@ -175,6 +175,7 @@ class ApiController extends Controller
 
             Plugin::getInstance()->track->addToLists($lists, $profile, $useSubscribeEndpoint);
         }
+    
     }
 
     /**

@@ -10,7 +10,7 @@ use yii\web\Response;
 
 class CartController extends Controller
 {
-    protected bool $allowAnonymous = true;
+    protected array|int|bool $allowAnonymous = true;
 
     public function actionRestore(): Response
     {
