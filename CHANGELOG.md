@@ -1,5 +1,36 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.8 - 2021-10-21
+
+### Fixed
+
+- Fixes error with guest checkouts when custom product image field doesn't exist on products or variants
+
+## 4.0.7 - 2021-09-27
+
+### Added
+
+- Klaviyo Connect will now use a variants product image if present before using
+  the products image ([#67](https://github.com/FosterCommerce/klaviyoconnect/pull/67))
+
+## 4.0.6 - 2021-08-23
+
+### Added
+
+- Added support for Guzzle 7.2
+
+## 4.0.5 - 2021-07-16
+
+### Added
+
+- Added the `useSubscribeEndpoint` parameter to the `klaviyoconnect/api/track` action to make it possible to use Klaviyo’s `subscribe` endpoint instead of `members`, which has the benefit of respecting the double opt-in setting of the list
+
+## 4.0.4 - 2021-01-11
+
+### Fixed
+
+- Fixes error when updating cart without a billing address
+
 ## 4.0.3 - 2020-11-23
 
 ### Added

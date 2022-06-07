@@ -21,6 +21,15 @@ use fostercommerce\klaviyoconnect\utilities\KCUtilities;
 use fostercommerce\klaviyoconnect\variables\Variable;
 use yii\base\Event;
 
+/**
+ * Class Plugin
+ *
+ * @package fostercommerce\klaviyoconnect
+ * @property \fostercommerce\klaviyoconnect\services\Api $api
+ * @property \fostercommerce\klaviyoconnect\services\Track $track
+ * @property \fostercommerce\klaviyoconnect\services\Map $map
+ * @property \fostercommerce\klaviyoconnect\services\Cart $cart
+ */
 class Plugin extends \craft\base\Plugin
 {
     public $hasCpSettings = true;

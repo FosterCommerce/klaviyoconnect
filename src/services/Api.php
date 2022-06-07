@@ -135,7 +135,7 @@ class Api extends Base
         return sizeof($content->data) > 0;
     }
 
-    public function addProfileToList(KlaviyoList &$list, Profile &$profile) {
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false) {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
         }
@@ -153,7 +153,8 @@ class Api extends Base
             $params['profiles'][] = $mapped;
         }
 
-        $response = $this->clientV2->post("list/{$list->id}/members", ['json' => $params]);
+        $endpoint = $useSubscribeEndpoint ? 'subscribe' : 'members';
+        $response = $this->clientV2->post("list/{$list->id}/${endpoint}", ['json' => $params]);
         $content = $this->getObjectResponse($response);
         return $content;
     }

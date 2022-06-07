@@ -4,76 +4,38 @@ In Klaviyo, product feeds are added via [Catalog Sources](https://www.klaviyo.co
 
 [Download Klaviyo's documentation for Custom Catalogs](https://help.klaviyo.com/attachments/token/mZ2rjQfoEcLjs5OMrXyIeOiK3/?name=Klaviyo+Custom+Catalog.zip)
 
-## JSON Feed
+## JSON Feed in Twig
 
-- Install Craft's [Element API](https://github.com/craftcms/element-api) plugin
-- Configure Element API to export a product feed, for example:
+You can use Twig to generate a JSON feed. Create a template like the following example and make sure it is publicly accessible:
 
-```php
-<?php
+```twig
+{% if craft.app.plugins.isPluginInstalled('klaviyoconnect') %}
+    {% set productImageField = craft.app.getPlugins().getPlugin('klaviyoconnect').getSettings().productImageField %}
+{% endif %}
 
-use craft\commerce\elements\Product;
-use craft\helpers\UrlHelper;
+{% set products = craft.products().hasVariant({ hasStock: true }).with(productImageField is defined ? [productImageField] : []).all() %}
 
-return [
-    'endpoints' => [
-        'products.json' => function() {
-            return [
-                'elementType' => Product::class,
-                'transformer' => function(Product $entry) {
-                    $variant = $entry->defaultVariant;
-                    return [
-                        'id' => $entry->id,
-                        'title' => $entry->title,
-                        'sku' => $variant->sku,
-                        'url' => UrlHelper::url("/products/{$entry->id}"),
-                    ];
-                },
-                'pretty' => true,
-                'paginate' => false,
-            ];
-        },
-    ]
-];
-```
+{% set feed = [] %}
 
-- Navigate to `<your-site-url>/products.json`
+{% for product in products %}
+    {% set variant = product.defaultVariant %}
+    {% set feedProduct = {
+        'SKU'        : variant.sku,
+        'ProductName': product.title,
+        'ProductType': product.type,
+        'ProductURL' : variant.url,
+        'ItemPrice'  : variant.price,
+        'ProductID'  : product.id,
+    } %}
 
-## Example output
+    {% if productImageField is defined and product[productImageField]|length > 0 %}
+        {% set feedProduct = feedProduct|merge({
+            'ProductImage': product[productImageField][0].url,
+        }) %}
+    {% endif %}
 
-```json
-{
-    "data": [
-        {
-            "id": "2",
-            "title": "A New Toga",
-            "sku": "ANT-001",
-            "url": "http://commerce.foster.test/products/2"
-        },
-        {
-            "id": "10",
-            "title": "The Last Knee-High",
-            "sku": "LKH-001",
-            "url": "http://commerce.foster.test/products/10"
-        },
-        {
-            "id": "8",
-            "title": "The Fleece Awakens",
-            "sku": "TFA-001",
-            "url": "http://commerce.foster.test/products/8"
-        },
-        {
-            "id": "6",
-            "title": "Romper For A Red Eye",
-            "sku": "RRE-001",
-            "url": "http://commerce.foster.test/products/6"
-        },
-        {
-            "id": "4",
-            "title": "Parka With Stripes On Back",
-            "sku": "PSB-001",
-            "url": "http://commerce.foster.test/products/4"
-        }
-    ]
-}
+    {% set feed = feed|merge([feedProduct]) %}
+{% endfor %}
+
+{{ feed|json_encode }}
 ```

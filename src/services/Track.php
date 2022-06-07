@@ -94,7 +94,7 @@ class Track extends Base
         $this->trackOrder("Refunded Order", $order, null, null, $event);
     }
 
-    public function addToLists($listIds, $profileParams)
+    public function addToLists($listIds, $profileParams, $useSubscribeEndpoint = false)
     {
         $profile = $this->createProfile($profileParams);
 
@@ -102,7 +102,7 @@ class Track extends Base
             $list = new KlaviyoList(['id' => $listId]);
 
             try {
-                Plugin::getInstance()->api->addProfileToList($list, $profile);
+                Plugin::getInstance()->api->addProfileToList($list, $profile, $useSubscribeEndpoint);
             } catch (RequestException $e) {
                 // Swallow. Klaviyo responds with a 200.
             }
@@ -132,8 +132,8 @@ class Track extends Base
         if ($order->email) {
             $profile = [
                 'email'      => $order->email,
-                'first_name' => $order->billingAddress->firstName,
-                'last_name'  => $order->billingAddress->lastName,
+                'first_name' => $order->billingAddress->firstName ?? null,
+                'last_name'  => $order->billingAddress->lastName ?? null,
             ];
         }
 
@@ -235,10 +235,17 @@ class Track extends Base
                     'SKU' => $lineItem->purchasable->sku,
                 ];
 
+                $variant = $lineItem->purchasable;
+                
                 $productImageField = $settings->productImageField;
-                if (isset($product->$productImageField)) {
+
+                if ( isset($variant->$productImageField) && $variant->$productImageField->count() ) {
+                    if ($image = $variant->$productImageField->one()) {
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
+                    }
+                } else if ( isset($product->$productImageField) && $product->$productImageField->count() ) {
                     if ($image = $product->$productImageField->one()) {
-                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation);
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
                     }
                 }
 
