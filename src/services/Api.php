@@ -80,6 +80,84 @@ class Api extends Base
 
         return $this->callServerApi($trackOnce ? 'track-once' : 'track', $params);
     }
+    
+    
+     /**
+     * getKlaviyoPersonId.
+     * retrieve a Klaviyo person ID from a user's email address
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Friday, June 10th, 2022.
+     * @access	public
+     * @param   $email  an email address used to find a Klaviyo person ID
+     * @return	string
+     */
+    public function getPersonIdfromEmail(string $email): ?string
+    {
+        $personId = null;
+        
+        $response = $this->clientV2->get('people/search', [
+            'query' => [
+                'api_key' => $this->getSetting('klaviyoApiKey'),
+                'email' => $email
+            ],
+        ]);
+        
+        $content = $this->getObjectResponse($response);
+        
+        $personId = $content->id ?? null;
+        
+        return $personId;
+    }
+    
+    
+    /**
+     * updateProfile.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, June 13th, 2022.
+     * @access	public
+     * @param   string  $id    	Klaviyo person ID
+     * @param	array	$params	Array of values to update
+     * @return	mixed
+     */
+    public function updateProfile(string $id, array $params): mixed
+    {
+        $profile = [];
+        
+        $query = [
+            'api_key' => $this->getSetting('klaviyoApiKey'),
+        ];
+       
+        // remove any empty array values
+        $params['params'] = array_filter($params['params'], function($v){
+            return trim($v);
+        });
+              
+        foreach($params['params'] as $key => $value) {
+           $query[$key] = $value;
+        }
+       
+       if(array_key_exists('new_email', $query)){
+           $query['email'] = $query['new_email'];
+           unset($query['new_email']);
+       }
+      
+       if(array_key_exists('new_phone', $query)) {
+           $query['phone_number'] = $params['params']['new_phone'];
+           unset($query['new_phone']);
+       }
+       
+        $response = $this->client->put("person/{$id}", [
+            'query' => $query
+        ]);
+    
+        $profile = $this->getObjectResponse($response);
+        
+        return $profile;
+    }
+    
 
     /**
      * identify.
