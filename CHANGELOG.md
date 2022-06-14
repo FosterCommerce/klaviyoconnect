@@ -1,5 +1,22 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.10 - 2022-06-13
+## Added
+
+- Added a service method to retrieve a Klaviyo Person ID using an email address
+- Added a service method to update a Klaviyo profile 
+- Added a controller method for updating a Klaviyo profile
+
+## 4.0.9 - 2022-06-07
+
+## Fixed
+
+- Fixes issue in Lists field type where list selection isn't saved, or previous setting is nulled, if the entry is first saved by an automatic draft.
+
+### Added
+
+- The plugin now works with Craft 4
+  
 ## 4.0.8 - 2021-10-21
 
 ### Fixed

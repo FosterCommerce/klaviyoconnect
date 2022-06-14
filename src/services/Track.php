@@ -29,7 +29,17 @@ class Track extends Base
 
     const ADD_PROFILE_PROPERTIES = 'addProfileProperties';
 
-    public function onSaveUser(Event $event)
+    /**
+     * onSaveUser.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	event	$event	
+     * @return	void
+     */
+    public function onSaveUser(Event $event): void
     {
         $user = $event->sender;
         $groups = $this->getSetting('klaviyoAvailableGroups');
@@ -40,7 +50,18 @@ class Track extends Base
         }
     }
 
-    private function isInGroup($selectedGroups, $userGroups)
+    /**
+     * isInGroup.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	private
+     * @param	mixed	$selectedGroups	
+     * @param	mixed	$userGroups    	
+     * @return	boolean
+     */
+    private function isInGroup($selectedGroups, $userGroups): bool
     {
         foreach ($selectedGroups as $group) {
             $hasGroup = in_array($group, ArrayHelper::getColumn($userGroups, 'id'), false);
@@ -52,7 +73,19 @@ class Track extends Base
         return false;
     }
 
-    protected function createProfile($params, $eventName = null, $context = null)
+    /**
+     * createProfile.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	protected
+     * @param	mixed	$params   	
+     * @param	mixed	$eventName	Default: null
+     * @param	mixed	$context  	Default: null
+     * @return	mixed
+     */
+    protected function createProfile($params, $eventName = null, $context = null): mixed
     {
         $profile = new Profile($params);
 
@@ -67,34 +100,96 @@ class Track extends Base
         return $profile;
     }
 
-    public function identifyUser($params)
+    /**
+     * identifyUser.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$params	
+     * @return	void
+     */
+    public function identifyUser($params): void
     {
         Plugin::getInstance()->api->identify($this->createProfile($params));
     }
 
-    public function onCartUpdated(Event $event)
+    /**
+     * onCartUpdated.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	event	$event	
+     * @return	void
+     */
+    public function onCartUpdated(Event $event): void
     {
         $this->trackOrder('Updated Cart', $event->sender);
     }
 
-    public function onOrderCompleted(Event $event)
+    /**
+     * onOrderCompleted.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	event	$event	
+     * @return	void
+     */
+    public function onOrderCompleted(Event $event): void
     {
         $this->trackOrder('Placed Order', $event->sender);
     }
 
-    public function onStatusChanged(Event $event)
+    /**
+     * onStatusChanged.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	event	$event	
+     * @return	void
+     */
+    public function onStatusChanged(Event $event): void
     {
         $order = $event->orderHistory->getOrder();
         $this->trackOrder("Status Changed", $order, null, null, $event);
     }
 
-    public function onOrderRefunded(RefundTransactionEvent $event)
+    /**
+     * onOrderRefunded.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	refundtransactionevent	$event	
+     * @return	void
+     */
+    public function onOrderRefunded(RefundTransactionEvent $event): void
     {
         $order = $event->transaction->getOrder();
         $this->trackOrder("Refunded Order", $order, null, null, $event);
     }
 
-    public function addToLists($listIds, $profileParams, $useSubscribeEndpoint = false)
+    /**
+     * addToLists.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed  	$listIds             	
+     * @param	mixed  	$profileParams       	
+     * @param	boolean	$useSubscribeEndpoint	Default: false
+     * @return	void
+     */
+    public function addToLists($listIds, $profileParams, $useSubscribeEndpoint = false): void
     {
         $profile = $this->createProfile($profileParams);
 
@@ -109,7 +204,21 @@ class Track extends Base
         }
     }
 
-    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce, $timestamp = null)
+    /**
+     * trackEvent.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$eventName      	
+     * @param	mixed	$profileParams  	
+     * @param	mixed	$eventProperties	
+     * @param	mixed	$trackOnce      	
+     * @param	mixed	$timestamp      	Default: null
+     * @return	void
+     */
+    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce, $timestamp = null): void
     {
         $profile = $this->createProfile($profileParams);
 
@@ -127,7 +236,21 @@ class Track extends Base
         }
     }
 
-    public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null)
+    /**
+     * trackOrder.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$eventName	
+     * @param	mixed	$order    	
+     * @param	mixed	$profile  	Default: null
+     * @param	mixed	$timestamp	Default: null
+     * @param	mixed	$fullEvent	Default: null
+     * @return	void
+     */
+    public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null): void
     {
         if ($order->email) {
             $profile = [
@@ -211,7 +334,18 @@ class Track extends Base
         }
     }
 
-    protected function getOrderDetails($order, $event = '')
+    /**
+     * getOrderDetails.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	protected
+     * @param	mixed 	$order	
+     * @param	string	$event	Default: ''
+     * @return	mixed
+     */
+    protected function getOrderDetails($order, $event = ''): mixed
     {
         $settings = Plugin::getInstance()->settings;
 

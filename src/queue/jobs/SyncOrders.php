@@ -18,7 +18,17 @@ class SyncOrders extends BaseJob
     // Public Methods
     // =========================================================================
 
-    public function execute($queue)
+    /**
+     * execute.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$queue	
+     * @return	void
+     */
+    public function execute($queue): void
     {
         $this->setProgress($queue, 1);
 
@@ -30,13 +40,22 @@ class SyncOrders extends BaseJob
             }
         }
 
-        return true;
+        return;
     }
 
 
     // Protected Methods
     // =========================================================================
 
+    /**
+     * defaultDescription.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	protected
+     * @return	mixed
+     */
     protected function defaultDescription(): string
     {
         return 'Syncing orders to Klaviyo';

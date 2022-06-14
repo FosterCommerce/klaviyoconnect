@@ -8,20 +8,31 @@ use yii\web\HttpException;
 
 class Cart extends Base
 {
-    public function restore($number)
+    
+    /**
+     * restore.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$number	
+     * @return	mixed
+     */
+    public function restore($number): mixed
     {
         $commerceInstance = Commerce::getInstance();
 
         $order = $commerceInstance->orders->getOrderByNumber($number);
 
-        if ($order) {
-            $commerceInstance->carts->forgetCart();
-            $cartNumber = $order->number;
-            $session = Craft::$app->getSession();
-            $session->set('commerce_cart', $cartNumber);
-            return $cartNumber;
+        if (!$order) {
+            throw new HttpException(404);
         }
-
-        throw new HttpException(404);
+        
+        $commerceInstance->carts->forgetCart();
+        $cartNumber = $order->number;
+        $session = Craft::$app->getSession();
+        $session->set('commerce_cart', $cartNumber);
+        return $cartNumber;
     }
 }

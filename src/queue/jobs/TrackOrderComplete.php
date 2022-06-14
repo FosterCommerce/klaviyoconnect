@@ -22,7 +22,17 @@ class TrackOrderComplete extends BaseJob
     // Public Methods
     // =========================================================================
 
-    public function execute($queue)
+    /**
+     * execute.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     * @param	mixed	$queue	
+     * @return	boolean
+     */
+    public function execute($queue): void
     {
         $this->setProgress($queue, 1);
 
@@ -39,8 +49,8 @@ class TrackOrderComplete extends BaseJob
                 Plugin::getInstance()->track->onOrderCompleted($event);
             }
         }
-
-        return true;
+        
+        return;
     }
 
 
