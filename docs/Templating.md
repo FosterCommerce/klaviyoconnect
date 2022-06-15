@@ -180,7 +180,46 @@ _Using the Klaviyo Lists Field from a global entry_
     <input type="submit" value="Submit" />
 </form>
 ```
+### Update a user's Klaviyo profile
 
+Prior to v4.0.10 it was possible to update/create profile fields when using any of this plugin's controllers simply by adding them to a form. Due to changes in the Klaviyo Identify API this is no longer possible for certain profile fields (ID, Email, and Telephone Number).
+
+This controller action will allow udpating a user's profile, including their email and telephone number fields. Because there is no guarantee that other profile fields will also be made off-limits, we advise using this new controller if you want to alter user's profile data.
+
+In order to make any updates you must supply either the Klaviyo `id`, or an `email` address of an existing Klaviyo user. 
+
+Update the email address by use of a `new_email` input. Likewise, update the telephone number with an input named `new_phone`.
+
+Any other profile fields can be updated (or created) by using their name.
+
+```twig
+<form method="POST">
+    {{ csrfInput() }}
+    <input type="hidden" name="action" value="/klaviyoconnect/api/update-profile" />
+    
+    <label>
+      Email
+      <input type="email" name="email" required />
+    </label>
+    
+    <label>
+      New Email
+      <input type="email" name="new_email" />
+    </label>
+    
+    <label>
+      Telephone
+      <input type="text" name="new_phone" />
+    </label>
+    
+    <label>
+      Address 1
+      <input type="text" name="address" />
+    </label>
+    
+    <input type="submit" value="Submit" />
+</form>
+```
 ## Klaviyo Email Templates
 
 ### Profile Details and Cart/Order Items
