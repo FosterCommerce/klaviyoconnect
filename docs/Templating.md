@@ -180,6 +180,7 @@ _Using the Klaviyo Lists Field from a global entry_
     <input type="submit" value="Submit" />
 </form>
 ```
+
 ### Update a user's Klaviyo profile
 
 Prior to v4.0.10 it was possible to update/create profile fields when using any of this plugin's controllers simply by adding them to a form. Due to changes in the Klaviyo Identify API this is no longer possible for certain profile fields (ID, Email, and Telephone Number).
@@ -220,6 +221,7 @@ Any other profile fields can be updated (or created) by using their name.
     <input type="submit" value="Submit" />
 </form>
 ```
+
 ## Klaviyo Email Templates
 
 ### Profile Details and Cart/Order Items

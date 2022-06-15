@@ -18,7 +18,7 @@ class ApiController extends Controller
     /**
      * @var		bool	$allowAnonymous
      */
-    protected array|int|bool $allowAnonymous = true;
+    protected $allowAnonymous = true;
 
     /**
      * actionTrack.
