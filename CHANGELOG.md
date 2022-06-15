@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+
+## 5.0.0 - 2022-06-15
+
+- Separate Craft 4 version
+
 ## 4.0.10 - 2022-06-13
 ## Added
 
