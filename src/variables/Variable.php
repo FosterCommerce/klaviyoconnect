@@ -18,7 +18,7 @@ class Variable
      * @access	public
      * @return	mixed
      */
-    public function lists(): mixed
+    public function lists() // no return type as mixed is PHP 8 only
     {
         if (is_null($this->lists)) {
             try {
@@ -43,7 +43,7 @@ class Variable
      * @access	public
      * @return	mixed
      */
-    public function error(): mixed
+    public function error() // no return type as mixed is PHP 8 only
     {
         return $this->error;
     }

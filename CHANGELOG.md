@@ -3,6 +3,7 @@
 ## 4.0.11 - 2022-06-29
 ### Fixed
 
+- Fixed issue with use of mixed return types on PHP 7.x
 - Fixed deprecated use of parseEnv()
 - Fixed formatting of this changelog
 

@@ -85,7 +85,7 @@ class Track extends Base
      * @param	mixed	$context  	Default: null
      * @return	mixed
      */
-    protected function createProfile($params, $eventName = null, $context = null): mixed
+    protected function createProfile($params, $eventName = null, $context = null) // no return type as mixed is PHP 8 only
     {
         $profile = new Profile($params);
 
@@ -345,7 +345,7 @@ class Track extends Base
      * @param	string	$event	Default: ''
      * @return	mixed
      */
-    protected function getOrderDetails($order, $event = ''): mixed
+    protected function getOrderDetails($order, $event = '') // no return type as mixed is PHP 8 only
     {
         $settings = Plugin::getInstance()->settings;
 
