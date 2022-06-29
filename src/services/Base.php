@@ -18,9 +18,9 @@ abstract class Base extends Component
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	protected
      * @param	mixed	$name	
-     * @return	mixed
+     * @return	string|array|null
      */
-    protected function getSetting($name): mixed
+    protected function getSetting($name): string|array|null
     {
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;
