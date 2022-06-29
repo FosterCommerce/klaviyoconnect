@@ -1,7 +1,13 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.11 - 2022-06-29
+### Fixed
+
+- Fixed deprecated use of parseEnv()
+- Fixed formatting of this changelog
+
 ## 4.0.10 - 2022-06-13
-## Added
+### Added
 
 - Added a service method to retrieve a Klaviyo Person ID using an email address
 - Added a service method to update a Klaviyo profile 
@@ -9,7 +15,7 @@
 
 ## 4.0.9 - 2022-06-07
 
-## Fixed
+### Fixed
 
 - Fixes issue in Lists field type where list selection isn't saved, or previous setting is nulled, if the entry is first saved by an automatic draft.
 
