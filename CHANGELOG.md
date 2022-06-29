@@ -3,9 +3,18 @@
 ## 5.0.1 - 2022-06-29
 
 - Fix issue with PHP Typing error on settings screen
+  
 ## 5.0.0 - 2022-06-15
 
 - Separate Craft 4 version
+
+## 4.0.10 - 2022-06-13
+## Added
+
+- Added a service method to retrieve a Klaviyo Person ID using an email address
+- Added a service method to update a Klaviyo profile 
+- Added a controller method for updating a Klaviyo profile
+
 ## 4.0.9 - 2022-06-07
 
 ## Fixed
