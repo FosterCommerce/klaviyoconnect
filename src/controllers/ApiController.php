@@ -29,7 +29,7 @@ class ApiController extends Controller
      * @access	public
      * @return	void
      */
-    public function actionTrack()
+    public function actionTrack() // no return type as mixed is PHP 8 only
     {
         $this->requirePostRequest();
 
@@ -282,7 +282,7 @@ class ApiController extends Controller
      * @access	private
      * @return	mixed
      */
-    private function forwardOrRedirect()
+    private function forwardOrRedirect() // no return type as mixed is PHP 8 only
     {
         $request = Craft::$app->getRequest();
         $forwardUrl = $request->getParam('forward');
@@ -302,7 +302,7 @@ class ApiController extends Controller
      * @access	private
      * @return	mixed
      */
-    private function mapProfile()
+    private function mapProfile() // no return type as mixed is PHP 8 only
     {
         $request = Craft::$app->getRequest();
         $profileParams = $request->getParam('profile');

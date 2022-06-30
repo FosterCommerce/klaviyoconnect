@@ -19,7 +19,7 @@ class Cart extends Base
      * @param	mixed	$number	
      * @return	mixed
      */
-    public function restore($number)
+    public function restore($number) // no return type as mixed is PHP 8 only
     {
         $commerceInstance = Commerce::getInstance();
 

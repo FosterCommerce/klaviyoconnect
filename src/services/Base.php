@@ -20,7 +20,7 @@ abstract class Base extends Component
      * @param	mixed	$name	
      * @return	mixed
      */
-    protected function getSetting($name)
+    protected function getSetting($name) // no return type as mixed only works above PHP 8
     {
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;

@@ -78,7 +78,7 @@ class ListsField extends Field
      * @param	elementinterface	$element	Default: null
      * @return	mixed
      */
-    public function normalizeValue($values, ElementInterface $element = null)
+    public function normalizeValue($values, ElementInterface $element = null) // no return type as mixed is PHP 8 only
     {
         if ($values && !is_array($values)) {
             $o = json_decode($values);

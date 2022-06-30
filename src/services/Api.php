@@ -122,7 +122,7 @@ class Api extends Base
      * @param	array	$params	Array of values to update
      * @return	mixed
      */
-    public function updateProfile(string $id, array $params)
+    public function updateProfile(string $id, array $params) // no return type as mixed is PHP 8 only
     {
         $profile = [];
         
@@ -233,7 +233,7 @@ class Api extends Base
      * @access	public
      * @return	mixed
      */
-    public function getLists()
+    public function getLists() // no return type as mixed is PHP 8 only
     {
 
         if (is_null($this->cachedLists)) {
@@ -294,7 +294,7 @@ class Api extends Base
      * @param	boolean    	$useSubscribeEndpoint	Default: false
      * @return	mixed
      */
-    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false)
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false) // no return type as mixed is PHP 8 only
     {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
@@ -329,7 +329,7 @@ class Api extends Base
      * @param	mixed	$response	
      * @return	mixed
      */
-    private function getObjectResponse($response)
+    private function getObjectResponse($response) // no return type as mixed is PHP 8 only
     {
         $content = $response->getBody()->getContents();
         if (isset($content)) {
