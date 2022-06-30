@@ -1,5 +1,7 @@
 # Release Notes for KlaviyoConnect
+## 5.0.2 - 2022-06-30
 
+- Fixing messed up releases where it was possible to install 5.0.1 on Craft 3
 ## 5.0.1 - 2022-06-29
 
 - Fix issue with PHP Typing error on settings screen

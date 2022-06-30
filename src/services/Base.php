@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\helpers\App;
 use fostercommerce\klaviyoconnect\Plugin;
 use yii\base\Component;
 
@@ -28,7 +29,7 @@ abstract class Base extends Component
         $value = $this->settings->$name;
 
         if (is_string($value)) {
-            $value = Craft::parseEnv($value);
+            $value = App::parseEnv($value);
         }
         
         return $value;

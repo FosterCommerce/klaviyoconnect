@@ -33,7 +33,7 @@ use yii\base\Event;
  */
 class Plugin extends \craft\base\Plugin
 {
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     public function init(): void
     {
