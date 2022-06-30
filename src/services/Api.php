@@ -122,7 +122,7 @@ class Api extends Base
      * @param	array	$params	Array of values to update
      * @return	mixed
      */
-    public function updateProfile(string $id, array $params): mixed
+    public function updateProfile(string $id, array $params)
     {
         $profile = [];
         
@@ -233,7 +233,7 @@ class Api extends Base
      * @access	public
      * @return	mixed
      */
-    public function getLists(): mixed
+    public function getLists()
     {
 
         if (is_null($this->cachedLists)) {
@@ -294,7 +294,7 @@ class Api extends Base
      * @param	boolean    	$useSubscribeEndpoint	Default: false
      * @return	mixed
      */
-    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false): mixed
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false)
     {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
@@ -329,7 +329,7 @@ class Api extends Base
      * @param	mixed	$response	
      * @return	mixed
      */
-    private function getObjectResponse($response): mixed
+    private function getObjectResponse($response)
     {
         $content = $response->getBody()->getContents();
         if (isset($content)) {

@@ -2,13 +2,14 @@
     "name": "fostercommerce/klaviyoconnect",
     "description": "Craft Commerce",
     "type": "craft-plugin",
-    "version": "4.0.10",
+    "version": "4.0.11",
     "keywords": [
       "klaviyo"
     ],
     "homepage": "https://fostercommerce.com",
     "require": {
       "craftcms/cms": "^3.0.0",
+      "php": "^7.2",
       "guzzlehttp/guzzle": "^6.3.0 || ^7.2.0"
     },
     "autoload": {

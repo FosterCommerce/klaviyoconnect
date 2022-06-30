@@ -29,7 +29,7 @@ class ApiController extends Controller
      * @access	public
      * @return	void
      */
-    public function actionTrack(): mixed
+    public function actionTrack()
     {
         $this->requirePostRequest();
 
@@ -282,7 +282,7 @@ class ApiController extends Controller
      * @access	private
      * @return	mixed
      */
-    private function forwardOrRedirect(): mixed
+    private function forwardOrRedirect()
     {
         $request = Craft::$app->getRequest();
         $forwardUrl = $request->getParam('forward');
@@ -302,7 +302,7 @@ class ApiController extends Controller
      * @access	private
      * @return	mixed
      */
-    private function mapProfile(): mixed
+    private function mapProfile()
     {
         $request = Craft::$app->getRequest();
         $profileParams = $request->getParam('profile');

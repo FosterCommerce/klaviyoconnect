@@ -70,7 +70,7 @@ class ListField extends Field
      * @param	elementinterface	$element	Default: null
      * @return	mixed
      */
-    public function normalizeValue($value, ElementInterface $element = null): mixed
+    public function normalizeValue($value, ElementInterface $element = null)
     {
         if ($value) {
             $o = json_decode($value);

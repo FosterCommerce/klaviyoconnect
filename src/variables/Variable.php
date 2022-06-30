@@ -18,7 +18,7 @@ class Variable
      * @access	public
      * @return	mixed
      */
-    public function lists(): mixed
+    public function lists()
     {
         if (is_null($this->lists)) {
             try {
@@ -43,7 +43,7 @@ class Variable
      * @access	public
      * @return	mixed
      */
-    public function error(): mixed
+    public function error()
     {
         return $this->error;
     }
