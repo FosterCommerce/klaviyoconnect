@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.12 2022-07-04
+### Fixed
+
+- Removed type declaration on $hasCpSettings which was causing a PHP Warning and preventing installation
+  
 ## 4.0.11 - 2022-06-29
 ### Fixed
 
