@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.13 2022-07-04
+### Added
+
+- Support for Craft 3 running on PHP 8
+  
 ## 4.0.12 2022-07-04
 ### Fixed
 
