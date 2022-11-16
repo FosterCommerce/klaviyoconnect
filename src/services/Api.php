@@ -283,6 +283,52 @@ class Api extends Base
     }
 
     /**
+     * getProfileFromList.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	mixed	$listId	
+     * @param	mixed	$email 	
+     * @return	object
+     */
+    public function getProfileFromList($listId, $email)
+    {
+        $response = $this->clientV2->get("list/{$listId}/members", [
+            'query' => [
+                'api_key' => $this->getSetting('klaviyoApiKey'),
+                'emails' => $email,
+            ],
+        ]);
+        $content = $this->getObjectResponse($response);
+        
+        return $content;
+    }
+
+    /**
+     * getProfile.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	string	$profileId	
+     * @return	object
+     */
+    public function getProfile($profileId)
+    {
+        $response = $this->client->get("person/{$profileId}", [
+            'query' => [
+                'api_key' => $this->getSetting('klaviyoApiKey'),
+            ],
+        ]);
+        $content = $this->getObjectResponse($response);
+        
+        return $content;
+    }
+
+    /**
      * addProfileToList.
      *
      * @author	Unknown
