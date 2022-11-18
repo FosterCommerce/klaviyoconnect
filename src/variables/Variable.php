@@ -35,6 +35,45 @@ class Variable
     }
 
     /**
+     * profileFromList.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	string	$listId	
+     * @param	string	$email 	
+     * @return	array
+     */
+    public function profileFromList(string $listId, string $email): array
+    {
+        if($listId && $email) {
+            $profile = Plugin::getInstance()->api->getProfileFromList($listId, $email);
+        }
+
+        return $profile;
+    }
+
+    /**
+     * profileFromList.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	string	$profileId	
+     * @return	array
+     */
+    public function profile(string $profileId): array
+    {
+        if($profileId) {
+            $profile = Plugin::getInstance()->api->getProfile($profileId);
+        }
+
+        return json_decode(json_encode($profile), true);
+    }
+
+    /**
      * error.
      *
      * @author	Unknown
