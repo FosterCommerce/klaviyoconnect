@@ -284,7 +284,8 @@ class Api extends Base
 
     /**
      * getProfileFromList.
-     *
+     * Get user profile from a specific klaviyo list. 
+     * 
      * @author	Unknown
      * @since	v0.0.1
      * @version	v1.0.0	Monday, November 14th, 2022.
@@ -308,7 +309,8 @@ class Api extends Base
 
     /**
      * getProfile.
-     *
+     * Get user profile from klaviyo
+     * 
      * @author	Unknown
      * @since	v0.0.1
      * @version	v1.0.0	Monday, November 14th, 2022.
