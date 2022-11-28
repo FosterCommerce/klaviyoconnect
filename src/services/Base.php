@@ -29,7 +29,11 @@ abstract class Base extends Component
         $value = $this->settings->$name;
 
         if (is_string($value)) {
-            $value = App::parseEnv($value);
+            if (method_exists('App', 'parseEnv')){
+                $value = App::parseEnv($value);
+            } else {
+                $value = Craft::parseEnv($value);
+            }
         }
         
         return $value;
