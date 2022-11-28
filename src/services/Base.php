@@ -2,6 +2,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\helpers\App;
 use fostercommerce\klaviyoconnect\Plugin;
 use yii\base\Component;
 
@@ -19,7 +20,7 @@ abstract class Base extends Component
      * @param	mixed	$name	
      * @return	mixed
      */
-    protected function getSetting($name): mixed
+    protected function getSetting($name) // no return type as mixed only works above PHP 8
     {
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;
@@ -28,7 +29,11 @@ abstract class Base extends Component
         $value = $this->settings->$name;
 
         if (is_string($value)) {
-            $value = Craft::parseEnv($value);
+            if (method_exists('App', 'parseEnv')){
+                $value = App::parseEnv($value);
+            } else {
+                $value = Craft::parseEnv($value);
+            }
         }
         
         return $value;

@@ -62,7 +62,7 @@ abstract class Base extends Model
      * @param	boolean	$recursive	Default: true
      * @return	mixed
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true): mixed
+    public function toArray(array $fields = [], array $expand = [], $recursive = true) // no return type as mixed is PHP 8 only
     {
         $arr = parent::toArray($fields, $expand, $recursive);
 

@@ -122,7 +122,7 @@ class Api extends Base
      * @param	array	$params	Array of values to update
      * @return	mixed
      */
-    public function updateProfile(string $id, array $params): mixed
+    public function updateProfile(string $id, array $params) // no return type as mixed is PHP 8 only
     {
         $profile = [];
         
@@ -233,7 +233,7 @@ class Api extends Base
      * @access	public
      * @return	mixed
      */
-    public function getLists(): mixed
+    public function getLists() // no return type as mixed is PHP 8 only
     {
 
         if (is_null($this->cachedLists)) {
@@ -283,6 +283,54 @@ class Api extends Base
     }
 
     /**
+     * getProfileFromList.
+     * Get user profile from a specific klaviyo list. 
+     * 
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	string	$listId	
+     * @param	string	$email 	
+     * @return	object
+     */
+    public function getProfileFromList(string $listId, string $email): array
+    {
+        $response = $this->clientV2->get("list/{$listId}/members", [
+            'query' => [
+                'api_key' => $this->getSetting('klaviyoApiKey'),
+                'emails' => $email,
+            ],
+        ]);
+        $content = $this->getObjectResponse($response);
+        
+        return $content;
+    }
+
+    /**
+     * getProfile.
+     * Get user profile from klaviyo
+     * 
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @access	public
+     * @param	string	$profileId	
+     * @return	object
+     */
+    public function getProfile(string $profileId): object
+    {
+        $response = $this->client->get("person/{$profileId}", [
+            'query' => [
+                'api_key' => $this->getSetting('klaviyoApiKey'),
+            ],
+        ]);
+        $content = $this->getObjectResponse($response);
+        
+        return $content;
+    }
+
+    /**
      * addProfileToList.
      *
      * @author	Unknown
@@ -294,7 +342,7 @@ class Api extends Base
      * @param	boolean    	$useSubscribeEndpoint	Default: false
      * @return	mixed
      */
-    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false): mixed
+    public function addProfileToList(KlaviyoList &$list, Profile &$profile, $useSubscribeEndpoint = false) // no return type as mixed is PHP 8 only
     {
         if (!$profile->hasEmail()) {
             throw new Exception('You must identify a user by email.');
@@ -329,7 +377,7 @@ class Api extends Base
      * @param	mixed	$response	
      * @return	mixed
      */
-    private function getObjectResponse($response): mixed
+    private function getObjectResponse($response) // no return type as mixed is PHP 8 only
     {
         $content = $response->getBody()->getContents();
         if (isset($content)) {
