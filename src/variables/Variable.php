@@ -34,6 +34,18 @@ class Variable
         return $this->lists;
     }
 
+    public function personIdFromEmail(string $email): string
+    {
+        try {
+            $personId = Plugin::getInstance()->api->getPersonIdfromEmail($email);
+        } catch (RequestException $e) {
+            $response = json_decode($e->getResponse()->getBody()->getContents());
+            $this->error = [$e->getCode() => $response->message];
+        }
+
+        return $personId;
+    }
+
     /**
      * error.
      *
