@@ -221,9 +221,26 @@ Any other profile fields can be updated (or created) by using their name.
     <input type="submit" value="Submit" />
 </form>
 ```
+## Get klaviyo profile properties
+
+We might need to update existing properties on a user's profile on klaviyo. In order for us to achieve that we first need to get the existing properties from klaviyo. 
+
+Klaviyo allows us to get a user's profile using klaviyo's unique `personId` which we can get from klaviyo using the method below.
+
+First we need to get the personId by using the `personIdFromEmail` method below.
+
+
+```twig
+{% set personId =  craft.klaviyoConnect.personIdFromEmail(email) %}
+```
+
+Now that we have the `personId` we can use this to get the user's profile properties from klaviyo by calling the `profile` method below, passing in the `personId`:
+
+```twig
+{% set profile =  craft.klaviyoConnect.profile(email) %}
+```
 
 ## Klaviyo Email Templates
-
 ### Profile Details and Cart/Order Items
 
 Assuming the event triggering the Klaviyo flow is one of Started Checkout, Placed Order or Updated Cart:

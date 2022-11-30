@@ -35,23 +35,25 @@ class Variable
     }
 
     /**
-     * profileFromList.
+     * personIdFromEmail .
      *
      * @author	Unknown
      * @since	v0.0.1
-     * @version	v1.0.0	Monday, November 14th, 2022.
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @param	string	$email	
      * @access	public
-     * @param	string	$listId	
-     * @param	string	$email 	
-     * @return	array
+     * @return	string
      */
-    public function profileFromList(string $listId, string $email): array
+    public function personIdFromEmail(string $email): string
     {
-        if($listId && $email) {
-            $profile = Plugin::getInstance()->api->getProfileFromList($listId, $email);
+        try {
+            $personId = Plugin::getInstance()->api->getPersonIdfromEmail($email);
+        } catch (RequestException $e) {
+            $response = json_decode($e->getResponse()->getBody()->getContents());
+            $this->error = [$e->getCode() => $response->message];
         }
 
-        return $profile;
+        return $personId;
     }
 
     /**
@@ -66,10 +68,15 @@ class Variable
      */
     public function profile(string $profileId): array
     {
-        if($profileId) {
-            $profile = Plugin::getInstance()->api->getProfile($profileId);
+        try {
+            if($profileId) {
+                $profile = Plugin::getInstance()->api->getProfile($profileId);
+            }
+        } catch (RequestException $e) {
+            $response = json_decode($e->getResponse()->getBody()->getContents());
+            $this->error = [$e->getCode() => $response->message];
         }
-
+        
         return json_decode(json_encode($profile), true);
     }
 
