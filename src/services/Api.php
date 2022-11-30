@@ -283,31 +283,6 @@ class Api extends Base
     }
 
     /**
-     * getProfileFromList.
-     * Get user profile from a specific klaviyo list. 
-     * 
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, November 14th, 2022.
-     * @access	public
-     * @param	string	$listId	
-     * @param	string	$email 	
-     * @return	object
-     */
-    public function getProfileFromList(string $listId, string $email): array
-    {
-        $response = $this->clientV2->get("list/{$listId}/members", [
-            'query' => [
-                'api_key' => $this->getSetting('klaviyoApiKey'),
-                'emails' => $email,
-            ],
-        ]);
-        $content = $this->getObjectResponse($response);
-        
-        return $content;
-    }
-
-    /**
      * getProfile.
      * Get user profile from klaviyo
      * 
