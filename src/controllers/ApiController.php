@@ -16,9 +16,9 @@ use GuzzleHttp\Exception\RequestException;
 class ApiController extends Controller
 {
     /**
-     * @var		bool	$allowAnonymous
+     * @var		array|int|bool	$allowAnonymous
      */
-    protected $allowAnonymous = true;
+    protected array|int|bool $allowAnonymous = true;
 
     /**
      * actionTrack.
