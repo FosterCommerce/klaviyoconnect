@@ -1,8 +1,11 @@
 # Release Notes for KlaviyoConnect
 
-## 5.0.3 - 2023-02-27
+## 5.0.4 - 2023-02-27
 
 - Fix missing type hint in API conroller
+## 5.0.3 - 2022-06-30
+
+- Adding version contstraints
 ## 5.0.2 - 2022-06-30
 
 - Fixing messed up releases where it was possible to install 5.0.1 on Craft 3
