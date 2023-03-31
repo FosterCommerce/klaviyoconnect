@@ -310,7 +310,7 @@ class Track extends Base
                     );
 
                     Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
-
+                    
                     if ($eventName === 'Placed Order') {
                         foreach ($orderDetails['Items'] as $item) {
                             $event = [
@@ -353,7 +353,31 @@ class Track extends Base
 
         foreach ($order->lineItems as $lineItem) {
             $lineItemProperties = [];
-
+            
+            // set some defaults
+            // This is a messy, temporary fix and needs refactoring
+            // If a variant has been deleted since an order was placed the array assignment for Klaviyo event properties is skipped 
+            // since there is no "product"
+            // this means that when creating the event ID in trackOrder() (around line 317), there is no key named "Slug".
+            // It was possible to get around this by ignoring "Slug", since it's always going to be null anyway,
+            // but this also meant that no record of the product was sent to Kalviyo. 
+            // This "fix" makes sure there is *some* data to send to Klaviyo if the Variant has been deleted
+            // We should probably refactor this part to always use the lineitem snapshot
+            $lineItemProperties = [
+                'value' => $lineItem->price * $lineItem->qty,
+                'ProductName' => $lineItem->snapshot['title'],
+                'Slug' => $lineItem->snapshot['slug'],
+                'ProductURL' => $lineItem->snapshot['url'],
+                'ProductType' => '',
+                'ItemPrice' => $lineItem->snapshot['price'],
+                'RowTotal' => $lineItem->subtotal,
+                'Quantity' => $lineItem->qty,
+                'SKU' => $lineItem->snapshot['sku'],
+                'Note' => 'Variant no longer available',
+                'Snapshot' =>  $lineItem->snapshot
+            ];
+            
+            
             // Add regular Product purchasable properties
             $product = $lineItem->purchasable->product ?? [];
             if ($product) {

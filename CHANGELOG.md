@@ -1,5 +1,14 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.16 2023-03-31
+### Fixed
+
+- Issue that caused queue faliures when pushing order data to Klaviyo if any of the orders contained line items for deleted variants
+
+## 4.0.15
+
+## 4.0.14
+
 ## 4.0.13 2022-07-04
 ### Added
 
