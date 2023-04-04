@@ -365,14 +365,14 @@ class Track extends Base
             // We should probably refactor this part to always use the lineitem snapshot
             $lineItemProperties = [
                 'value' => $lineItem->price * $lineItem->qty,
-                'ProductName' => $lineItem->snapshot['title'],
-                'Slug' => $lineItem->snapshot['slug'],
-                'ProductURL' => $lineItem->snapshot['url'],
+                'ProductName' => $lineItem->snapshot['title'] ?? '',
+                'Slug' => $lineItem->snapshot['slug'] ?? '',
+                'ProductURL' => $lineItem->snapshot['url'] ?? '',
                 'ProductType' => '',
-                'ItemPrice' => $lineItem->snapshot['price'],
+                'ItemPrice' => $lineItem->snapshot['price'] ?? '',
                 'RowTotal' => $lineItem->subtotal,
                 'Quantity' => $lineItem->qty,
-                'SKU' => $lineItem->snapshot['sku'],
+                'SKU' => $lineItem->snapshot['sku'] ?? '',
                 'Note' => 'Variant no longer available',
                 'Snapshot' =>  $lineItem->snapshot
             ];

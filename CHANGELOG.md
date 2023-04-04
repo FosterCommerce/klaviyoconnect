@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.161 2023-04-31
+### Fixed
+- Fixes issue caused in last update which caused a 500 error when updating an order in the CP
+
+
 ## 4.0.16 2023-03-31
 ### Fixed
 
