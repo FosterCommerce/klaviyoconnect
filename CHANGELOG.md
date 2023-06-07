@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+## 4.0.16.2 2023-06-07
+### Fixed
+- Fixes issue with type declaration on controller for PHP 7
+  
+
 ## 4.0.16.1 2023-04-31
 ### Fixed
 - Fixes issue caused in last update which caused a 500 error when updating an order in the CP
