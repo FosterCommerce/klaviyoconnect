@@ -8,7 +8,7 @@ use yii\base\Component;
 
 abstract class Base extends Component
 {
-    private $settings = null;
+    private mixed $settings = null;
 
     /**
      * getSetting.
@@ -20,7 +20,7 @@ abstract class Base extends Component
      * @param	mixed	$name	
      * @return	mixed
      */
-    protected function getSetting($name): mixed
+    protected function getSetting(string $name): mixed
     {
         if (is_null($this->settings)) {
             $this->settings = Plugin::getInstance()->settings;

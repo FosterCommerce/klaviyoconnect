@@ -57,7 +57,7 @@
   </div>
 {% elseif craft.klaviyoConnect.error is not null  %}
   <ul class="errors">
-    <li>{% if '403' in craft.klaviyoConnect.error|keys %}Klaviyo Private API key is invalid{% endif %}</li>
+    <li>{{craft.klaviyoConnect.error}}</li>
   </ul>
 {% else %}
   <ul class="errors">
