@@ -38,15 +38,11 @@ class SyncOrders extends BaseJob
             if ($order) {
                 // When syncing orders we want to use the timestamp from the order
                 // instead of the time the sync operation was performed.
-                $timestamp = $order->dateOrdered
-                    ? $order->dateOrdered->getTimestamp()
-                    : null;
-
                 Plugin::getInstance()->track->trackOrder(
                     'Placed Order',
                     $order,
                     null,
-                    $timestamp
+                    $order->dateOrdered?->getTimestamp(),
                 );
             }
         }
