@@ -24,6 +24,13 @@
     },
     "require-dev": {
       "friendsofphp/php-cs-fixer": "^2.13",
-      "craftcms/commerce": "^4.2"
+      "craftcms/commerce": "^4.2",
+      "craftcms/phpstan": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
     }
 }
