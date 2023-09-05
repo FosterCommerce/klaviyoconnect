@@ -1,36 +1,44 @@
 {
-    "name": "fostercommerce/klaviyoconnect",
-    "description": "Craft Commerce",
-    "type": "craft-plugin",
-    "version": "5.0.4",
-    "keywords": [
-      "klaviyo"
-    ],
-    "homepage": "https://fostercommerce.com",
-    "require": {
-      "craftcms/cms": "^4.0.0",
-      "php": "^8.0",
-      "guzzlehttp/guzzle": "^6.3.0 || ^7.2.0"
-    },
-    "autoload": {
-      "psr-4": {
-        "fostercommerce\\klaviyoconnect\\": "src/"
-      }
-    },
-    "extra": {
-      "handle": "klaviyoconnect",
-      "name": "Klaviyo Connect",
-      "developer": "Foster Commerce"
-    },
-    "require-dev": {
-      "craftcms/commerce": "^4.2",
-      "craftcms/phpstan": "dev-main",
-        "craftcms/ecs": "dev-main"
-    },
-    "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer": true,
-            "craftcms/plugin-installer": true
-        }
+  "name": "fostercommerce/klaviyoconnect",
+  "description": "Craft Commerce",
+  "type": "craft-plugin",
+  "version": "5.0.4",
+  "keywords": [
+    "klaviyo"
+  ],
+  "homepage": "https://fostercommerce.com",
+  "require": {
+    "craftcms/cms": "^4.0.0",
+    "php": "^8.0",
+    "guzzlehttp/guzzle": "^6.3.0 || ^7.2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "fostercommerce\\klaviyoconnect\\": "src/"
     }
+  },
+  "extra": {
+    "handle": "klaviyoconnect",
+    "name": "Klaviyo Connect",
+    "developer": "Foster Commerce"
+  },
+  "require-dev": {
+    "craftcms/commerce": "^4.2",
+    "craftcms/phpstan": "dev-main",
+    "craftcms/ecs": "dev-main",
+    "craftcms/rector": "dev-main"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  },
+  "scripts": {
+    "phpstan": "phpstan --memory-limit=1G",
+    "ecs-check": "ecs check --ansi --memory-limit=1G",
+    "ecs-fix": "ecs check --ansi --fix --memory-limit=1G",
+    "rector": "rector process",
+    "rector-dry-run": "rector process --dry-run"
+  }
 }
