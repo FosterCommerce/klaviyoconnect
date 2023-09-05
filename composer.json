@@ -23,9 +23,9 @@
       "developer": "Foster Commerce"
     },
     "require-dev": {
-      "friendsofphp/php-cs-fixer": "^2.13",
       "craftcms/commerce": "^4.2",
-      "craftcms/phpstan": "dev-main"
+      "craftcms/phpstan": "dev-main",
+        "craftcms/ecs": "dev-main"
     },
     "config": {
         "allow-plugins": {
