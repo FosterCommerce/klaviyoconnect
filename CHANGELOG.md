@@ -1,18 +1,26 @@
 # Release Notes for KlaviyoConnect
 
+## 5.0.5 - 2023-02-27
+
+- Fix issue where the plugin would attempt to fetch lists when the Klaviyo API key was not set
+- Include order timestamps when synchronizing orders from the control panel
+
 ## 5.0.4 - 2023-02-27
 
-- Fix missing type hint in API conroller
+- Fix missing type hint in API controller
+
 ## 5.0.3 - 2022-06-30
 
-- Adding version contstraints
+- Adding version constraints
+
 ## 5.0.2 - 2022-06-30
 
 - Fixing messed up releases where it was possible to install 5.0.1 on Craft 3
+
 ## 5.0.1 - 2022-06-29
 
 - Fix issue with PHP Typing error on settings screen
-  
+
 ## 5.0.0 - 2022-06-15
 
 - Separate Craft 4 version
@@ -21,7 +29,7 @@
 ## Added
 
 - Added a service method to retrieve a Klaviyo Person ID using an email address
-- Added a service method to update a Klaviyo profile 
+- Added a service method to update a Klaviyo profile
 - Added a controller method for updating a Klaviyo profile
 
 ## 4.0.9 - 2022-06-07
@@ -33,7 +41,7 @@
 ### Added
 
 - The plugin now works with Craft 4
-  
+
 ## 4.0.8 - 2021-10-21
 
 ### Fixed
