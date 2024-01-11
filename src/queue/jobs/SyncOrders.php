@@ -25,7 +25,7 @@ class SyncOrders extends BaseJob
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$queue	
+     * @param	mixed	$queue
      * @return	void
      */
     public function execute($queue): void
@@ -36,7 +36,18 @@ class SyncOrders extends BaseJob
             $order = Order::find()->id($this->orderId)->one();
 
             if ($order) {
-                Plugin::getInstance()->track->trackOrder('Placed Order', $order);
+                // When syncing orders we want to use the timestamp from the order
+                // instead of the time the sync operation was performed.
+                $timestamp = $order->dateOrdered
+                    ? $order->dateOrdered->getTimestamp()
+                    : null;
+
+                Plugin::getInstance()->track->trackOrder(
+                    'Placed Order',
+                    $order,
+                    null,
+                    $timestamp
+                );
             }
         }
 

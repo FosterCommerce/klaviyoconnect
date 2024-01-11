@@ -1,9 +1,13 @@
 # Release Notes for KlaviyoConnect
 
+## 4.1.0 2024-01-11
+
+- Include order timestamps when synchronizing orders from the control panel
+
 ## 4.0.16.2 2023-06-07
 ### Fixed
 - Fixes issue with type declaration on controller for PHP 7
-  
+
 
 ## 4.0.16.1 2023-04-31
 ### Fixed
@@ -23,12 +27,12 @@
 ### Added
 
 - Support for Craft 3 running on PHP 8
-  
+
 ## 4.0.12 2022-07-04
 ### Fixed
 
 - Removed type declaration on $hasCpSettings which was causing a PHP Warning and preventing installation
-  
+
 ## 4.0.11 - 2022-06-29
 ### Fixed
 
@@ -40,7 +44,7 @@
 ### Added
 
 - Added a service method to retrieve a Klaviyo Person ID using an email address
-- Added a service method to update a Klaviyo profile 
+- Added a service method to update a Klaviyo profile
 - Added a controller method for updating a Klaviyo profile
 
 ## 4.0.9 - 2022-06-07
@@ -52,7 +56,7 @@
 ### Added
 
 - The plugin now works with Craft 4
-  
+
 ## 4.0.8 - 2021-10-21
 
 ### Fixed
