@@ -38,6 +38,8 @@
 	const startDate = dateContainer.querySelector('[data-start-date]');
 	const endDate = dateContainer.querySelector('[data-end-date]');
 	const picker = dateContainer.querySelector('[data-date-range-picker]');
+	const adminPath = "{{ craft.app.config.general.cpTrigger ? craft.app.config.general.cpTrigger : 'admin' }}";
+	
 	let startTime, endTime;
 	const options = {
 		onChange: (start, end) => {
@@ -62,7 +64,7 @@
 		e.preventDefault();
 
 		if(startDate.value.length && endDate.value.length) {
-			const url = `/admin/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
+			const url = `/${adminPath}/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
 
 			request.open('GET', url, true);
 			request.send();
