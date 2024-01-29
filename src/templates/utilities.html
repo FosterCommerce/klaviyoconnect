@@ -62,7 +62,7 @@
 		e.preventDefault();
 
 		if(startDate.value.length && endDate.value.length) {
-			const url = `/admin/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
+			const url = `/{{ craft.app.config.general.cpTrigger }}/klaviyoconnect/sync-orders?start=${startTime}&end=${endTime}`;
 
 			request.open('GET', url, true);
 			request.send();

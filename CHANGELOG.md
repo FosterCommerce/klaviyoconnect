@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 5.0.6 - 2024-01-29
+
+- Use `cpTrigger` config when triggering an order sync to Klaviyo from Utilities
+
 ## 5.0.5 - 2023-02-27
 
 - Fix issue where the plugin would attempt to fetch lists when the Klaviyo API key was not set
