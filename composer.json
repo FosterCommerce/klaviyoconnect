@@ -24,9 +24,10 @@
   },
   "require-dev": {
     "craftcms/commerce": "^4.2",
-    "craftcms/phpstan": "dev-main",
-    "craftcms/ecs": "dev-main",
-    "craftcms/rector": "dev-main"
+    "fostercommerce/phpstan": "dev-main",
+    "fostercommerce/ecs": "dev-main",
+    "fostercommerce/rector": "dev-main",
+    "roave/security-advisories": "dev-latest"
   },
   "config": {
     "allow-plugins": {
@@ -34,6 +35,8 @@
       "craftcms/plugin-installer": true
     }
   },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
   "scripts": {
     "phpstan": "phpstan --memory-limit=1G",
     "ecs-check": "ecs check --ansi --memory-limit=1G",
