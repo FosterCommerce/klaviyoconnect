@@ -1,7 +1,6 @@
 includes:
-    - vendor/craftcms/phpstan/phpstan.neon
+    - vendor/fostercommerce/phpstan/phpstan.neon
 
 parameters:
-    level: 0
     paths:
         - src

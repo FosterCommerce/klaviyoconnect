@@ -36,7 +36,7 @@ jobs:
       - run: composer install --prefer-dist --no-progress
       - name: Run rector --dry-run
         run: |
-          vendor/bin/rector --memory-limit=1G --no-progress-bar
+          vendor/bin/rector --memory-limit=1G --no-progress-bar --dry-run
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
