@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 5.0.7 - 2024-03-21
+
+- Update plugin branding
+
 ## 5.0.6 - 2024-01-29
 
 - Use `cpTrigger` config when triggering an order sync to Klaviyo from Utilities
