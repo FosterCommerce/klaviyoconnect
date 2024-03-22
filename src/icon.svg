@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
-  <polygon class="cls-1" points="38.38 191.17 38.38 808.83 961.62 808.83 961.62 808.82 767.82 500.01 961.62 191.17 38.38 191.17"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <defs>
+    <style>.klaviyo_conn_icon_j{fill:#fff;}.klaviyo_conn_icon_j,.klaviyo_conn_icon_k{stroke-width:0px;}.klaviyo_conn_icon_k{fill:url(#klaviyo_conn_icon_f);}</style>
+    <radialGradient id="klaviyo_conn_icon_f" cx="970.38" cy="921.11" fx="970.38" fy="921.11" r="1225.76" gradientUnits="userSpaceOnUse"><stop offset=".03" stop-color="#bd9664"/><stop offset=".12" stop-color="#95836a"/><stop offset=".23" stop-color="#6c6f71"/><stop offset=".31" stop-color="#526375"/><stop offset=".36" stop-color="#495f77"/><stop offset=".42" stop-color="#3f5267"/><stop offset=".54" stop-color="#27323f"/><stop offset=".61" stop-color="#171d25"/></radialGradient>
+  </defs>
+  <rect class="klaviyo_conn_icon_k" x="38.38" y="38.38" width="923.24" height="923.24" rx="255.52" ry="255.52"/>
+  <polygon class="klaviyo_conn_icon_j" points="257.85 338 257.85 662 742.15 662 742.15 661.99 640.49 500 742.15 338 257.85 338"/>
 </svg>

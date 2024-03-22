@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 5.0.8 - 2024-03-21
+
+- Use correct Craft control panel icon
+
 ## 5.0.7 - 2024-03-21
 
 - Update plugin branding
