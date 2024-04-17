@@ -6,7 +6,7 @@ use craft\base\Model;
 
 class Profile extends Base
 {
-    public $id;
+    public $external_id;
     public $email;
     public $first_name;
     public $last_name;

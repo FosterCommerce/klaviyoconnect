@@ -54,7 +54,7 @@ class ApiController extends Controller
      * @access	public
      * @return	void
      */
-    public function actionSyncOrders(): void 
+    public function actionSyncOrders(): void
     {
         $params = $this->request->queryParams;
         $start  = is_numeric($params['start']) ? $params['start'] : null;
@@ -70,76 +70,7 @@ class ApiController extends Controller
             }
         }
     }
-    
-    
-    /**
-     * actionUpdateProfile.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, June 13th, 2022.
-     * @access	public
-     * @return	void
-     */
-    public function actionUpdateProfile(): void
-    {
-        $this->requirePostRequest();
-        
-        // user must be logged in to update a profile
-        $currentUser = Craft::$app->getUser()->getIdentity();
-        if(!$currentUser){
-            throw new \Exception('You must be logged in to update your profile.');
-        } 
-                
-        // Get the posted params
-        $request = Craft::$app->getRequest();
-        $klaviyoId = $request->getParam('profile_id') ?? $request->getParam('id') ?? null;
-        $email = $request->getParam('profile_email') ?? $request->getParam('email') ?? null;
-        
-        // we need either an email or a klaviyo id, if we have neither then stop
-        if($email === null && $klaviyoId === null){
-            throw new \Exception('You must identify a user by email or ID.');
-        }
-         // if the logged in user's email is NOT the same as the one we want to update then stop
-         if($email) {
-             if ($currentUser->email !== $email) {
-                 throw new NotFoundHttpException('You are not permitted to update this profile.');
-             }
-         }
-        
-        // if there is no klaviyo id provided then retrieve one using the email address
-        if($klaviyoId === null && $email !== null) {
-            // Get the Klaviyo ID based on the user email
-            $result =  Plugin::getInstance()->api->getPersonIdfromEmail($email);
-            $klaviyoId = $result ?? null;
-        }
-                
-        // clean up the post data
-        $formParams = $request->getBodyParams();
-        
-        unset($formParams[$request->csrfParam]);
-        unset($formParams['action']);
-            
-        // Update the user's profile using the Update Profile API
-        $params = [
-            'params' => $formParams
-        ];
-        
-        $result = Plugin::getInstance()->api->updateProfile($klaviyoId, $params);
-        
-        $this->forwardOrRedirect();
-    }
-    
 
-    /**
-     * trackEvent.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @return	void
-     */
     private function trackEvent(): void
     {
         $request = Craft::$app->getRequest();
@@ -179,16 +110,13 @@ class ApiController extends Controller
                         );
                     }
                 } else {
-                    $trackOnce = array_key_exists('trackOnce', $event) ? (bool) $event['trackOnce'] : false;
-
                     $eventProperties = new EventProperties($event);
 
                     Plugin::getInstance()->track->trackEvent(
                         $event['name'],
                         $this->mapProfile(),
                         $eventProperties,
-                        $trackOnce,
-                        $timestamp
+                        $timestamp,
                     );
                 }
             } else {
@@ -203,15 +131,6 @@ class ApiController extends Controller
         }
     }
 
-    /**
-     * addProfileToLists.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @return	void
-     */
     private function addProfileToLists(): void
     {
         $lists = array();
@@ -220,7 +139,7 @@ class ApiController extends Controller
         if ($listId = $request->getParam('list')) {
             $lists[] = $listId;
         } elseif ($listIds = $request->getParam('lists')) {
-            if (is_array($listIds) && sizeof($listIds) > 0) {
+            if (is_array($listIds) && count($listIds) > 0) {
                 foreach ($listIds as $listId) {
                     if (!empty($listId)) {
                         $lists[] = $listId;
@@ -229,13 +148,13 @@ class ApiController extends Controller
             }
         }
 
-        if (sizeof($lists) > 0) {
+        if (count($lists) > 0) {
             $profile = $this->mapProfile();
-            $useSubscribeEndpoint = (bool)$request->getParam('useSubscribeEndpoint');
+            $subscribe = (bool) $request->getParam('subscribe');
 
-            Plugin::getInstance()->track->addToLists($lists, $profile, $useSubscribeEndpoint);
+            Plugin::getInstance()->track->addToLists($lists, $profile, $subscribe);
         }
-    
+
     }
 
     /**
@@ -253,15 +172,6 @@ class ApiController extends Controller
         $this->forwardOrRedirect();
     }
 
-    /**
-     * identify.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @return	void
-     */
     private function identify(): void
     {
         $this->requirePostRequest();
@@ -288,21 +198,12 @@ class ApiController extends Controller
         $forwardUrl = $request->getParam('forward');
         if ($forwardUrl) {
             return $this->run($forwardUrl);
-        } else {
-            return $this->redirectToPostedUrl();
         }
+
+        return $this->redirectToPostedUrl();
     }
 
-    /**
-     * mapProfile.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @return	mixed
-     */
-    private function mapProfile(): mixed
+    private function mapProfile(): array
     {
         $request = Craft::$app->getRequest();
         $profileParams = $request->getParam('profile');
@@ -318,7 +219,7 @@ class ApiController extends Controller
         $currentUser = Craft::$app->getUser()->getIdentity();
 
         if ($currentUser) {
-            return $profileParams = array_merge(
+            return array_merge(
                 Plugin::getInstance()->map->mapUser($currentUser),
                 $profileParams
             );

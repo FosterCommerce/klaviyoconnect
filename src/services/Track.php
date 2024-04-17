@@ -36,7 +36,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onSaveUser(Event $event): void
@@ -46,7 +46,7 @@ class Track extends Base
         $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
 
         if ($this->isInGroup($groups, $userGroups)) {
-            $this->identifyUser(Plugin::getInstance()->map->mapUser($user));
+            $this->identifyUser(Plugin::getInstance()->map->mapUser($user), true);
         }
     }
 
@@ -57,8 +57,8 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	private
-     * @param	mixed	$selectedGroups	
-     * @param	mixed	$userGroups    	
+     * @param	mixed	$selectedGroups
+     * @param	mixed	$userGroups
      * @return	boolean
      */
     private function isInGroup($selectedGroups, $userGroups): bool
@@ -80,15 +80,12 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	protected
-     * @param	mixed	$params   	
+     * @param	mixed	$params
      * @param	mixed	$eventName	Default: null
      * @param	mixed	$context  	Default: null
-     * @return	mixed
      */
-    protected function createProfile($params, $eventName = null, $context = null): mixed
+    protected function createProfile($profile, $eventName = null, $context = null): array
     {
-        $profile = new Profile($params);
-
         $event = new AddProfilePropertiesEvent([
             'profile' => $profile,
             'event' => $eventName,
@@ -96,7 +93,9 @@ class Track extends Base
         ]);
         Event::trigger(static::class, self::ADD_PROFILE_PROPERTIES, $event);
 
-        $profile->setCustomProperties($event->properties);
+        if (count($event->properties) > 0) {
+            $profile['properties'] = $event->properties;
+        }
         return $profile;
     }
 
@@ -107,12 +106,12 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$params	
+     * @param	mixed	$params
      * @return	void
      */
-    public function identifyUser($params): void
+    public function identifyUser($params, bool $update = false): void
     {
-        Plugin::getInstance()->api->identify($this->createProfile($params));
+        Plugin::getInstance()->api->identify($this->createProfile($params), $update);
     }
 
     /**
@@ -122,7 +121,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onCartUpdated(Event $event): void
@@ -137,7 +136,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onOrderCompleted(Event $event): void
@@ -152,7 +151,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onStatusChanged(Event $event): void
@@ -168,7 +167,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	refundtransactionevent	$event	
+     * @param	refundtransactionevent	$event
      * @return	void
      */
     public function onOrderRefunded(RefundTransactionEvent $event): void
@@ -178,28 +177,25 @@ class Track extends Base
     }
 
     /**
-     * addToLists.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed  	$listIds             	
-     * @param	mixed  	$profileParams       	
-     * @param	boolean	$useSubscribeEndpoint	Default: false
-     * @return	void
+     * @param string[] $listIds
+     * @return void
      */
-    public function addToLists($listIds, $profileParams, $useSubscribeEndpoint = false): void
+    public function addToLists(array $listIds, array $profile, bool $subscribe = false): void
     {
-        $profile = $this->createProfile($profileParams);
+        $profileId = Plugin::getInstance()->api->getProfileId($profile['email']);
 
-        foreach ($listIds as $listId) {
-            $list = new KlaviyoList(['id' => $listId]);
-
-            try {
-                Plugin::getInstance()->api->addProfileToList($list, $profile, $useSubscribeEndpoint);
-            } catch (RequestException $e) {
-                // Swallow. Klaviyo responds with a 200.
+        if ($profileId) {
+            foreach ($listIds as $listId) {
+                try {
+                    if ($subscribe) {
+                        Plugin::getInstance()->api->subscribeProfileToList($listId, $profile);
+                    } else {
+                        Plugin::getInstance()->api->addProfileToList($listId, $profileId);
+                    }
+                } catch (\Throwable $t) {
+                    // TODO we need proper error handling
+                    // Swallow. Klaviyo responds with a 200.
+                }
             }
         }
     }
@@ -211,45 +207,30 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$eventName      	
-     * @param	mixed	$profileParams  	
-     * @param	mixed	$eventProperties	
-     * @param	mixed	$trackOnce      	
+     * @param	mixed	$eventName
+     * @param	mixed	$profileParams
+     * @param	mixed	$eventProperties
      * @param	mixed	$timestamp      	Default: null
      * @return	void
      */
-    public function trackEvent($eventName, $profileParams, $eventProperties, $trackOnce, $timestamp = null): void
+    public function trackEvent($eventName, $profileParams, $eventProperties, $timestamp = null): void
     {
         $profile = $this->createProfile($profileParams);
 
         $addCustomPropertiesEvent = new AddCustomPropertiesEvent(['name' => $eventName]);
         Event::trigger(static::class, self::ADD_CUSTOM_PROPERTIES, $addCustomPropertiesEvent);
 
-        if (sizeof($addCustomPropertiesEvent->properties) > 0) {
+        if (count($addCustomPropertiesEvent->properties) > 0) {
             $eventProperties->setCustomProperties($addCustomPropertiesEvent->properties);
         }
 
         try {
-            Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $trackOnce, $timestamp);
+            Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
         } catch (RequestException $e) {
             // Swallow. Klaviyo responds with a 200.
         }
     }
 
-    /**
-     * trackOrder.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed	$eventName	
-     * @param	mixed	$order    	
-     * @param	mixed	$profile  	Default: null
-     * @param	mixed	$timestamp	Default: null
-     * @param	mixed	$fullEvent	Default: null
-     * @return	void
-     */
     public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null): void
     {
         if ($order->email) {
@@ -341,7 +322,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	protected
-     * @param	mixed 	$order	
+     * @param	mixed 	$order
      * @param	string	$event	Default: ''
      * @return	mixed
      */
@@ -370,7 +351,7 @@ class Track extends Base
                 ];
 
                 $variant = $lineItem->purchasable;
-                
+
                 $productImageField = $settings->productImageField;
 
                 if ( isset($variant->$productImageField) && $variant->$productImageField->count() ) {
