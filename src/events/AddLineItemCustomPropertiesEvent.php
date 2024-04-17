@@ -2,15 +2,17 @@
 
 namespace fostercommerce\klaviyoconnect\events;
 
+use craft\commerce\elements\Order;
+use craft\commerce\models\LineItem;
 use yii\base\Event;
 
 class AddLineItemCustomPropertiesEvent extends Event
 {
-    public $properties = [];
+    public array $properties = [];
 
-    public $order = null;
+    public Order $order;
 
-    public $lineItem = null;
+    public LineItem $lineItem;
 
-    public $event = null;
+    public string $event;
 }

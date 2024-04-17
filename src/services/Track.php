@@ -3,6 +3,7 @@
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
+use craft\commerce\elements\Order;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\helpers\ArrayHelper;
 use DateTime;
@@ -13,7 +14,6 @@ use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\RequestException;
-use Klaviyo;
 use yii\base\Event;
 
 class Track extends Base
@@ -52,9 +52,8 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$params
      */
-    public function identifyUser($params, bool $update = false): void
+    public function identifyUser(array $params, bool $update = false): void
     {
         Plugin::getInstance()->api->identify($this->createProfile($params), $update);
     }
@@ -69,7 +68,9 @@ class Track extends Base
      */
     public function onCartUpdated(Event $event): void
     {
-        $this->trackOrder('Updated Cart', $event->sender);
+        /** @var Order $order */
+        $order = $event->sender;
+        $this->trackOrder('Updated Cart', $order);
     }
 
     /**
@@ -82,7 +83,9 @@ class Track extends Base
      */
     public function onOrderCompleted(Event $event): void
     {
-        $this->trackOrder('Placed Order', $event->sender);
+        /** @var Order $order */
+        $order = $event->sender;
+        $this->trackOrder('Placed Order', $order);
     }
 
     /**
@@ -128,7 +131,7 @@ class Track extends Base
                     } else {
                         Plugin::getInstance()->api->addProfileToList($listId, $profileId);
                     }
-                } catch (\Throwable $t) {
+                } catch (\Throwable) {
                     // TODO we need proper error handling
                     // Swallow. Klaviyo responds with a 200.
                 }
@@ -136,25 +139,14 @@ class Track extends Base
         }
     }
 
-    /**
-     * trackEvent.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed	$eventName
-     * @param	mixed	$profileParams
-     * @param	mixed	$eventProperties
-     * @param	mixed	$timestamp      	Default: null
-     */
-    public function trackEvent($eventName, $profileParams, $eventProperties, $timestamp = null): void
+    public function trackEvent(string $eventName, array $profileParams, EventProperties $eventProperties, ?string $timestamp = null): void
     {
-        $profile = $this->createProfile($profileParams);
+        $profile = $this->createProfile($profileParams, $eventName);
 
         $addCustomPropertiesEvent = new AddCustomPropertiesEvent([
             'name' => $eventName,
         ]);
+
         Event::trigger(static::class, self::ADD_CUSTOM_PROPERTIES, $addCustomPropertiesEvent);
 
         if (count($addCustomPropertiesEvent->properties) > 0) {
@@ -163,14 +155,14 @@ class Track extends Base
 
         try {
             Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             // Swallow. Klaviyo responds with a 200.
         }
     }
 
-    public function trackOrder($eventName, $order, $profile = null, $timestamp = null, $fullEvent = null): void
+    public function trackOrder(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null): void
     {
-        if ($order->email) {
+        if ($order->email !== null) {
             $profile = [
                 'email' => $order->email,
                 'first_name' => $order->billingAddress->firstName ?? null,
@@ -178,7 +170,7 @@ class Track extends Base
             ];
         }
 
-        if (! $profile && $currentUser = Craft::$app->user->getIdentity()) {
+        if (($profile === null || $profile === []) && $currentUser = Craft::$app->user->getIdentity()) {
             $profile = Plugin::getInstance()->map->mapUser($currentUser);
         }
 
@@ -203,8 +195,6 @@ class Track extends Base
                     $eventProperties->setCustomProperties([
                         'Reason' => $message,
                     ]);
-
-                    $eventName === 'Refund Issued';
                 } else {
                     $success = false;
                 }
@@ -217,7 +207,7 @@ class Track extends Base
                     'Reason' => $orderHistory->message,
                 ]);
 
-                $eventName = "${status} Order";
+                $eventName = "{$status} Order";
             }
 
             if ($success) {
@@ -246,26 +236,17 @@ class Track extends Base
                             Plugin::getInstance()->api->track('Ordered Product', $profile, $eventProperties, $timestamp);
                         }
                     }
-                } catch (RequestException $e) {
+                } catch (RequestException) {
                     // Swallow. Klaviyo responds with a 200.
                 }
             }
         }
+
         // Swallow.
             // This is likely a logged out user adding an item to their cart.
     }
 
-    /**
-     * createProfile.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	protected
-     * @param	mixed	$eventName	Default: null
-     * @param	mixed	$context  	Default: null
-     */
-    protected function createProfile($profile, $eventName = null, $context = null): array
+    protected function createProfile(array $profile, ?string $eventName = null, mixed $context = null): array
     {
         $event = new AddProfilePropertiesEvent([
             'profile' => $profile,
@@ -274,23 +255,14 @@ class Track extends Base
         ]);
         Event::trigger(static::class, self::ADD_PROFILE_PROPERTIES, $event);
 
-        if (count($event->properties) > 0) {
+        if ($event->properties !== []) {
             $profile['properties'] = $event->properties;
         }
+
         return $profile;
     }
 
-    /**
-     * getOrderDetails.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	protected
-     * @param	mixed 	$order
-     * @param	string	$event	Default: ''
-     */
-    protected function getOrderDetails($order, $event = ''): mixed
+    protected function getOrderDetails(Order $order, string $event = ''): array
     {
         $settings = Plugin::getInstance()->settings;
 
@@ -367,14 +339,11 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	private
-     * @param	mixed	$selectedGroups
-     * @param	mixed	$userGroups
-     * @return	boolean
      */
-    private function isInGroup($selectedGroups, $userGroups): bool
+    private function isInGroup(mixed $selectedGroups, mixed $userGroups): bool
     {
-        foreach ($selectedGroups as $group) {
-            $hasGroup = in_array($group, ArrayHelper::getColumn($userGroups, 'id'), false);
+        foreach ($selectedGroups as $selectedGroup) {
+            $hasGroup = in_array($selectedGroup, ArrayHelper::getColumn($userGroups, 'id'), false);
             if ($hasGroup) {
                 return true;
             }

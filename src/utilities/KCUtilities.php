@@ -14,7 +14,6 @@ class KCUtilities extends Utility
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
-     * @return	mixed
      */
     public static function displayName(): string
     {
@@ -41,7 +40,6 @@ class KCUtilities extends Utility
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
-     * @return	mixed
      */
     public static function iconPath(): string
     {
@@ -55,7 +53,6 @@ class KCUtilities extends Utility
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
-     * @return	mixed
      */
     public static function contentHtml(): string
     {

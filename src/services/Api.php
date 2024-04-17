@@ -4,39 +4,27 @@ namespace fostercommerce\klaviyoconnect\services;
 
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
-use fostercommerce\klaviyoconnect\models\Profile;
-use GuzzleHttp\Client;
 use KlaviyoAPI\ApiException;
 use KlaviyoAPI\KlaviyoAPI;
 use yii\base\Exception;
 
 class Api extends Base
 {
-    private $host = 'https://a.klaviyo.com/api';
-
-    private $client = null;
-
-    private $clientV2 = null;
-
     private KlaviyoAPI|null $api = null;
 
-    private $cachedLists = null;
+    /**
+     * @var KlaviyoList[]|null
+     */
+    private ?array $cachedLists = null;
 
-    public function init()
+    public function init(): void
     {
         parent::init();
-        $this->client = new Client([
-            'base_uri' => "{$this->host}/v1/",
-        ]);
-
-        $this->clientV2 = new Client([
-            'base_uri' => "{$this->host}/v2/",
-        ]);
 
         $this->api = new KlaviyoAPI($this->getSetting('klaviyoApiKey'));
     }
 
-    public function track(string $event, $profile, EventProperties $eventProperties = null, $timestamp = null)
+    public function track(string $event, array $profile, ?EventProperties $eventProperties = null, ?string $timestamp = null): void
     {
         if (! $profile['email']) {
             throw new Exception('You must identify a user by email.');
@@ -94,7 +82,7 @@ class Api extends Base
             if ($e->getCode() !== 409) {
                 // TODO implement proper error handling
             }
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             // TODO implement proper error handling
             // Swallow error.
         }
@@ -116,12 +104,10 @@ class Api extends Base
                 $cursor = $this->getPaginationCursor($result);
             } while ($cursor !== null);
 
-            $lists = array_map(static function($list) {
-                return new KlaviyoList([
-                    'id' => $list['id'],
-                    'name' => $list['attributes']['name'],
-                ]);
-            }, $lists);
+            $lists = array_map(static fn($list): KlaviyoList => new KlaviyoList([
+                'id' => $list['id'],
+                'name' => $list['attributes']['name'],
+            ]), $lists);
 
             $this->cachedLists = $lists;
         }
@@ -139,7 +125,7 @@ class Api extends Base
         return null;
     }
 
-    public function addProfileToList(string $listId, string $profileId)
+    public function addProfileToList(string $listId, string $profileId): void
     {
         $this->api?->Lists->createListRelationships(
             $listId,
@@ -154,7 +140,7 @@ class Api extends Base
         );
     }
 
-    public function subscribeProfileToList(string $listId, array $profile)
+    public function subscribeProfileToList(string $listId, array $profile): void
     {
         $profileData = [];
         $consent = [];
@@ -167,6 +153,7 @@ class Api extends Base
                 ],
             ];
         }
+
         if (array_key_exists('phone_number', $profile)) {
             $profileData['phone_number'] = $profile['phone_number'];
             $consent['sms'] = [
@@ -176,7 +163,7 @@ class Api extends Base
             ];
         }
 
-        $res = $this->api?->Profiles->subscribeProfiles([
+        $this->api?->Profiles->subscribeProfiles([
             'data' => [
                 'type' => 'profile-subscription-bulk-create-job',
                 'attributes' => [
@@ -214,67 +201,10 @@ class Api extends Base
         ];
     }
 
-    /**
-     * callServerApi.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @param	mixed	$path
-     * @param	mixed	$params
-     */
-    private function callServerApi($path, $params): bool
-    {
-        if ($path === 'track' && $params['properties']) {
-            $items = $params['properties']['Items'] ?? null;
-
-            if ($items && is_string($items)) {
-                $params['properties']['Items'] = json_decode($items);
-            }
-        }
-
-        $response = $this->client->request('GET', "/api/{$path}?data={$this->encode($params)}");
-        $body = (string) $response->getBody();
-        return $response->getStatusCode() === 200 && $body === '1';
-    }
-
-    /**
-     * encode.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @param	mixed	$params
-     */
-    private function encode($params): string
-    {
-        return urlencode(base64_encode(json_encode($params)));
-    }
-
     private function getPaginationCursor(array $response): ?string
     {
         $url = parse_url($response['links']['next'] ?? '');
         parse_str($url['query'] ?? '', $params);
         return $params['page']['cursor'] ?? null;
-    }
-
-    /**
-     * getObjectResponse.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @param	mixed	$response
-     */
-    private function getObjectResponse($response): mixed
-    {
-        $content = $response->getBody()->getContents();
-        if (isset($content)) {
-            return json_decode($content);
-        }
-        return null;
     }
 }

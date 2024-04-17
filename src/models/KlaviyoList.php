@@ -4,7 +4,7 @@ namespace fostercommerce\klaviyoconnect\models;
 
 use craft\base\Model;
 
-class KlaviyoList extends Model
+class KlaviyoList extends Model implements \Stringable
 {
     /**
      * @var		public
