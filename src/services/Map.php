@@ -1,4 +1,5 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
@@ -8,11 +9,11 @@ class Map extends Base
 {
     public function mapUser(?UserElement $user = null): array
     {
-        if (!$user) {
+        if (! $user) {
             $user = Craft::$app->user->getIdentity();
         }
 
-        if (!$user) {
+        if (! $user) {
             return [];
         }
 

@@ -3,8 +3,8 @@
 namespace fostercommerce\klaviyoconnect\controllers;
 
 use Craft;
-use fostercommerce\klaviyoconnect\Plugin;
 use craft\web\Controller;
+use fostercommerce\klaviyoconnect\Plugin;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -14,7 +14,7 @@ class CartController extends Controller
 
     public function actionRestore(): Response
     {
-        if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+        if (Craft::$app->plugins->isPluginEnabled('commerce')) {
             $number = Craft::$app->getRequest()->getParam('number');
             Plugin::getInstance()->cart->restore($number);
             $cartUrl = Plugin::getInstance()->settings->cartUrl;

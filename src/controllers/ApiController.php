@@ -3,21 +3,18 @@
 namespace fostercommerce\klaviyoconnect\controllers;
 
 use Craft;
-use fostercommerce\klaviyoconnect\Plugin;
-use fostercommerce\klaviyoconnect\models\EventProperties;
-use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
-use craft\web\Controller;
-use craft\commerce\Plugin as Commerce;
 use craft\commerce\elements\Order;
-use yii\base\Event;
-use yii\web\NotFoundHttpException;
+use craft\commerce\Plugin as Commerce;
+use craft\web\Controller;
+use fostercommerce\klaviyoconnect\models\EventProperties;
+use fostercommerce\klaviyoconnect\Plugin;
+use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
 use GuzzleHttp\Exception\RequestException;
+use yii\web\NotFoundHttpException;
+use yii\web\Response as YiiResponse;
 
 class ApiController extends Controller
 {
-    /**
-     * @var		array|int|bool	$allowAnonymous
-     */
     protected array|int|bool $allowAnonymous = true;
 
     /**
@@ -27,7 +24,6 @@ class ApiController extends Controller
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	void
      */
     public function actionTrack(): mixed
     {
@@ -38,11 +34,10 @@ class ApiController extends Controller
         $this->addProfileToLists();
 
         $request = Craft::$app->getRequest();
-        if ($request->isAjax && !$request->getParam('forward')) {
+        if ($request->isAjax && ! $request->getParam('forward')) {
             return $this->asJson('success');
-        } else {
-            return $this->forwardOrRedirect();
         }
+        return $this->forwardOrRedirect();
     }
 
     /**
@@ -52,23 +47,36 @@ class ApiController extends Controller
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	void
      */
     public function actionSyncOrders(): void
     {
         $params = $this->request->queryParams;
-        $start  = is_numeric($params['start']) ? $params['start'] : null;
-        $end    = is_numeric($params['end']) ? $params['end'] : null;
+        $start = is_numeric($params['start']) ? $params['start'] : null;
+        $end = is_numeric($params['end']) ? $params['end'] : null;
 
-        if($start && $end) {
+        if ($start && $end) {
             $orders = Order::find()->isCompleted()->dateCreated(['and', ">= {$start}", "<= {$end}"])->all();
 
             foreach ($orders as $order) {
                 Craft::$app->getQueue()->delay(10)->push(new SyncOrders([
-                    'orderId' => $order->id
+                    'orderId' => $order->id,
                 ]));
             }
         }
+    }
+
+    /**
+     * actionIdentify.
+     *
+     * @author	Unknown
+     * @since	v0.0.1
+     * @version	v1.0.0	Monday, May 23rd, 2022.
+     * @access	public
+     */
+    public function actionIdentify(): void
+    {
+        $this->identify();
+        $this->forwardOrRedirect();
     }
 
     private function trackEvent(): void
@@ -84,15 +92,15 @@ class ApiController extends Controller
                 }
 
                 if (array_key_exists('trackOrder', $event)) {
-                    if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+                    if (Craft::$app->plugins->isPluginEnabled('commerce')) {
                         $profile = $this->mapProfile();
                         if (array_key_exists('orderId', $event)) {
                             $order = Order::find()
                                 ->id($event['orderId'])
                                 ->one();
 
-                            if (!$order) {
-                                throw new NotFoundHttpException("Order with ID {$orderId} could not be found");
+                            if (! $order) {
+                                throw new NotFoundHttpException("Order with ID {$event['orderId']} could not be found");
                             }
                         } else {
                             // Use the current cart
@@ -133,7 +141,7 @@ class ApiController extends Controller
 
     private function addProfileToLists(): void
     {
-        $lists = array();
+        $lists = [];
         $request = Craft::$app->getRequest();
 
         if ($listId = $request->getParam('list')) {
@@ -141,7 +149,7 @@ class ApiController extends Controller
         } elseif ($listIds = $request->getParam('lists')) {
             if (is_array($listIds) && count($listIds) > 0) {
                 foreach ($listIds as $listId) {
-                    if (!empty($listId)) {
+                    if (! empty($listId)) {
                         $lists[] = $listId;
                     }
                 }
@@ -154,22 +162,6 @@ class ApiController extends Controller
 
             Plugin::getInstance()->track->addToLists($lists, $profile, $subscribe);
         }
-
-    }
-
-    /**
-     * actionIdentify.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @return	void
-     */
-    public function actionIdentify(): void
-    {
-        $this->identify();
-        $this->forwardOrRedirect();
     }
 
     private function identify(): void
@@ -183,16 +175,7 @@ class ApiController extends Controller
         }
     }
 
-    /**
-     * forwardOrRedirect.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     * @return	mixed
-     */
-    private function forwardOrRedirect(): mixed
+    private function forwardOrRedirect(): YiiResponse
     {
         $request = Craft::$app->getRequest();
         $forwardUrl = $request->getParam('forward');
@@ -208,11 +191,11 @@ class ApiController extends Controller
         $request = Craft::$app->getRequest();
         $profileParams = $request->getParam('profile');
 
-        if (!$profileParams) {
+        if (! $profileParams) {
             $profileParams = [];
         }
 
-        if ($request->getParam('email') && !isset($profileParams['email'])) {
+        if ($request->getParam('email') && ! isset($profileParams['email'])) {
             $profileParams['email'] = $request->getParam('email');
         }
 

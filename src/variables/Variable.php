@@ -1,4 +1,5 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\variables;
 
 use fostercommerce\klaviyoconnect\Plugin;
@@ -7,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 class Variable
 {
     private $error = null;
+
     private $lists = null;
 
     /**
@@ -16,12 +18,11 @@ class Variable
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	mixed
      */
     public function lists(): mixed
     {
-        if (!empty(Plugin::getInstance()->settings->klaviyoApiKey)) {
-            if (is_null($this->lists)) {
+        if (! empty(Plugin::getInstance()->settings->klaviyoApiKey)) {
+            if ($this->lists === null) {
                 try {
                     $lists = Plugin::getInstance()->api->getLists();
                     if (count($lists) > 0) {
@@ -39,10 +40,10 @@ class Variable
                         if (isset($response)) {
                             $this->error = $response->message;
                         } else {
-                            $this->error = "Unable to retrieve lists, please check your configuration";
+                            $this->error = 'Unable to retrieve lists, please check your configuration';
                         }
                     } catch (\JsonException) {
-                        $this->error = "Unable to retrieve lists, please check your configuration";
+                        $this->error = 'Unable to retrieve lists, please check your configuration';
                     }
                 }
             }
@@ -57,7 +58,6 @@ class Variable
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	mixed
      */
     public function error(): mixed
     {

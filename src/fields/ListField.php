@@ -1,9 +1,10 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\fields;
 
 use Craft;
-use craft\base\Field;
 use craft\base\ElementInterface;
+use craft\base\Field;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\ClientException;
 
@@ -30,7 +31,7 @@ class ListField extends Field
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed           	$value  	
+     * @param	mixed               $value
      * @param	elementinterface	$element	Default: null
      * @return	mixed
      */
@@ -47,16 +48,16 @@ class ListField extends Field
 
         $listOptions = [];
         foreach ($lists as $list) {
-            if ($allLists || in_array($list->id, $availableLists)) {
+            if ($allLists || in_array($list->id, $availableLists, true)) {
                 $listOptions[$list->id] = $list->name;
             }
         }
 
-        return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/select', array(
+        return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/select', [
             'name' => $this->handle,
             'options' => $listOptions,
             'value' => $value ? $value->id : null,
-        ));
+        ]);
     }
 
     /**
@@ -66,9 +67,8 @@ class ListField extends Field
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed           	$value  	
+     * @param	mixed               $value
      * @param	elementinterface	$element	Default: null
-     * @return	mixed
      */
     public function normalizeValue($value, ElementInterface $element = null): mixed
     {
@@ -78,7 +78,7 @@ class ListField extends Field
                 $value = $o->id;
             }
         }
-        $modified = array();
+        $modified = [];
 
         try {
             $lists = Plugin::getInstance()->api->getLists();

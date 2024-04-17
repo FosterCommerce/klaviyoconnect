@@ -1,15 +1,12 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\models;
 
-use Craft;
 use craft\base\Model;
 use yii\base\UnknownPropertyException;
 
 abstract class Base extends Model
 {
-    /**
-     * @var		array	$customAttributes
-     */
     private array $customAttributes = [];
 
     /**
@@ -19,16 +16,15 @@ abstract class Base extends Model
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$name 	
-     * @param	mixed	$value	
-     * @return	void
+     * @param	mixed   $name
+     * @param	mixed   $value
      */
     public function __set($name, $value): void
     {
         try {
             parent::__set($name, $value);
         } catch (UnknownPropertyException $e) {
-            $this->$name = $value;
+            $this->{$name} = $value;
             $this->customAttributes[] = $name;
         }
     }
@@ -40,13 +36,12 @@ abstract class Base extends Model
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$properties	
-     * @return	void
+     * @param	mixed   $properties
      */
     public function setCustomProperties($properties): void
     {
         foreach ($properties as $property => $value) {
-            $this->$property = $value;
+            $this->{$property} = $value;
         }
     }
 
@@ -60,7 +55,6 @@ abstract class Base extends Model
      * @param	array  	$fields   	Default: []
      * @param	array  	$expand   	Default: []
      * @param	boolean	$recursive	Default: true
-     * @return	mixed
      */
     public function toArray(array $fields = [], array $expand = [], $recursive = true): mixed
     {
@@ -72,7 +66,7 @@ abstract class Base extends Model
         }
 
         foreach ($this->customAttributes as $name) {
-            $mapped[$name] = $this->$name;
+            $mapped[$name] = $this->{$name};
         }
 
         return $mapped;

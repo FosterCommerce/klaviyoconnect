@@ -1,19 +1,18 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect;
 
 use Craft;
-use craft\events\RegisterUrlRulesEvent;
-use craft\services\Users;
-use craft\elements\User;
 use craft\base\Model;
 use craft\commerce\elements\Order;
 use craft\commerce\events\OrderStatusEvent;
-use craft\commerce\services\OrderHistories;
-use craft\events\RegisterComponentTypesEvent;
 use craft\commerce\events\RefundTransactionEvent;
+use craft\commerce\services\OrderHistories;
 use craft\commerce\services\Payments;
+use craft\elements\User;
+use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
-use craft\events\UserGroupsAssignEvent;
 use craft\services\Utilities;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
@@ -59,31 +58,31 @@ class Plugin extends \craft\base\Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['klaviyoconnect/sync-orders'] = 'klaviyoconnect/api/sync-orders';
             }
         );
 
-        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function (RegisterComponentTypesEvent $event) {
+        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListField::class;
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListsField::class;
         });
 
         if ($settings->trackSaveUser) {
-            Event::on(User::class, User::EVENT_AFTER_SAVE, function (Event $event) {
-                Plugin::getInstance()->track->onSaveUser($event);
+            Event::on(User::class, User::EVENT_AFTER_SAVE, function(Event $event) {
+                self::getInstance()->track->onSaveUser($event);
             });
         }
 
-        if(Craft::$app->plugins->isPluginEnabled('commerce')) {
+        if (Craft::$app->plugins->isPluginEnabled('commerce')) {
             if ($settings->trackCommerceCartUpdated) {
-                Event::on(Order::class, Order::EVENT_AFTER_SAVE, function (Event $e) {
-                    Plugin::getInstance()->track->onCartUpdated($e);
+                Event::on(Order::class, Order::EVENT_AFTER_SAVE, function(Event $e) {
+                    self::getInstance()->track->onCartUpdated($e);
                 });
             }
 
             if ($settings->trackCommerceOrderCompleted) {
-                Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function (Event $e) {
+                Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function(Event $e) {
                     Craft::$app->getQueue()->delay(10)->push(new TrackOrderComplete([
                         'name' => $e->name,
                         'orderId' => $e->sender->id,
@@ -94,8 +93,8 @@ class Plugin extends \craft\base\Plugin
             if ($settings->trackCommerceStatusUpdated) {
                 Event::on(OrderHistories::class,
                     OrderHistories::EVENT_ORDER_STATUS_CHANGE,
-                    function (OrderStatusEvent $e) {
-                        Plugin::getInstance()->track->onStatusChanged($e);
+                    function(OrderStatusEvent $e) {
+                        self::getInstance()->track->onStatusChanged($e);
                     }
                 );
             }
@@ -103,28 +102,28 @@ class Plugin extends \craft\base\Plugin
             if ($settings->trackCommerceRefunded) {
                 Event::on(Payments::class,
                     Payments::EVENT_AFTER_REFUND_TRANSACTION,
-                    function (RefundTransactionEvent $e) {
-                        Plugin::getInstance()->track->onOrderRefunded($e);
+                    function(RefundTransactionEvent $e) {
+                        self::getInstance()->track->onOrderRefunded($e);
                     }
                 );
             }
         }
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
             $variable = $event->sender;
             $variable->set('klaviyoConnect', Variable::class);
         });
     }
 
-    protected function createSettingsModel(): ?Model
-    {
-        return new \fostercommerce\klaviyoconnect\models\Settings();
-    }
-
     public function settingsHtml(): ?string
     {
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/settings', [
-            'settings' => $this->getSettings()
+            'settings' => $this->getSettings(),
         ]);
+    }
+
+    protected function createSettingsModel(): ?Model
+    {
+        return new \fostercommerce\klaviyoconnect\models\Settings();
     }
 }

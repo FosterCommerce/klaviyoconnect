@@ -1,12 +1,12 @@
 <?php
-namespace fostercommerce\klaviyoconnect\queue\jobs;
 
-use fostercommerce\klaviyoconnect\Plugin;
+namespace fostercommerce\klaviyoconnect\queue\jobs;
 
 use craft\commerce\elements\Order;
 
-use Craft;
 use craft\queue\BaseJob;
+
+use fostercommerce\klaviyoconnect\Plugin;
 
 use yii\base\Event;
 
@@ -16,6 +16,7 @@ class TrackOrderComplete extends BaseJob
     // =========================================================================
 
     public $name;
+
     public $orderId;
 
 
@@ -29,7 +30,7 @@ class TrackOrderComplete extends BaseJob
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$queue	
+     * @param	mixed   $queue
      * @return	boolean
      */
     public function execute($queue): void
@@ -49,7 +50,7 @@ class TrackOrderComplete extends BaseJob
                 Plugin::getInstance()->track->onOrderCompleted($event);
             }
         }
-        
+
         return;
     }
 

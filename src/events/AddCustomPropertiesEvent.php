@@ -1,4 +1,5 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\events;
 
 use yii\base\Event;
@@ -6,5 +7,6 @@ use yii\base\Event;
 class AddCustomPropertiesEvent extends Event
 {
     public $name;
-    public $properties = array();
+
+    public $properties = [];
 }
