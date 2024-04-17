@@ -18,29 +18,17 @@ class ListsField extends Field
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
-     * @return	mixed
      */
     public static function displayName(): string
     {
         return Craft::t('klaviyoconnect', 'Klaviyo Lists');
     }
 
-    /**
-     * getInputHtml.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed               $values
-     * @param	elementinterface	$element	Default: null
-     * @return	mixed
-     */
-    public function getInputHtml($values, ElementInterface $element = null): string
+    public function getInputHtml(mixed $value, ?ElementInterface $element = null): string
     {
         try {
             $lists = Plugin::getInstance()->api->getLists();
-        } catch (ClientException $e) {
+        } catch (ClientException) {
             $lists = [];
         }
 
@@ -56,9 +44,9 @@ class ListsField extends Field
         }
 
         $ids = [];
-        if ($values !== null) {
-            $values = is_array($values) ? $values : [];
-            $ids = ArrayHelper::getColumn($values, 'id');
+        if ($value !== null) {
+            $value = is_array($value) ? $value : [];
+            $ids = ArrayHelper::getColumn($value, 'id');
         }
 
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/checkboxgroup', [
@@ -68,43 +56,36 @@ class ListsField extends Field
         ]);
     }
 
-    /**
-     * normalizeValue.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed               $values
-     * @param	elementinterface	$element	Default: null
-     */
-    public function normalizeValue($values, ElementInterface $element = null): mixed
+    public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
     {
-        if ($values && ! is_array($values)) {
-            $o = json_decode($values);
+        if ($value && ! is_array($value)) {
+            $o = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
             $newValues = [];
             if (is_array($o)) {
                 foreach ($o as $val) {
                     $newValues[] = $val->id;
                 }
-                $values = $newValues;
+
+                $value = $newValues;
             }
         }
+
         $modified = [];
 
         try {
             $lists = Plugin::getInstance()->api->getLists();
-        } catch (ClientException $e) {
+        } catch (ClientException) {
             $lists = [];
         }
 
-        if (! empty($values)) {
+        if (! empty($value)) {
             foreach ($lists as $list) {
-                if (in_array($list->id, $values, true)) {
+                if (in_array($list->id, $value, true)) {
                     $modified[] = $list;
                 }
             }
         }
+
         return $modified;
     }
 }

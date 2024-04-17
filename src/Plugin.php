@@ -50,7 +50,7 @@ class Plugin extends \craft\base\Plugin
         Event::on(
             Utilities::class,
             Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function(RegisterComponentTypesEvent $event) {
+            static function(RegisterComponentTypesEvent $event): void {
                 $event->types[] = KCUtilities::class;
             }
         );
@@ -58,34 +58,36 @@ class Plugin extends \craft\base\Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            static function(RegisterUrlRulesEvent $event): void {
                 $event->rules['klaviyoconnect/sync-orders'] = 'klaviyoconnect/api/sync-orders';
             }
         );
 
-        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
+        Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, static function(RegisterComponentTypesEvent $event): void {
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListField::class;
             $event->types[] = \fostercommerce\klaviyoconnect\fields\ListsField::class;
         });
 
         if ($settings->trackSaveUser) {
-            Event::on(User::class, User::EVENT_AFTER_SAVE, function(Event $event) {
+            Event::on(User::class, User::EVENT_AFTER_SAVE, static function(Event $event): void {
                 self::getInstance()->track->onSaveUser($event);
             });
         }
 
         if (Craft::$app->plugins->isPluginEnabled('commerce')) {
             if ($settings->trackCommerceCartUpdated) {
-                Event::on(Order::class, Order::EVENT_AFTER_SAVE, function(Event $e) {
+                Event::on(Order::class, Order::EVENT_AFTER_SAVE, static function(Event $e): void {
                     self::getInstance()->track->onCartUpdated($e);
                 });
             }
 
             if ($settings->trackCommerceOrderCompleted) {
-                Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, function(Event $e) {
+                Event::on(Order::class, Order::EVENT_AFTER_COMPLETE_ORDER, static function(Event $e): void {
+                    /** @var Order $order */
+                    $order = $e->sender;
                     Craft::$app->getQueue()->delay(10)->push(new TrackOrderComplete([
                         'name' => $e->name,
-                        'orderId' => $e->sender->id,
+                        'orderId' => $order->id,
                     ]));
                 });
             }
@@ -93,7 +95,7 @@ class Plugin extends \craft\base\Plugin
             if ($settings->trackCommerceStatusUpdated) {
                 Event::on(OrderHistories::class,
                     OrderHistories::EVENT_ORDER_STATUS_CHANGE,
-                    function(OrderStatusEvent $e) {
+                    static function(OrderStatusEvent $e): void {
                         self::getInstance()->track->onStatusChanged($e);
                     }
                 );
@@ -102,20 +104,20 @@ class Plugin extends \craft\base\Plugin
             if ($settings->trackCommerceRefunded) {
                 Event::on(Payments::class,
                     Payments::EVENT_AFTER_REFUND_TRANSACTION,
-                    function(RefundTransactionEvent $e) {
+                    static function(RefundTransactionEvent $e): void {
                         self::getInstance()->track->onOrderRefunded($e);
                     }
                 );
             }
         }
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, static function(Event $event): void {
             $variable = $event->sender;
             $variable->set('klaviyoConnect', Variable::class);
         });
     }
 
-    public function settingsHtml(): ?string
+    protected function settingsHtml(): ?string
     {
         return Craft::$app->getView()->renderTemplate('klaviyoconnect/settings', [
             'settings' => $this->getSettings(),

@@ -2,7 +2,7 @@
 
 namespace fostercommerce\klaviyoconnect\models;
 
-class EventProperties extends Base
+class EventProperties extends Base implements \Stringable
 {
     /**
      * @var		public

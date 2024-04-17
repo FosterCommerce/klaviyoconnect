@@ -9,53 +9,23 @@ abstract class Base extends Model
 {
     private array $customAttributes = [];
 
-    /**
-     * __set.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed   $name
-     * @param	mixed   $value
-     */
-    public function __set($name, $value): void
+    public function __set(mixed $name, mixed $value): void
     {
         try {
             parent::__set($name, $value);
-        } catch (UnknownPropertyException $e) {
+        } catch (UnknownPropertyException) {
             $this->{$name} = $value;
             $this->customAttributes[] = $name;
         }
     }
 
-    /**
-     * setCustomProperties.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed   $properties
-     */
-    public function setCustomProperties($properties): void
+    public function setCustomProperties(array $properties): void
     {
         foreach ($properties as $property => $value) {
             $this->{$property} = $value;
         }
     }
 
-    /**
-     * toArray.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	array  	$fields   	Default: []
-     * @param	array  	$expand   	Default: []
-     * @param	boolean	$recursive	Default: true
-     */
     public function toArray(array $fields = [], array $expand = [], $recursive = true): mixed
     {
         $arr = parent::toArray($fields, $expand, $recursive);
@@ -65,8 +35,8 @@ abstract class Base extends Model
             $mapped["\${$name}"] = $value;
         }
 
-        foreach ($this->customAttributes as $name) {
-            $mapped[$name] = $this->{$name};
+        foreach ($this->customAttributes as $customAttribute) {
+            $mapped[$customAttribute] = $this->{$customAttribute};
         }
 
         return $mapped;

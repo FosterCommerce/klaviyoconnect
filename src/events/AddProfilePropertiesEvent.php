@@ -6,11 +6,11 @@ use yii\base\Event;
 
 class AddProfilePropertiesEvent extends Event
 {
-    public $event = null;
+    public ?string $event = null;
 
-    public $properties = [];
+    public array $properties = [];
 
-    public $profile = null;
+    public array $profile;
 
-    public $context = null;
+    public mixed $context;
 }

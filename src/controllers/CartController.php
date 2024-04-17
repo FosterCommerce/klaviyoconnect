@@ -18,9 +18,10 @@ class CartController extends Controller
             $number = Craft::$app->getRequest()->getParam('number');
             Plugin::getInstance()->cart->restore($number);
             $cartUrl = Plugin::getInstance()->settings->cartUrl;
-            if (strlen($cartUrl) === 0) {
+            if ((string) $cartUrl === '') {
                 throw new HttpException(400, 'Cart URL is required. Settings -> Klaviyo Connect -> Cart URL');
             }
+
             return $this->redirect($cartUrl);
         }
 

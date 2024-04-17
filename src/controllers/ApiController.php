@@ -37,6 +37,7 @@ class ApiController extends Controller
         if ($request->isAjax && ! $request->getParam('forward')) {
             return $this->asJson('success');
         }
+
         return $this->forwardOrRedirect();
     }
 
@@ -118,12 +119,10 @@ class ApiController extends Controller
                         );
                     }
                 } else {
-                    $eventProperties = new EventProperties($event);
-
                     Plugin::getInstance()->track->trackEvent(
                         $event['name'],
                         $this->mapProfile(),
-                        $eventProperties,
+                        new EventProperties($event),
                         $timestamp,
                     );
                 }
@@ -147,7 +146,7 @@ class ApiController extends Controller
         if ($listId = $request->getParam('list')) {
             $lists[] = $listId;
         } elseif ($listIds = $request->getParam('lists')) {
-            if (is_array($listIds) && count($listIds) > 0) {
+            if (is_array($listIds) && $listIds !== []) {
                 foreach ($listIds as $listId) {
                     if (! empty($listId)) {
                         $lists[] = $listId;
@@ -156,7 +155,7 @@ class ApiController extends Controller
             }
         }
 
-        if (count($lists) > 0) {
+        if ($lists !== []) {
             $profile = $this->mapProfile();
             $subscribe = (bool) $request->getParam('subscribe');
 
@@ -170,7 +169,7 @@ class ApiController extends Controller
         $profile = $this->mapProfile();
         try {
             Plugin::getInstance()->track->identifyUser($profile);
-        } catch (RequestException $e) {
+        } catch (RequestException) {
             // Swallow. Klaviyo responds with a 200.
         }
     }

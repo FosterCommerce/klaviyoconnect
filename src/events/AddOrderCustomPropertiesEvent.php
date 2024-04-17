@@ -2,13 +2,14 @@
 
 namespace fostercommerce\klaviyoconnect\events;
 
+use craft\commerce\elements\Order;
 use yii\base\Event;
 
 class AddOrderCustomPropertiesEvent extends Event
 {
-    public $properties = [];
+    public array $properties = [];
 
-    public $order = null;
+    public Order $order;
 
-    public $event = null;
+    public string $event;
 }

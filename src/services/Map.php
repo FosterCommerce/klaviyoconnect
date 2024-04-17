@@ -9,7 +9,7 @@ class Map extends Base
 {
     public function mapUser(?UserElement $user = null): array
     {
-        if (! $user) {
+        if (! $user instanceof UserElement) {
             $user = Craft::$app->user->getIdentity();
         }
 

@@ -9,21 +9,15 @@ use yii\web\HttpException;
 class Cart extends Base
 {
     /**
-     * restore.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed   $number
+     * @param string $number Order number to restore
      */
-    public function restore($number): mixed
+    public function restore(string $number): ?string
     {
         $commerceInstance = Commerce::getInstance();
 
         $order = $commerceInstance->orders->getOrderByNumber($number);
 
-        if (! $order) {
+        if ($order === null) {
             throw new HttpException(404);
         }
 

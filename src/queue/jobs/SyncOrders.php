@@ -8,29 +8,13 @@ use fostercommerce\klaviyoconnect\Plugin;
 
 class SyncOrders extends BaseJob
 {
-    // Properties
-    // =========================================================================
+    public int $orderId;
 
-    public $orderId;
-
-
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * execute.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	public
-     * @param	mixed   $queue
-     */
     public function execute($queue): void
     {
         $this->setProgress($queue, 1);
 
-        if ($this->orderId) {
+        if ($this->orderId !== 0) {
             $order = Order::find()->id($this->orderId)->one();
 
             if ($order) {
@@ -44,23 +28,8 @@ class SyncOrders extends BaseJob
                 );
             }
         }
-
-        return;
     }
 
-
-    // Protected Methods
-    // =========================================================================
-
-    /**
-     * defaultDescription.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	protected
-     * @return	mixed
-     */
     protected function defaultDescription(): string
     {
         return 'Syncing orders to Klaviyo';
