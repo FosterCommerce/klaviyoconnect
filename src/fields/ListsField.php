@@ -1,9 +1,10 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\fields;
 
 use Craft;
-use craft\base\Field;
 use craft\base\ElementInterface;
+use craft\base\Field;
 use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\ClientException;
@@ -31,7 +32,7 @@ class ListsField extends Field
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed           	$values 	
+     * @param	mixed               $values
      * @param	elementinterface	$element	Default: null
      * @return	mixed
      */
@@ -46,25 +47,25 @@ class ListsField extends Field
         $allLists = Plugin::getInstance()->settings->klaviyoListsAll;
         $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
 
-        $listOptions = array();
+        $listOptions = [];
 
         foreach ($lists as $list) {
-            if ($allLists || in_array($list->id, $availableLists)) {
+            if ($allLists || in_array($list->id, $availableLists, true)) {
                 $listOptions[$list->id] = $list->name;
             }
         }
 
-        $ids = array();
-        if (!is_null($values)) {
-            $values = is_array($values) ? $values : array();
+        $ids = [];
+        if ($values !== null) {
+            $values = is_array($values) ? $values : [];
             $ids = ArrayHelper::getColumn($values, 'id');
         }
 
-        return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/checkboxgroup', array(
+        return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/checkboxgroup', [
             'name' => $this->handle,
             'options' => $listOptions,
-            'values'   => $ids,
-        ));
+            'values' => $ids,
+        ]);
     }
 
     /**
@@ -74,13 +75,12 @@ class ListsField extends Field
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed           	$values 	
+     * @param	mixed               $values
      * @param	elementinterface	$element	Default: null
-     * @return	mixed
      */
     public function normalizeValue($values, ElementInterface $element = null): mixed
     {
-        if ($values && !is_array($values)) {
+        if ($values && ! is_array($values)) {
             $o = json_decode($values);
             $newValues = [];
             if (is_array($o)) {
@@ -90,7 +90,7 @@ class ListsField extends Field
                 $values = $newValues;
             }
         }
-        $modified = array();
+        $modified = [];
 
         try {
             $lists = Plugin::getInstance()->api->getLists();
@@ -98,9 +98,9 @@ class ListsField extends Field
             $lists = [];
         }
 
-        if (!empty($values)) {
+        if (! empty($values)) {
             foreach ($lists as $list) {
-                if (in_array($list->id, $values)) {
+                if (in_array($list->id, $values, true)) {
                     $modified[] = $list;
                 }
             }

@@ -10,6 +10,6 @@ return static function(RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->sets([
-        SetList::CRAFT_CMS_40
+        SetList::CRAFT_CMS_40,
     ]);
 };

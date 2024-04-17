@@ -28,7 +28,6 @@ class KCUtilities extends Utility
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
-     * @return	string
      */
     public static function id(): string
     {

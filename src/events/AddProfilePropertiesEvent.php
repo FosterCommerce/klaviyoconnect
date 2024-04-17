@@ -1,4 +1,5 @@
 <?php
+
 namespace fostercommerce\klaviyoconnect\events;
 
 use yii\base\Event;
@@ -6,7 +7,10 @@ use yii\base\Event;
 class AddProfilePropertiesEvent extends Event
 {
     public $event = null;
-    public $properties = array();
+
+    public $properties = [];
+
     public $profile = null;
+
     public $context = null;
 }

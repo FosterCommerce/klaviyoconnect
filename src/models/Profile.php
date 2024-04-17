@@ -1,22 +1,31 @@
 <?php
-namespace fostercommerce\klaviyoconnect\models;
 
-use Craft;
-use craft\base\Model;
+namespace fostercommerce\klaviyoconnect\models;
 
 class Profile extends Base
 {
     public $external_id;
+
     public $email;
+
     public $first_name;
+
     public $last_name;
+
     public $phone_number;
+
     public $title;
+
     public $organization;
+
     public $city;
+
     public $region;
+
     public $country;
+
     public $zip;
+
     public $image;
 
     /**
@@ -28,13 +37,16 @@ class Profile extends Base
      * One of "email", "web", "sms", "directmail", "mobile"
      */
     public $consent;
+
     public $consent_id;
+
     public $consent_method;
 
     /**
      * Automatically added by Klaviyo if not present
      */
     public $consent_timestamp;
+
     public $consent_version;
 
     /**
@@ -44,7 +56,6 @@ class Profile extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	string
      */
     public function __toString(): string
     {
@@ -58,11 +69,10 @@ class Profile extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	bool
      */
     public function hasEmail(): bool
     {
-        return isset($this->email) && !is_null($this->email);
+        return isset($this->email) && $this->email !== null;
     }
 
     /**
@@ -72,11 +82,10 @@ class Profile extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	bool
      */
     public function hasId(): bool
     {
-        return isset($this->id) && !is_null($this->email);
+        return isset($this->id) && $this->email !== null;
     }
 
     /**
@@ -86,7 +95,6 @@ class Profile extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	bool
      */
     public function hasEmailOrId(): bool
     {

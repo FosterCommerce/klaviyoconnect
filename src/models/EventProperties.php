@@ -1,18 +1,16 @@
 <?php
-namespace fostercommerce\klaviyoconnect\models;
 
-use Craft;
-use craft\base\Model;
+namespace fostercommerce\klaviyoconnect\models;
 
 class EventProperties extends Base
 {
     /**
-     * @var		public	$event_id
+     * @var		public
      */
     public $event_id;
-    
+
     /**
-     * @var		public	$value
+     * @var		public
      */
     public $value;
 
@@ -23,7 +21,6 @@ class EventProperties extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @return	string
      */
     public function __toString(): string
     {
