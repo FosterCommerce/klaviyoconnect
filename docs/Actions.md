@@ -10,7 +10,7 @@ See the Profile Form Parameters in the Update Profile action.
 
 **Note:** Profiles can be updated provided the email address used is the same as an existing Klaviyo profile. 
 
-**Warning:** It is possible for forms that post to identify and track endpoints on unauthenticated pages to be abused to update profile information of profiles already in Klaviyo. 
+**Warning:** Forms that `POST` to the 'identify' and 'track' endpoints on unauthenticated pages (Craft user sign-in not required) can be abused to update existing Klaviyo profiles.
 
 
 ## Update Profile `POST /klaviyoconnect/api/track`
