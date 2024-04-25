@@ -1,16 +1,24 @@
 # Release Notes for KlaviyoConnect
 
-## Unreleased
+## 6.0.0-beta.1
 
-- Removed track once event.
+### Updated
 - Renamed `useSubscribeEndpoint` to `subscribe`.
-- Provide `email` and/or `phone_number` when `subscribe` is `true` to provide consent for subscription to those channels.
-- Remove `profileInList` API service function.
 - User profile now uses `external_id` instead of `id`.
-- Removed `update-profile` action
-- Removed `updateProfile` API service method.
+- Renamed `event_id` to `unique_id`
 - Changed `identify` function to include an `$update` argument
-- `identify` action won't update an existing profile
+- `identify` action can update an existing profile
+- Updated `trackOrder` to include the order currency in the event details
+
+### Added
+- Provide `email` and/or `phone_number` when `subscribe` is `true` to provide consent for subscription to those channels.
+- Added `value_currency` to event details
+
+### Removed
+- Removed track once event.
+- Remove `profileInList` API service function.
+- Removed `update-profile` action. Update profiles using identify and track endpoints instead.
+- Removed `updateProfile` API service method.
 
 ## 5.0.8 - 2024-03-21
 

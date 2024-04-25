@@ -40,7 +40,7 @@ The difference with the above is that if double opt-in is enabled for the list, 
     <input type="hidden" name="action" value="/klaviyoconnect/api/track" />
     <!-- Add to the list -->
     <input type="hidden" name="list" value="FOO123" />
-    <input type="hidden" name="useSubscribeEndpoint" value="1" />
+    <input type="hidden" name="subscribe" value="1" />
     <label>
       Email
       <input type="email" name="email" />
@@ -74,8 +74,9 @@ _Using the Klaviyo Lists Field from a global entry_
     <input type="hidden" name="action" value="/klaviyoconnect/api/track" />
     <!-- Event to track -->
     <input type="hidden" name="event[name]" value="Event Foo" />
-    <input type="hidden" name="event[event_id]" value="a1b2c3" />
-    <input type="hidden" name="event[value]" value="Foobar" />
+    <input type="hidden" name="event[unique_id]" value="a1b2c3" />
+    <input type="hidden" name="event[value]" value="100.98" />
+    <input type="hidden" name="event[value_currency]" value="USD" />
     <input type="hidden" name="event[FooBar]" value="Foo Bar" />
     <!-- Profile Details -->
     <label>
@@ -93,7 +94,7 @@ _Using the Klaviyo Lists Field from a global entry_
 <form method="POST">
     <input type="hidden" name="action" value="/klaviyoconnect/api/track" />
     <input type="hidden" name="event[name]" value="My Event" />
-    <input type="hidden" name="event[event_id]" value="some-id" />
+    <input type="hidden" name="event[unique_id]" value="some-id" />
     <!-- The timestamp to set the event to in Klaviyo -->
     <input type="hidden" name="event[timestamp]" value="2019-12-02T00:30:00" />
     <label>
@@ -114,8 +115,9 @@ _Using the Klaviyo Lists Field from a global entry_
     <input type="hidden" name="list" value="FOO123" />
     <!-- Event to track -->
     <input type="hidden" name="event[name]" value="Event Foo" />
-    <input type="hidden" name="event[event_id]" value="a1b2c3" />
-    <input type="hidden" name="event[value]" value="Foobar" />
+    <input type="hidden" name="event[unique_id]" value="a1b2c3" />
+    <input type="hidden" name="event[value]" value="110.99" />
+    <input type="hidden" name="event[value_currency]" value="CAD" />
     <input type="hidden" name="event[FooBar]" value="Foo Bar" />
     <!-- Profile Details -->
     <label>
@@ -162,6 +164,15 @@ _Using the Klaviyo Lists Field from a global entry_
     </label>
     <input type="submit" value="Submit" />
 </form>
+```
+
+Use `profile[properties][Custom property]` to add a [custom property](https://developers.klaviyo.com/en/reference/create_profile) to a profile:
+
+```html
+<label>
+  Notes
+  <input type="text" name="profile[properties][Notes]" />
+</label>
 ```
 
 ### Forward a POST request after Klaviyo Connect has identified a user

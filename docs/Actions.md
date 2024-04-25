@@ -8,6 +8,11 @@ This action is used to track properties about an individual without tracking an 
 
 See the Profile Form Parameters in the Update Profile action.
 
+**Note:** Profiles can be updated provided the email address used is the same as an existing Klaviyo profile. 
+
+**Warning:** It is possible for forms that post to identify and track endpoints on unauthenticated pages to be abused to update profile information of profiles already in Klaviyo. 
+
+
 ## Update Profile `POST /klaviyoconnect/api/track`
 
 This action is used to add a user to a list or multiple lists and/or track events from a user.
@@ -87,12 +92,12 @@ The name of the event to track.
 <input type="hidden" name="event[name]" value="Completed Order" />
 ```
 
-`event[event_id]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
+`event[unique_id]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
 
 The ID to associate with an event, e.g. Order ID.
 
 ```html
-<input type="hidden" name="event[event_id]" value="{{ order.number }}" />
+<input type="hidden" name="event[unique_id]" value="{{ order.number }}" />
 ```
 
 `event[value]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
@@ -101,6 +106,14 @@ Value associated with an event, e.g. Total Cost.
 
 ```html
 <input type="hidden" name="event[value]" value="{{ order.totalPrice }}" />
+```
+
+`event[value_currency]` - _Required_ See [Klaviyo Notes](./KlaviyoNotes.md)
+
+The ISO 4217 currency code of the value associated with the event. e.g. USD.
+
+```html
+<input type="hidden" name="event[value_currency]" value="USD" />
 ```
 
 #### Custom Event Properties
@@ -143,12 +156,12 @@ Tells the plugin to forward the POST request to a specified action once complete
 <input type="hidden" name="forward" value="/commerce/cart/update-cart" />
 ```
 
-`useSubscribeEndpoint` - _Optional_
+`subscribe` - _Optional_
 
-Whether to use Klaviyo’s `subscribe` endpoint instead of `members` (which is the default). This has the benefit of [respecting the double opt-in setting of the list](https://apidocs.klaviyo.com/reference/lists-segments#add-members).
+Whether to [subscribe](https://developers.klaviyo.com/en/reference/subscribe_profiles) a user to a list or [add their profile](https://developers.klaviyo.com/en/reference/create_list_relationships) to a list (default). This has the benefit of [respecting the double opt-in setting of the list](https://developers.klaviyo.com/en/docs/collect_email_and_sms_consent_via_api#single-vs-double-opt-in).
 
 ```html
-<input type="hidden" name="useSubscribeEndpoint" value="1" />
+<input type="hidden" name="subscribe" value="1" />
 ```
 
 ## Restore Cart `GET /klaviyoconnect/cart/restore`

@@ -5,14 +5,20 @@ namespace fostercommerce\klaviyoconnect\models;
 class EventProperties extends Base implements \Stringable
 {
     /**
-     * @var		public
+     * A unique identifier for an event. If the unique_id is repeated for the same
+     * profile and metric, only the first processed event will be recorded.
      */
-    public $event_id;
+    public ?string $unique_id = null;
 
     /**
-     * @var		public
+     * A numeric, monetary value to associate with this event. For example, the dollar amount of a purchase.
      */
-    public $value;
+    public ?string $value = null;
+
+    /**
+     * The ISO 4217 currency code of the value associated with the event.
+     */
+    public ?string $value_currency = null;
 
     /**
      * __toString.

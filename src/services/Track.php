@@ -41,7 +41,7 @@ class Track extends Base
         $userGroups = Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
 
         if ($this->isInGroup($groups, $userGroups)) {
-            $this->identifyUser(Plugin::getInstance()->map->mapUser($user), true);
+            $this->identifyUser(Plugin::getInstance()->map->mapUser($user));
         }
     }
 
@@ -53,9 +53,9 @@ class Track extends Base
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
      */
-    public function identifyUser(array $params, bool $update = false): void
+    public function identifyUser(array $params): void
     {
-        Plugin::getInstance()->api->identify($this->createProfile($params), $update);
+        Plugin::getInstance()->api->identify($this->createProfile($params));
     }
 
     /**
@@ -179,8 +179,9 @@ class Track extends Base
             $dateTime = new DateTime();
 
             $event = [
-                'event_id' => $order->id . '_' . $dateTime->getTimestamp(),
+                'unique_id' => $order->id . '_' . $dateTime->getTimestamp(),
                 'value' => $order->totalPaid,
+                'value_currency' => $order->currency,
             ];
             $eventProperties = new EventProperties($event);
             $eventProperties->setCustomProperties($orderDetails);
@@ -226,8 +227,9 @@ class Track extends Base
                     if ($eventName === 'Placed Order') {
                         foreach ($orderDetails['Items'] as $item) {
                             $event = [
-                                'event_id' => $order->id . '_' . $item['Slug'] . '_' . $dateTime->getTimestamp(),
+                                'unique_id' => $order->id . '_' . $item['Slug'] . '_' . $dateTime->getTimestamp(),
                                 'value' => $order->totalPaid,
+                                'value_currency' => $order->currency,
                             ];
 
                             $eventProperties = new EventProperties($event);
@@ -332,18 +334,12 @@ class Track extends Base
         return $addOrderCustomPropertiesEvent->properties;
     }
 
-    /**
-     * isInGroup.
-     *
-     * @author	Unknown
-     * @since	v0.0.1
-     * @version	v1.0.0	Monday, May 23rd, 2022.
-     * @access	private
-     */
-    private function isInGroup(mixed $selectedGroups, mixed $userGroups): bool
+    private function isInGroup(array $selectedGroups, array $userGroups): bool
     {
-        foreach ($selectedGroups as $selectedGroup) {
-            $hasGroup = in_array($selectedGroup, ArrayHelper::getColumn($userGroups, 'id'), false);
+        $groupIds = ArrayHelper::getColumn($userGroups, 'id');
+        $groups = array_filter(array_map(static fn($group): ?int => $group ? (int) $group : null, $selectedGroups));
+        foreach ($groups as $group) {
+            $hasGroup = in_array($group, $groupIds, false);
             if ($hasGroup) {
                 return true;
             }

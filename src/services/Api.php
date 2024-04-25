@@ -65,18 +65,15 @@ class Api extends Base
         ]);
     }
 
-    public function identify(array $profile, bool $update = false): void
+    public function identify(array $profile): void
     {
-        if (! $profile['email']) {
+        $profile = $this->profileArray($profile);
+        if (! isset($profile['data']['attributes']['email'])) {
             throw new Exception('You must identify a user by email');
         }
 
         try {
-            if ($update) {
-                $this->api?->Profiles->createOrUpdateProfile($this->profileArray($profile));
-            } else {
-                $this->api?->Profiles->createProfile($this->profileArray($profile));
-            }
+            $this->api?->Profiles->createOrUpdateProfile($profile);
         } catch (ApiException $e) {
             // 409 for a duplicate profile error - if we try track the same person twice, Klaviyo will respond with this.
             if ($e->getCode() !== 409) {
