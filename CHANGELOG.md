@@ -1,5 +1,26 @@
 # Release Notes for KlaviyoConnect
 
+## 4.2.0-beta.1
+
+### Updated
+- Uses official klaviyo/api package.
+- Renamed `useSubscribeEndpoint` to `subscribe`.
+- User profile now uses `external_id` instead of `id`.
+- Renamed `event_id` to `unique_id`.
+- Changed `identify` function to include an `$update` argument.
+- `identify` action can update an existing profile.
+- Updated `trackOrder` to include the order currency in the event details.
+
+### Added
+- Provide `email` and/or `phone_number` when `subscribe` is `true` to provide consent for subscription to those channels.
+- Added `value_currency` to event details.
+
+### Removed
+- Removed track once event.
+- Remove `profileInList` API service function.
+- Removed `update-profile` action. Update profiles using identify and track endpoints instead.
+- Removed `updateProfile` API service method.
+
 ## 4.1.0 2024-01-11
 
 - Include order timestamps when synchronizing orders from the control panel

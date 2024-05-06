@@ -3,7 +3,6 @@ namespace fostercommerce\klaviyoconnect;
 
 use Craft;
 use craft\events\RegisterUrlRulesEvent;
-use craft\services\Users;
 use craft\elements\User;
 use craft\base\Model;
 use craft\commerce\elements\Order;
@@ -13,7 +12,6 @@ use craft\events\RegisterComponentTypesEvent;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\services\Payments;
 use craft\services\Fields;
-use craft\events\UserGroupsAssignEvent;
 use craft\services\Utilities;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;

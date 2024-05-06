@@ -27,7 +27,7 @@ class Map extends Base
         }
 
         return [
-            'id' => $user->id,
+            'external_id' => $user->id,
             'email' => $user->email,
             'first_name' => $user->firstName,
             'last_name' => $user->lastName,
