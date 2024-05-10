@@ -1,5 +1,10 @@
 # Release Notes for KlaviyoConnect
 
+## 4.2.0-beta.2
+
+### Fixed
+- Removed `mixed` argument type from `createProfile`, it is only supported from PHP 8.0+
+
 ## 4.2.0-beta.1
 
 ### Updated

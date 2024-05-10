@@ -33,7 +33,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onSaveUser(Event $event): void
@@ -54,7 +54,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$params	
+     * @param	mixed	$params
      * @return	void
      */
     public function identifyUser(array $params): void
@@ -69,7 +69,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onCartUpdated(Event $event): void
@@ -86,7 +86,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onOrderCompleted(Event $event): void
@@ -101,7 +101,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	event	$event	
+     * @param	event	$event
      * @return	void
      */
     public function onStatusChanged(Event $event): void
@@ -117,7 +117,7 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	refundtransactionevent	$event	
+     * @param	refundtransactionevent	$event
      * @return	void
      */
     public function onOrderRefunded(RefundTransactionEvent $event): void
@@ -133,8 +133,8 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed  	$listIds             	
-     * @param	mixed  	$profileParams       	
+     * @param	mixed  	$listIds
+     * @param	mixed  	$profileParams
      * @param	boolean	$useSubscribeEndpoint	Default: false
      * @return	void
      */
@@ -165,10 +165,10 @@ class Track extends Base
      * @since	v0.0.1
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
-     * @param	mixed	$eventName      	
-     * @param	mixed	$profileParams  	
-     * @param	mixed	$eventProperties	
-     * @param	mixed	$trackOnce      	
+     * @param	mixed	$eventName
+     * @param	mixed	$profileParams
+     * @param	mixed	$eventProperties
+     * @param	mixed	$trackOnce
      * @param	mixed	$timestamp      	Default: null
      * @return	void
      */
@@ -251,7 +251,7 @@ class Track extends Base
                     );
 
                     Plugin::getInstance()->api->track($eventName, $profile, $eventProperties, $timestamp);
-                    
+
                     if ($eventName === 'Placed Order') {
                         foreach ($orderDetails['Items'] as $item) {
                             $event = [
@@ -276,7 +276,7 @@ class Track extends Base
         }
     }
 
-    protected function createProfile(array $profile, ?string $eventName = null, mixed $context = null): array
+    protected function createProfile(array $profile, ?string $eventName = null, $context = null): array
     {
         $event = new AddProfilePropertiesEvent([
             'profile' => $profile,
@@ -301,11 +301,11 @@ class Track extends Base
         foreach ($order->lineItems as $lineItem) {
             // set some defaults
             // This is a messy, temporary fix and needs refactoring
-            // If a variant has been deleted since an order was placed the array assignment for Klaviyo event properties is skipped 
+            // If a variant has been deleted since an order was placed the array assignment for Klaviyo event properties is skipped
             // since there is no "product"
             // this means that when creating the event ID in trackOrder() (around line 317), there is no key named "Slug".
             // It was possible to get around this by ignoring "Slug", since it's always going to be null anyway,
-            // but this also meant that no record of the product was sent to Kalviyo. 
+            // but this also meant that no record of the product was sent to Kalviyo.
             // This "fix" makes sure there is *some* data to send to Klaviyo if the Variant has been deleted
             // We should probably refactor this part to always use the lineitem snapshot
             $lineItemProperties = [
@@ -321,8 +321,8 @@ class Track extends Base
                 'Note' => 'Variant no longer available',
                 'Snapshot' =>  $lineItem->snapshot
             ];
-            
-            
+
+
             // Add regular Product purchasable properties
             $product = $lineItem->purchasable->product ?? [];
             if ($product) {
@@ -339,7 +339,7 @@ class Track extends Base
                 ];
 
                 $variant = $lineItem->purchasable;
-                
+
                 $productImageField = $settings->productImageField;
 
                 if ( isset($variant->$productImageField) && $variant->$productImageField->count() ) {
