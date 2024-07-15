@@ -30,7 +30,7 @@ class Variable
             } catch (RequestException $e) {
                 try {
                     $response = json_decode(
-                        $e->getResponse()?->getBody()->getContents(),
+                        (string) $e->getResponse()?->getBody()->getContents(),
                         false,
                         512, // default
                         JSON_THROW_ON_ERROR

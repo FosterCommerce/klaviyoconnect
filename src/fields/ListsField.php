@@ -62,7 +62,7 @@ class ListsField extends Field
     public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
     {
         if ($value && ! is_array($value)) {
-            $o = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
+            $o = json_decode((string) $value, false, 512, JSON_THROW_ON_ERROR);
             $newValues = [];
             if (is_array($o)) {
                 foreach ($o as $val) {

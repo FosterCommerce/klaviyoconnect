@@ -41,7 +41,7 @@ class KCUtilities extends Utility
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public static
      */
-    public static function iconPath(): string
+    public static function icon(): string
     {
         return Craft::getAlias('@fostercommerce/klaviyoconnect/icon-mask.svg');
     }

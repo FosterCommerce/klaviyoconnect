@@ -47,7 +47,7 @@ class ListField extends Field
     public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
     {
         if ($value) {
-            $o = json_decode($value);
+            $o = json_decode((string) $value);
             if ($o) {
                 $value = $o->id;
             }

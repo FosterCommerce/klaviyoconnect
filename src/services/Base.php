@@ -13,7 +13,7 @@ abstract class Base extends Component
 
     protected function getSetting(string $name): mixed
     {
-        if ($this->settings === null) {
+        if (! $this->settings instanceof Settings) {
             /** @var Settings $settings */
             $settings = Plugin::getInstance()->getSettings();
             $this->settings = $settings;
