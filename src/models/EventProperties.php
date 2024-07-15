@@ -30,6 +30,6 @@ class EventProperties extends Base implements \Stringable
      */
     public function __toString(): string
     {
-        return "[{$this->name}] {$this->value}";
+        return "[{$this->unique_id}] {$this->value}";
     }
 }

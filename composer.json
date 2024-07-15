@@ -8,8 +8,8 @@
   ],
   "homepage": "https://fostercommerce.com",
   "require": {
-    "craftcms/cms": "^4.0.0",
-    "php": "^8.0",
+    "craftcms/cms": "^5.0.0",
+    "php": "^8.2",
     "klaviyo/api": "^7.1"
   },
   "autoload": {
@@ -23,10 +23,12 @@
     "developer": "Foster Commerce"
   },
   "require-dev": {
-    "craftcms/commerce": "^4.2",
-    "fostercommerce/phpstan": "dev-main",
+    "craftcms/commerce": "^5.0.0",
+    "craftcms/phpstan": "dev-main",
+    "craftcms/rector": "dev-main",
     "fostercommerce/ecs": "dev-main",
     "fostercommerce/rector": "dev-main",
+    "phpstan/phpstan": "^1.11",
     "roave/security-advisories": "dev-latest"
   },
   "config": {

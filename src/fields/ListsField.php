@@ -6,6 +6,7 @@ use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\helpers\ArrayHelper;
+use fostercommerce\klaviyoconnect\models\Settings;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\ClientException;
 
@@ -32,8 +33,10 @@ class ListsField extends Field
             $lists = [];
         }
 
-        $allLists = Plugin::getInstance()->settings->klaviyoListsAll;
-        $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
+        /** @var Settings $settings */
+        $settings = Plugin::getInstance()->getSettings();
+        $allLists = $settings->klaviyoListsAll;
+        $availableLists = $settings->klaviyoAvailableLists;
 
         $listOptions = [];
 

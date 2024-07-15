@@ -24,7 +24,7 @@ class SyncOrders extends BaseJob
                     'Placed Order',
                     $order,
                     null,
-                    $order->dateOrdered?->getTimestamp(),
+                    (string) $order->dateOrdered?->getTimestamp(),
                 );
             }
         }

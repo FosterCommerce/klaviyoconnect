@@ -6,14 +6,8 @@ use craft\base\Model;
 
 class KlaviyoList extends Model implements \Stringable
 {
-    /**
-     * @var		public
-     */
     public string $id;
 
-    /**
-     * @var		public
-     */
     public string $name;
 
     /**

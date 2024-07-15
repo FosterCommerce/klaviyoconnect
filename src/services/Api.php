@@ -101,7 +101,7 @@ class Api extends Base
                 $cursor = $this->getPaginationCursor($result);
             } while ($cursor !== null);
 
-            $lists = array_map(static fn($list): KlaviyoList => new KlaviyoList([
+            $lists = array_map(static fn ($list): KlaviyoList => new KlaviyoList([
                 'id' => $list['id'],
                 'name' => $list['attributes']['name'],
             ]), $lists);

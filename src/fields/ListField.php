@@ -5,6 +5,7 @@ namespace fostercommerce\klaviyoconnect\fields;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
+use fostercommerce\klaviyoconnect\models\Settings;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\ClientException;
 
@@ -23,8 +24,11 @@ class ListField extends Field
             $lists = [];
         }
 
-        $allLists = Plugin::getInstance()->settings->klaviyoListsAll;
-        $availableLists = Plugin::getInstance()->settings->klaviyoAvailableLists;
+        /** @var Settings $settings */
+        $settings = Plugin::getInstance()->getSettings();
+
+        $allLists = $settings->klaviyoListsAll;
+        $availableLists = $settings->klaviyoAvailableLists;
 
         $listOptions = [];
         foreach ($lists as $list) {

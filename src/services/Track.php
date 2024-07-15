@@ -4,7 +4,9 @@ namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
 use craft\commerce\elements\Order;
+use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\events\RefundTransactionEvent;
+use craft\commerce\events\TransactionEvent;
 use craft\helpers\ArrayHelper;
 use DateTime;
 use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
@@ -12,6 +14,7 @@ use fostercommerce\klaviyoconnect\events\AddLineItemCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
 use fostercommerce\klaviyoconnect\models\EventProperties;
+use fostercommerce\klaviyoconnect\models\Settings;
 use fostercommerce\klaviyoconnect\Plugin;
 use GuzzleHttp\Exception\RequestException;
 use yii\base\Event;
@@ -96,7 +99,7 @@ class Track extends Base
      * @version	v1.0.0	Monday, May 23rd, 2022.
      * @access	public
      */
-    public function onStatusChanged(Event $event): void
+    public function onStatusChanged(OrderStatusEvent $event): void
     {
         $order = $event->orderHistory->getOrder();
         $this->trackOrder('Status Changed', $order, null, null, $event);
@@ -188,6 +191,7 @@ class Track extends Base
             $success = true;
 
             if ($eventName === 'Refunded Order') {
+                /** @var TransactionEvent $fullEvent */
                 $children = $fullEvent->transaction->childTransactions;
                 $child = $children[count($children) - 1];
 
@@ -202,6 +206,7 @@ class Track extends Base
             }
 
             if ($eventName === 'Status Changed') {
+                /** @var OrderStatusEvent $fullEvent */
                 $orderHistory = $fullEvent->orderHistory;
                 $status = $orderHistory->getNewStatus()->name;
                 $eventProperties->setCustomProperties([
@@ -245,7 +250,7 @@ class Track extends Base
         }
 
         // Swallow.
-            // This is likely a logged out user adding an item to their cart.
+        // This is likely a logged out user adding an item to their cart.
     }
 
     protected function createProfile(array $profile, ?string $eventName = null, mixed $context = null): array
@@ -266,7 +271,8 @@ class Track extends Base
 
     protected function getOrderDetails(Order $order, string $event = ''): array
     {
-        $settings = Plugin::getInstance()->settings;
+        /** @var Settings $settings */
+        $settings = Plugin::getInstance()->getSettings();
 
         $lineItemsProperties = [];
 
@@ -279,7 +285,7 @@ class Track extends Base
                 $lineItemProperties = [
                     'value' => $lineItem->price * $lineItem->qty,
                     'ProductName' => $product->title,
-                    'Slug' => $lineItem->purchasable->product->slug,
+                    'Slug' => $product->slug,
                     'ProductURL' => $product->getUrl(),
                     'ProductType' => $product->type->name,
                     'ItemPrice' => $lineItem->price,
@@ -294,11 +300,11 @@ class Track extends Base
 
                 if (isset($variant->{$productImageField}) && $variant->{$productImageField}->count()) {
                     if ($image = $variant->{$productImageField}->one()) {
-                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
                     }
                 } elseif (isset($product->{$productImageField}) && $product->{$productImageField}->count()) {
                     if ($image = $product->{$productImageField}->one()) {
-                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation,true);
+                        $lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
                     }
                 }
             }
@@ -337,7 +343,7 @@ class Track extends Base
     private function isInGroup(array $selectedGroups, array $userGroups): bool
     {
         $groupIds = ArrayHelper::getColumn($userGroups, 'id');
-        $groups = array_filter(array_map(static fn($group): ?int => $group ? (int) $group : null, $selectedGroups));
+        $groups = array_filter(array_map(static fn ($group): ?int => $group ? (int) $group : null, $selectedGroups));
         foreach ($groups as $group) {
             $hasGroup = in_array($group, $groupIds, false);
             if ($hasGroup) {

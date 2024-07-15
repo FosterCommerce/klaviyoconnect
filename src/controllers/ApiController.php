@@ -105,7 +105,7 @@ class ApiController extends Controller
                             }
                         } else {
                             // Use the current cart
-                            $order = Commerce::getInstance()->carts->getCart();
+                            $order = Commerce::getInstance()->getCarts()->getCart();
                         }
 
                         Plugin::getInstance()->track->trackOrder($event['name'], $order, $profile, $timestamp);

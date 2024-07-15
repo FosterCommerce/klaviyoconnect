@@ -21,7 +21,7 @@ class Cart extends Base
             throw new HttpException(404);
         }
 
-        $commerceInstance->carts->forgetCart();
+        $commerceInstance->getCarts()->forgetCart();
         $cartNumber = $order->number;
         $session = Craft::$app->getSession();
         $session->set('commerce_cart', $cartNumber);
