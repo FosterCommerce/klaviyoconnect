@@ -2,7 +2,7 @@
   "name": "fostercommerce/klaviyoconnect",
   "description": "Craft Commerce",
   "type": "craft-plugin",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "keywords": [
     "klaviyo"
   ],
@@ -24,8 +24,8 @@
   },
   "require-dev": {
     "craftcms/commerce": "^5.0.0",
-    "craftcms/phpstan": "dev-main",
-    "craftcms/rector": "dev-main",
+		"craftcms/phpstan": "dev-main",
+		"craftcms/rector": "dev-main",
     "fostercommerce/ecs": "dev-main",
     "fostercommerce/rector": "dev-main",
     "phpstan/phpstan": "^1.11",

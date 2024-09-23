@@ -8,30 +8,30 @@ use fostercommerce\klaviyoconnect\Plugin;
 
 class SyncOrders extends BaseJob
 {
-    public int $orderId;
+	public int $orderId;
 
-    public function execute($queue): void
-    {
-        $this->setProgress($queue, 1);
+	public function execute($queue): void
+	{
+		$this->setProgress($queue, 1);
 
-        if ($this->orderId !== 0) {
-            $order = Order::find()->id($this->orderId)->one();
+		if ($this->orderId !== 0) {
+			$order = Order::find()->id($this->orderId)->one();
 
-            if ($order) {
-                // When syncing orders we want to use the timestamp from the order
-                // instead of the time the sync operation was performed.
-                Plugin::getInstance()->track->trackOrder(
-                    'Placed Order',
-                    $order,
-                    null,
-                    (string) $order->dateOrdered?->getTimestamp(),
-                );
-            }
-        }
-    }
+			if ($order) {
+				// When syncing orders we want to use the timestamp from the order
+				// instead of the time the sync operation was performed.
+				Plugin::getInstance()->track->trackOrder(
+					'Placed Order',
+					$order,
+					null,
+					(string) $order->dateOrdered?->getTimestamp(),
+				);
+			}
+		}
+	}
 
-    protected function defaultDescription(): string
-    {
-        return 'Syncing orders to Klaviyo';
-    }
+	protected function defaultDescription(): string
+	{
+		return 'Syncing orders to Klaviyo';
+	}
 }

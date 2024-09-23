@@ -6,34 +6,34 @@ use craft\base\Model;
 
 class Settings extends Model
 {
-    public $klaviyoSiteId = '';
+	public $klaviyoSiteId = '';
 
-    public $klaviyoApiKey = '';
+	public $klaviyoApiKey = '';
 
-    public $klaviyoDefaultProfileMapping = 'formdata_mapping';
+	public $klaviyoDefaultProfileMapping = 'formdata_mapping';
 
-    public $klaviyoAvailableLists = [];
+	public $klaviyoAvailableLists = [];
 
-    public $klaviyoListsAll = false;
+	public $klaviyoListsAll = false;
 
-    public $klaviyoAvailableGroups = [];
+	public $klaviyoAvailableGroups = [];
 
-    public $cartUrl = '/shop/cart';
+	public $cartUrl = '/shop/cart';
 
-    public $productImageField = 'productImage';
+	public $productImageField = 'productImage';
 
-    public $productImageFieldTransformation = 'productThumbnail';
+	public $productImageFieldTransformation = 'productThumbnail';
 
-    public $eventPrefix = '';
+	public $eventPrefix = '';
 
-    // Tracking Event Options
-    public $trackSaveUser = true;
+	// Tracking Event Options
+	public $trackSaveUser = true;
 
-    public $trackCommerceCartUpdated = true;
+	public $trackCommerceCartUpdated = true;
 
-    public $trackCommerceOrderCompleted = true;
+	public $trackCommerceOrderCompleted = true;
 
-    public $trackCommerceStatusUpdated = true;
+	public $trackCommerceStatusUpdated = true;
 
-    public $trackCommerceRefunded = true;
+	public $trackCommerceRefunded = true;
 }

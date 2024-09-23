@@ -6,7 +6,7 @@ use yii\base\Event;
 
 class AddCustomPropertiesEvent extends Event
 {
-    public $name;
+	public $name;
 
-    public $properties = [];
+	public $properties = [];
 }

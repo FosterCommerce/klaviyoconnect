@@ -7,9 +7,9 @@ use yii\base\Event;
 
 class AddOrderCustomPropertiesEvent extends Event
 {
-    public array $properties = [];
+	public array $properties = [];
 
-    public Order $order;
+	public Order $order;
 
-    public string $event;
+	public string $event;
 }
