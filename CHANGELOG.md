@@ -1,6 +1,6 @@
 # Release Notes for KlaviyoConnect
 
-## 6.0.0-beta.1
+## 6.0.0
 
 ### Updated
 - Uses official klaviyo/api package.
