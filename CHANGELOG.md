@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 7.1.1
+
+## Updated
+
+- Updated profile data that is used for order events.
+
 ## 7.1.0
 
 ### Added
