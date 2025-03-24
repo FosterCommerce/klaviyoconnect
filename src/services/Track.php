@@ -166,10 +166,17 @@ class Track extends Base
 	public function trackOrder(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null): void
 	{
 		if ($order->email !== null) {
+			$location = [
+				'city' => $order->billingAddress?->locality,
+				'region' => $order->billingAddress?->administrativeArea,
+				'country' => $order->billingAddress?->getCountry()->getName(),
+			];
+
 			$profile = [
 				'email' => $order->email,
-				'first_name' => $order->billingAddress->firstName ?? null,
-				'last_name' => $order->billingAddress->lastName ?? null,
+				'first_name' => $order->customer->firstName ?? $order->billingAddress?->firstName ?? null,
+				'last_name' => $order->customer->lastName ?? $order->billingAddress?->lastName ?? null,
+				'location' => $location,
 			];
 		}
 
