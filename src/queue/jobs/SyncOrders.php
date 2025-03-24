@@ -24,7 +24,7 @@ class SyncOrders extends BaseJob
 					'Placed Order',
 					$order,
 					null,
-					(string) $order->dateOrdered?->getTimestamp(),
+					$order->dateOrdered?->format('Y-m-d\TH:i:s'),
 				);
 			}
 		}
