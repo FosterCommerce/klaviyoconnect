@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 6.1.1
+
+- Update profile data that is used for order events.
+
 ## 6.1.0
 
 ### Added
