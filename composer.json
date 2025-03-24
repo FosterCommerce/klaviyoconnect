@@ -2,7 +2,7 @@
   "name": "fostercommerce/klaviyoconnect",
   "description": "Craft Commerce",
   "type": "craft-plugin",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "keywords": [
     "klaviyo"
   ],
