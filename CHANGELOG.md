@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 6.1.0
+
+### Added
+
+- Added order billing address location to profiles on order events. 
+
 ## 6.0.1
 
 ### Fixed
