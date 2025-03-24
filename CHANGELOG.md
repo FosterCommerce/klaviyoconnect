@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 6.0.1
+
+### Fixed
+
+- Fix the timestamp value that is sent to Klaviyo when synchronizing older orders.
+
 ## 6.0.0
 
 ### Updated
