@@ -61,17 +61,7 @@ class ListsField extends Field
 
 	public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
 	{
-		if ($value && ! is_array($value)) {
-			$o = json_decode((string) $value, false, 512, JSON_THROW_ON_ERROR);
-			$newValues = [];
-			if (is_array($o)) {
-				foreach ($o as $val) {
-					$newValues[] = $val->id;
-				}
-
-				$value = $newValues;
-			}
-		}
+		$value = is_array($value) ? collect($value)->pluck('id')->toArray() : [];
 
 		$modified = [];
 
@@ -81,7 +71,7 @@ class ListsField extends Field
 			$lists = [];
 		}
 
-		if (! empty($value)) {
+		if ($value !== []) {
 			foreach ($lists as $list) {
 				if (in_array($list->id, $value, true)) {
 					$modified[] = $list;

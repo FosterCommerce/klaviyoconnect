@@ -46,11 +46,8 @@ class ListField extends Field
 
 	public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
 	{
-		if ($value) {
-			$o = json_decode((string) $value);
-			if ($o) {
-				$value = $o->id;
-			}
+		if (is_array($value)) {
+			$value = $value['id'] ?? null;
 		}
 
 		try {
@@ -59,7 +56,7 @@ class ListField extends Field
 			$lists = [];
 		}
 
-		if ($value) {
+		if ($value !== null) {
 			foreach ($lists as $list) {
 				if ($list->id === $value) {
 					return $list;
