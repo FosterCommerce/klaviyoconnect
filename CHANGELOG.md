@@ -6,6 +6,11 @@
 
 - Added order billing address location to profiles on order events. 
 
+### Fixed
+
+- Use correct timestamp value when syncing past orders
+- Use correct value format for normalizing list field values
+
 
 ## 7.0.0
 
