@@ -7,6 +7,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\events\TransactionEvent;
+use craft\elements\Address;
 use craft\helpers\ArrayHelper;
 use DateTime;
 use fostercommerce\klaviyoconnect\events\AddCustomPropertiesEvent;
@@ -166,16 +167,22 @@ class Track extends Base
 	public function trackOrder(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null): void
 	{
 		if ($order->email !== null) {
-			$location = [
-				'city' => $order->billingAddress?->locality,
-				'region' => $order->billingAddress?->administrativeArea,
-				'country' => $order->billingAddress?->getCountry()->getName(),
-			];
+			$address = $order->shippingAddress ?? $order->billingAddress;
+
+			if ($address instanceof Address) {
+				$location = [
+					'city' => $address->locality,
+					'region' => $address->administrativeArea,
+					'country' => $address->getCountry()->getName(),
+				];
+			} else {
+				$location = null;
+			}
 
 			$profile = [
 				'email' => $order->email,
-				'first_name' => $order->customer->firstName ?? $order->billingAddress?->firstName ?? null,
-				'last_name' => $order->customer->lastName ?? $order->billingAddress?->lastName ?? null,
+				'first_name' => $order->customer?->firstName,
+				'last_name' => $order->customer?->lastName,
 				'location' => $location,
 			];
 		}
