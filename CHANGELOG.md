@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 7.2.0
+
+### Updated
+
+- Updated to use klaviyo/api v14, revision [2025-04-15](https://developers.klaviyo.com/en/docs/changelog_#revision-2025-04-15-ga)
+
 ## 7.1.1
 
 ## Updated
