@@ -2,7 +2,7 @@
   "name": "fostercommerce/klaviyoconnect",
   "description": "Craft Commerce",
   "type": "craft-plugin",
-  "version": "7.1.1",
+  "version": "7.2.0",
   "keywords": [
     "klaviyo"
   ],
@@ -10,7 +10,16 @@
   "require": {
     "craftcms/cms": "^5.0.0",
     "php": "^8.2",
-    "klaviyo/api": "^7.1"
+    "klaviyo/api": "^14.0.0"
+  },
+  "require-dev": {
+    "craftcms/commerce": "^5.0.0",
+		"craftcms/phpstan": "dev-main",
+		"craftcms/rector": "dev-main",
+    "fostercommerce/ecs": "dev-main",
+    "fostercommerce/rector": "dev-main",
+    "phpstan/phpstan": "^1.11",
+    "roave/security-advisories": "dev-latest"
   },
   "autoload": {
     "psr-4": {
@@ -21,15 +30,6 @@
     "handle": "klaviyoconnect",
     "name": "Klaviyo Connect",
     "developer": "Foster Commerce"
-  },
-  "require-dev": {
-    "craftcms/commerce": "^5.0.0",
-		"craftcms/phpstan": "dev-main",
-		"craftcms/rector": "dev-main",
-    "fostercommerce/ecs": "dev-main",
-    "fostercommerce/rector": "dev-main",
-    "phpstan/phpstan": "^1.11",
-    "roave/security-advisories": "dev-latest"
   },
   "config": {
     "allow-plugins": {
