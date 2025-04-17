@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 6.2.0
+
+- Update to use klaviyo/api v14, revision [2025-04-15](https://developers.klaviyo.com/en/docs/changelog_#revision-2025-04-15-ga)
+
 ## 6.1.1
 
 - Update profile data that is used for order events.

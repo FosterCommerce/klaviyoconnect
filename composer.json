@@ -2,7 +2,7 @@
   "name": "fostercommerce/klaviyoconnect",
   "description": "Craft Commerce",
   "type": "craft-plugin",
-  "version": "6.1.1",
+  "version": "6.2.0",
   "keywords": [
     "klaviyo"
   ],
@@ -10,7 +10,7 @@
   "require": {
     "craftcms/cms": "^4.0.0",
     "php": "^8.0",
-    "klaviyo/api": "^7.1"
+    "klaviyo/api": "^14.0.0"
   },
   "autoload": {
     "psr-4": {
