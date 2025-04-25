@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 7.2.1 - 2025-04-25
+
+### Fixed
+
+- Fixed an issue where accessing custom line item purchasables was causing an exception and preventing orders from being updated.
+
 ## 7.2.0
 
 ### Updated
