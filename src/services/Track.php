@@ -4,9 +4,11 @@ namespace fostercommerce\klaviyoconnect\services;
 
 use Craft;
 use craft\commerce\elements\Order;
+use craft\commerce\enums\LineItemType;
 use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\events\RefundTransactionEvent;
 use craft\commerce\events\TransactionEvent;
+use craft\commerce\models\LineItem;
 use craft\elements\Address;
 use craft\helpers\ArrayHelper;
 use DateTime;
@@ -285,47 +287,16 @@ class Track extends Base
 
 	protected function getOrderDetails(Order $order, string $event = ''): array
 	{
-		/** @var Settings $settings */
-		$settings = Plugin::getInstance()->getSettings();
-
 		$lineItemsProperties = [];
 
 		foreach ($order->lineItems as $lineItem) {
-			$lineItemProperties = [];
-
-			// Add regular Product purchasable properties
-			$product = $lineItem->purchasable->product ?? [];
-			if ($product) {
-				$lineItemProperties = [
-					'value' => $lineItem->price * $lineItem->qty,
-					'ProductName' => $product->title,
-					'Slug' => $product->slug,
-					'ProductURL' => $product->getUrl(),
-					'ProductType' => $product->type->name,
-					'ItemPrice' => $lineItem->price,
-					'RowTotal' => $lineItem->subtotal,
-					'Quantity' => $lineItem->qty,
-					'SKU' => $lineItem->purchasable->sku,
-				];
-
-				$variant = $lineItem->purchasable;
-
-				$productImageField = $settings->productImageField;
-
-				if (isset($variant->{$productImageField}) && $variant->{$productImageField}->count()) {
-					if ($image = $variant->{$productImageField}->one()) {
-						$lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
-					}
-				} elseif (isset($product->{$productImageField}) && $product->{$productImageField}->count()) {
-					if ($image = $product->{$productImageField}->one()) {
-						$lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
-					}
-				}
+			if ($lineItem->type !== LineItemType::Custom) {
+				$lineItemProperties = $this->populateLineItemProperties($lineItem);
 			}
 
 			// Add any additional user-defined properties
 			$addLineItemCustomPropertiesEvent = new AddLineItemCustomPropertiesEvent([
-				'properties' => $lineItemProperties,
+				'properties' => $lineItemProperties ?? [],
 				'order' => $order,
 				'lineItem' => $lineItem,
 				'event' => $event,
@@ -352,6 +323,53 @@ class Track extends Base
 		Event::trigger(static::class, self::ADD_ORDER_CUSTOM_PROPERTIES, $addOrderCustomPropertiesEvent);
 
 		return $addOrderCustomPropertiesEvent->properties;
+	}
+
+	private function populateLineItemProperties(LineItem $lineItem): array
+	{
+		/** @var Settings $settings */
+		$settings = Plugin::getInstance()->getSettings();
+
+		$lineItemProperties = [];
+
+		// Add regular Product purchasable properties
+		$product = $lineItem->purchasable?->product ?? [];
+		if ($product !== []) {
+			$lineItemProperties = [
+				'value' => $lineItem->price * $lineItem->qty,
+				'ProductName' => $product->title,
+				'Slug' => $product->slug,
+				'ProductURL' => $product->getUrl(),
+				'ProductType' => $product->type->name,
+				'ItemPrice' => $lineItem->price,
+				'RowTotal' => $lineItem->subtotal,
+				'Quantity' => $lineItem->qty,
+				'SKU' => $lineItem->purchasable->sku,
+				'Options' => $lineItem->getOptions(),
+				'Adjustments' => collect($lineItem->getAdjustments())
+					->flatMap(static fn ($adjustment) => [
+						$adjustment->name => $adjustment->amountAsCurrency,
+					])
+					->toArray(),
+
+			];
+
+			$variant = $lineItem->purchasable;
+
+			$productImageField = $settings->productImageField;
+
+			if (isset($variant->{$productImageField}) && $variant->{$productImageField}->count()) {
+				if ($image = $variant->{$productImageField}->one()) {
+					$lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
+				}
+			} elseif (isset($product->{$productImageField}) && $product->{$productImageField}->count()) {
+				if ($image = $product->{$productImageField}->one()) {
+					$lineItemProperties['ImageURL'] = $image->getUrl($settings->productImageFieldTransformation, true);
+				}
+			}
+		}
+
+		return $lineItemProperties;
 	}
 
 	private function isInGroup(array $selectedGroups, array $userGroups): bool
