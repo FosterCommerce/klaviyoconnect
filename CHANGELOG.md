@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 7.2.2 - 2025-04-28
+
+### Fixed
+
+- Fix issue where Klaviyo lists on the plugin settings page were not being loaded correctly.
+
 ## 7.2.1 - 2025-04-25
 
 ### Fixed
