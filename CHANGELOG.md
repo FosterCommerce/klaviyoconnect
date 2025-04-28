@@ -1,5 +1,9 @@
 # Release Notes for KlaviyoConnect
 
+## 6.2.1 - 2025-04-28
+
+- Fix issue where Klaviyo lists on the plugin settings page were not being loaded correctly.
+
 ## 6.2.0
 
 - Update to use klaviyo/api v14, revision [2025-04-15](https://developers.klaviyo.com/en/docs/changelog_#revision-2025-04-15-ga)
