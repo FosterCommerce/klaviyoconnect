@@ -92,7 +92,7 @@ class Api extends Base
 			$cursor = null;
 
 			do {
-				$result = $this->api?->Lists->getLists(['name'], page_cursor: $cursor);
+				$result = $this->api?->Lists->getLists(fields_list: ['name'], page_cursor: $cursor);
 				$lists = [
 					...$lists,
 					...$result['data'],
