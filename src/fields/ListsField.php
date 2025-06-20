@@ -61,7 +61,12 @@ class ListsField extends Field
 
 	public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
 	{
-		$value = is_array($value) ? collect($value)->pluck('id')->toArray() : [];
+		if (is_array($value) && is_array(reset($value))) {
+			// DB format
+			$value = array_column($value, 'id');
+		} else {
+			$value = is_array($value) ? $value : [];
+		}
 
 		$modified = [];
 
