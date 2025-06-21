@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+### 7.2.3 - 2025-06-21
+
+### Fixed
+
+- Fix an issue in the ListsField where setting the value wasn't normalizing correctly.
+
 ## 7.2.2 - 2025-04-28
 
 ### Fixed

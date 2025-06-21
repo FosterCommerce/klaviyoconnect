@@ -4,9 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
-      - develop
-      - craft-5
+      - main
   pull_request:
 
 jobs:
