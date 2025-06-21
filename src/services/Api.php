@@ -6,6 +6,8 @@ use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\models\KlaviyoList;
 use KlaviyoAPI\ApiException;
 use KlaviyoAPI\KlaviyoAPI;
+use KlaviyoAPI\Model\EventCreateQueryV2;
+use KlaviyoAPI\Model\ProfileUpsertQuery;
 use yii\base\Exception;
 
 class Api extends Base
@@ -60,9 +62,9 @@ class Api extends Base
 			$properties['attributes']['properties'] = $mappedProperties;
 		}
 
-		$this->api?->Events->createEvent([
+		$this->api?->Events->createEvent(new EventCreateQueryV2([
 			'data' => $properties,
-		]);
+		]));
 	}
 
 	public function identify(array $profile): void
@@ -73,7 +75,7 @@ class Api extends Base
 		}
 
 		try {
-			$this->api?->Profiles->createOrUpdateProfile($profile);
+			$this->api?->Profiles->createOrUpdateProfile(new ProfileUpsertQuery($profile));
 		} catch (ApiException $e) {
 			// 409 for a duplicate profile error - if we try track the same person twice, Klaviyo will respond with this.
 			if ($e->getCode() !== 409) {
