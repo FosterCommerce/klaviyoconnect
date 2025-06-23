@@ -56,8 +56,8 @@ _Using the Klaviyo Lists Field from a global entry_
 ```twig
 <form method="POST">
     <input type="hidden" name="action" value="/klaviyoconnect/api/track" />
-    {% for id, name in global.myKlaviyoLists %}
-      <input type="hidden" name="lists[]" value="{{ id }}" />
+    {% for list in global.myKlaviyoLists %}
+      <input type="hidden" name="lists[]" value="{{ list.id }}" />
     {% endfor %}
     <label>
       Email
