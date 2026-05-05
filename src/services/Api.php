@@ -23,7 +23,14 @@ class Api extends Base
 	{
 		parent::init();
 
-		$this->api = new KlaviyoAPI($this->getSetting('klaviyoApiKey'));
+		$this->api = new KlaviyoAPI(
+			$this->getSetting('klaviyoApiKey'),
+			num_retries: 0,
+			guzzle_options: [
+				'connect_timeout' => 5,
+				'timeout' => 5,
+			],
+		);
 	}
 
 	public function track(string $event, array $profile, ?EventProperties $eventProperties = null, ?string $timestamp = null): void
