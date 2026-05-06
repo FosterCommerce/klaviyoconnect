@@ -19,6 +19,7 @@ use craft\web\UrlManager;
 use fostercommerce\klaviyoconnect\queue\jobs\TrackOrderComplete;
 use fostercommerce\klaviyoconnect\utilities\KCUtilities;
 use fostercommerce\klaviyoconnect\variables\Variable;
+use Throwable;
 use yii\base\Event;
 
 /**
@@ -70,14 +71,22 @@ class Plugin extends \craft\base\Plugin
 
         if ($settings->trackSaveUser) {
             Event::on(User::class, User::EVENT_AFTER_SAVE, static function(Event $event): void {
-                self::getInstance()->track->onSaveUser($event);
+                try {
+                    self::getInstance()->track->onSaveUser($event);
+                } catch (Throwable $throwable) {
+                    Craft::error('Klaviyo onSaveUser failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+                }
             });
         }
 
         if (Craft::$app->plugins->isPluginEnabled('commerce')) {
             if ($settings->trackCommerceCartUpdated) {
                 Event::on(Order::class, Order::EVENT_AFTER_SAVE, static function(Event $e): void {
-                    self::getInstance()->track->onCartUpdated($e);
+                    try {
+                        self::getInstance()->track->onCartUpdated($e);
+                    } catch (Throwable $throwable) {
+                        Craft::error('Klaviyo onCartUpdated failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+                    }
                 });
             }
 
@@ -96,7 +105,11 @@ class Plugin extends \craft\base\Plugin
                 Event::on(OrderHistories::class,
                     OrderHistories::EVENT_ORDER_STATUS_CHANGE,
                     static function(OrderStatusEvent $e): void {
-                        self::getInstance()->track->onStatusChanged($e);
+                        try {
+                            self::getInstance()->track->onStatusChanged($e);
+                        } catch (Throwable $throwable) {
+                            Craft::error('Klaviyo onStatusChanged failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+                        }
                     }
                 );
             }
@@ -105,7 +118,11 @@ class Plugin extends \craft\base\Plugin
                 Event::on(Payments::class,
                     Payments::EVENT_AFTER_REFUND_TRANSACTION,
                     static function(RefundTransactionEvent $e): void {
-                        self::getInstance()->track->onOrderRefunded($e);
+                        try {
+                            self::getInstance()->track->onOrderRefunded($e);
+                        } catch (Throwable $throwable) {
+                            Craft::error('Klaviyo onOrderRefunded failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+                        }
                     }
                 );
             }

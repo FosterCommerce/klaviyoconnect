@@ -1,5 +1,12 @@
 # Release Notes for KlaviyoConnect
 
+## 6.2.2 - 2026-05-05
+
+### Fixed
+
+- Klaviyo API failures no longer break host requests. Errors are caught, logged to the `klaviyoconnect` category, and the request continues.
+- Klaviyo API calls now hard-cap at 5s (5s connect) with retries disabled, so an unresponsive Klaviyo can't stall the host request.
+
 ## 6.2.1 - 2025-04-28
 
 - Fix issue where Klaviyo lists on the plugin settings page were not being loaded correctly.
