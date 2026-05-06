@@ -7,7 +7,7 @@
 - Klaviyo API failures no longer break host requests. Errors are caught, logged to the `klaviyoconnect` category, and the request continues.
 - Klaviyo API calls now hard-cap at 5s (5s connect) with retries disabled, so an unresponsive Klaviyo can't stall the host request.
 
-### 7.2.3 - 2025-06-21
+## 7.2.3 - 2025-06-21
 
 ### Fixed
 
@@ -25,19 +25,19 @@
 
 - Fixed an issue where accessing custom line item purchasables was causing an exception and preventing orders from being updated.
 
-## 7.2.0
+## 7.2.0 - 2025-04-17
 
 ### Updated
 
 - Updated to use klaviyo/api v14, revision [2025-04-15](https://developers.klaviyo.com/en/docs/changelog_#revision-2025-04-15-ga)
 
-## 7.1.1
+## 7.1.1 - 2025-03-24
 
 ## Updated
 
 - Updated profile data that is used for order events.
 
-## 7.1.0
+## 7.1.0 - 2025-03-24
 
 ### Added
 
@@ -49,7 +49,7 @@
 - Use correct value format for normalizing list field values
 
 
-## 7.0.0
+## 7.0.0 - 2024-09-23
 
 - Migrated to Craft 5 and Commerce 5
 
