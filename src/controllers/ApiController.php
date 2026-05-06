@@ -9,7 +9,7 @@ use craft\web\Controller;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\Plugin;
 use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
-use GuzzleHttp\Exception\RequestException;
+use Throwable;
 use yii\web\NotFoundHttpException;
 use yii\web\Response as YiiResponse;
 
@@ -29,9 +29,23 @@ class ApiController extends Controller
 	{
 		$this->requirePostRequest();
 
-		$this->identify();
-		$this->trackEvent();
-		$this->addProfileToLists();
+		try {
+			$this->identify();
+		} catch (Throwable $throwable) {
+			Craft::error('Klaviyo identify failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+		}
+
+		try {
+			$this->trackEvent();
+		} catch (Throwable $throwable) {
+			Craft::error('Klaviyo trackEvent failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+		}
+
+		try {
+			$this->addProfileToLists();
+		} catch (Throwable $throwable) {
+			Craft::error('Klaviyo addProfileToLists failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+		}
 
 		$request = Craft::$app->getRequest();
 		if ($request->isAjax && ! $request->getParam('forward')) {
@@ -76,7 +90,12 @@ class ApiController extends Controller
 	 */
 	public function actionIdentify(): void
 	{
-		$this->identify();
+		try {
+			$this->identify();
+		} catch (Throwable $throwable) {
+			Craft::error('Klaviyo identify failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+		}
+
 		$this->forwardOrRedirect();
 	}
 
@@ -169,8 +188,9 @@ class ApiController extends Controller
 		$profile = $this->mapProfile();
 		try {
 			Plugin::getInstance()->track->identifyUser($profile);
-		} catch (RequestException) {
-			// Swallow. Klaviyo responds with a 200.
+		} catch (Throwable $throwable) {
+			// Swallow. Klaviyo flake/outage must not break host request flow.
+			Craft::error('Klaviyo identifyUser failed: ' . $throwable->getMessage(), 'klaviyoconnect');
 		}
 	}
 
