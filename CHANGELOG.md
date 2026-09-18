@@ -1,5 +1,11 @@
 # Release Notes for KlaviyoConnect
 
+## 7.2.5 - 2026-09-18
+
+### Fixed
+
+- Fixed an error on edit screens when the saved Klaviyo list isn't in the connected account.
+
 ## 7.2.4 - 2026-05-05
 
 ### Fixed
