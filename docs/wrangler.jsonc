@@ -2,7 +2,7 @@
   "name": "klaviyoconnect",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": ".vuepress/dist",
+    "directory": ".vitepress/dist",
     "not_found_handling": "404-page"
   }
 }

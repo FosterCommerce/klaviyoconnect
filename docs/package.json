@@ -1,13 +1,19 @@
 {
   "name": "klaviyoconnect",
+  "private": true,
+  "type": "module",
   "repository": "git@github.com:FosterCommerce/klaviyoconnect.git",
   "author": "Tyrone Tudehope <tyrone@fostercommerce.com>",
   "scripts": {
-    "dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev .",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build ."
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview ."
   },
   "devDependencies": {
-    "vuepress": "^1.9.10"
+    "vitepress": "^1.6.4"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@1.22.22",
+  "resolutions": {
+    "vite": "^6.4.3"
+  }
 }
