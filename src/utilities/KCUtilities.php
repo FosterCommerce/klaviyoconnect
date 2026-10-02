@@ -17,7 +17,7 @@ class KCUtilities extends Utility
 	 */
 	public static function displayName(): string
 	{
-		return Craft::t('klaviyoconnect', 'Klaviyo Connect');
+		return Craft::t('klaviyoconnect', 'Klaviyo Connect Plus');
 	}
 
 	/**
@@ -30,7 +30,7 @@ class KCUtilities extends Utility
 	 */
 	public static function id(): string
 	{
-		return 'klaviyo-connect';
+		return 'klaviyoconnect';
 	}
 
 	/**

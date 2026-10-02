@@ -194,7 +194,7 @@ class ApiController extends Controller
 		}
 	}
 
-	private function forwardOrRedirect(): YiiResponse
+	private function forwardOrRedirect(): ?YiiResponse
 	{
 		$request = Craft::$app->getRequest();
 		$forwardUrl = $request->getParam('forward');

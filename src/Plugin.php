@@ -28,7 +28,6 @@ use yii\base\Event;
  * @property \fostercommerce\klaviyoconnect\services\Api $api
  * @property \fostercommerce\klaviyoconnect\services\Track $track
  * @property \fostercommerce\klaviyoconnect\services\Map $map
- * @property \fostercommerce\klaviyoconnect\services\Cart $cart
  */
 class Plugin extends \craft\base\Plugin
 {
@@ -38,30 +37,56 @@ class Plugin extends \craft\base\Plugin
 	{
 		parent::init();
 
+		// Set the base template directory for the plugin
+		Craft::setAlias('@klaviyoconnect', $this->getBasePath());
+
 		$this->setComponents([
 			'api' => \fostercommerce\klaviyoconnect\services\Api::class,
 			'track' => \fostercommerce\klaviyoconnect\services\Track::class,
 			'map' => \fostercommerce\klaviyoconnect\services\Map::class,
-			'cart' => \fostercommerce\klaviyoconnect\services\Cart::class,
 		]);
 
 		/** @var Settings $settings */
 		$settings = $this->getSettings();
 
-		// [Ty] Temporarily disabled KCUtilities on Craft 5
-		//        Event::on(
-		//            Utilities::class,
-		//            Utilities::EVENT_REGISTER_UTILITY_TYPES,
-		//            static function(RegisterComponentTypesEvent $event): void {
-		//                $event->types[] = KCUtilities::class;
-		//            }
-		//        );
+		// TODO: Fix this page - the date range picker is not working
+		// Event::on(
+		// 	Utilities::class,
+		// 	Utilities::EVENT_REGISTER_UTILITIES,
+		// 	static function(RegisterComponentTypesEvent $event): void {
+		// 		$event->types[] = KCUtilities::class;
+		// 	}
+		// );
 
 		Event::on(
 			UrlManager::class,
 			UrlManager::EVENT_REGISTER_CP_URL_RULES,
 			static function (RegisterUrlRulesEvent $event): void {
 				$event->rules['klaviyoconnect/sync-orders'] = 'klaviyoconnect/api/sync-orders';
+			}
+		);
+
+		Event::on(
+			\craft\web\Application::class,
+			\craft\web\Application::EVENT_INIT,
+			static function (): void {
+				$request = Craft::$app->getRequest();
+
+				if (! $request->getIsConsoleRequest()) {
+					$path = $request->getPathInfo();
+
+					// Redirect old plugin handle URLs to new one
+					if (str_starts_with($path, 'actions/klaviyoconnect/cart/restore') ||
+						str_starts_with($path, 'actions/klaviyoconnect/cart/restore')) {
+						$number = $request->getParam('number');
+						$newUrl = \craft\helpers\UrlHelper::actionUrl('klaviyoconnect/cart/restore', [
+							'number' => $number,
+						]);
+
+						Craft::$app->getResponse()->redirect($newUrl)->send();
+						Craft::$app->end();
+					}
+				}
 			}
 		);
 
@@ -133,7 +158,7 @@ class Plugin extends \craft\base\Plugin
 
 		Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, static function (Event $event): void {
 			$variable = $event->sender;
-			$variable->set('klaviyoConnect', Variable::class);
+			$variable->set('klaviyoconnect', Variable::class);
 		});
 	}
 
@@ -146,6 +171,6 @@ class Plugin extends \craft\base\Plugin
 
 	protected function createSettingsModel(): ?Model
 	{
-		return new \fostercommerce\klaviyoconnect\models\Settings();
+		return new Settings();
 	}
 }

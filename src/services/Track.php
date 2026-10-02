@@ -278,6 +278,7 @@ class Track extends Base
 		]);
 		Event::trigger(static::class, self::ADD_PROFILE_PROPERTIES, $event);
 
+		$profile = $event->profile;
 		if ($event->properties !== []) {
 			$profile['properties'] = $event->properties;
 		}
@@ -306,6 +307,8 @@ class Track extends Base
 
 			$lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
 		}
+
+		$lineItemsProperties = array_values(array_filter($lineItemsProperties));
 
 		$customProperties = [
 			'OrderID' => $order->id,

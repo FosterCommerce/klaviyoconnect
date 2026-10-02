@@ -28,7 +28,7 @@ class Api extends Base
 			num_retries: 0,
 			guzzle_options: [
 				'connect_timeout' => 5,
-				'timeout' => 5,
+				'timeout' => 10,
 			],
 		);
 	}
@@ -102,6 +102,7 @@ class Api extends Base
 
 			do {
 				$result = $this->api?->Lists->getLists(fields_list: ['name'], page_cursor: $cursor);
+
 				$lists = [
 					...$lists,
 					...$result['data'],

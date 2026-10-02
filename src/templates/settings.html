@@ -28,7 +28,7 @@
     <label>Lists</label>
     <p class="instructions">{{ "Select lists available to Control Panel" | t }}</p>
   </div>
-{% if craft.klaviyoConnect.lists is not null %}
+{% if craft.klaviyoconnect.lists is not null %}
   <div class="input">
     <input type="hidden" name="klaviyoListsAll" value="0" />
     <input type="hidden" name="klaviyoAvailableLists[]" value="" />
@@ -42,7 +42,7 @@
       />
       <label for="klaviyoListsAll" class="klaviyoListsAll-label">All</label>
     </div>
-    {% for list in craft.klaviyoConnect.lists %}
+    {% for list in craft.klaviyoconnect.lists %}
     <div class="field checkboxfield">
       <input type="checkbox" name="klaviyoAvailableLists[]"
         class="klaviyoAvailableLists"
@@ -55,9 +55,9 @@
     </div>
     {% endfor %}
   </div>
-{% elseif craft.klaviyoConnect.error is not null  %}
+{% elseif craft.klaviyoconnect.error is not null  %}
   <ul class="errors">
-    <li>{{craft.klaviyoConnect.error}}</li>
+    <li>{{craft.klaviyoconnect.error}}</li>
   </ul>
 {% else %}
   <ul class="errors">
