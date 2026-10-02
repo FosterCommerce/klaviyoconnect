@@ -57,6 +57,7 @@ Without `subscribe`, the plugin looks up the profile by email and adds it to eac
 | `event[value_currency]` | An ISO 4217 currency code, such as `USD`. Left out unless it's three capital letters. |
 | `event[timestamp]` | When the event happened, in ISO 8601 format such as `2026-01-15T09:30:00Z`. Defaults to the time Klaviyo receives the event. Klaviyo Connect also uses that default for a value that isn't a date, or a time before 1990 or more than a year ahead. |
 | `event[PropertyName]` | A custom event property. Every other key under `event` becomes one. |
+| `event[Items][0][SKU]` | A nested key sends an array or object, here an `Items` array whose first entry has a `SKU`. A JSON string in a single field is sent as text. See [send an array of items](../dev-guide/template-examples.md#send-an-array-of-items). |
 
 ### Order events
 

@@ -119,6 +119,32 @@ Klaviyo's own profile keys, such as `first_name` and `location`, go at the top l
 
 Klaviyo shows the event as a metric named Submitted Contact Form, with a `Topic` property. To record an event once however often the form is posted, add `event[unique_id]`. To send a value, add `event[value]` and `event[value_currency]`.
 
+### Send an array of items
+
+Nested field names send an array of objects, which a Klaviyo email can loop over. This form sends the cart's line items with a Requested Quote event:
+
+```twig
+<form method="post">
+  {{ csrfInput() }}
+  {{ actionInput('klaviyoconnect/api/track') }}
+  {{ redirectInput('quote/thanks') }}
+  {{ hiddenInput('event[name]', 'Requested Quote') }}
+
+  {% for item in cart.lineItems %}
+    {{ hiddenInput("event[Items][#{loop.index0}][SKU]", item.sku) }}
+    {{ hiddenInput("event[Items][#{loop.index0}][ProductName]", item.description) }}
+    {{ hiddenInput("event[Items][#{loop.index0}][Quantity]", item.qty) }}
+  {% endfor %}
+
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required>
+
+  <button type="submit">Request a quote</button>
+</form>
+```
+
+Klaviyo receives `Items` as an array, with `SKU`, `ProductName` and `Quantity` on each entry. Form values arrive as text, so `Quantity` is `"2"` rather than `2`. Don't post the array as JSON in one field: Klaviyo Connect sends that as a single string. For cart and order events, Klaviyo Connect already sends `Items` itself; see [event properties](../reference/event-properties.md).
+
 ## Track an event for an order
 
 On an order confirmation page, this form sends the order's details with the event:
