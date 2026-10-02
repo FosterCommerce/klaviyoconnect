@@ -110,6 +110,28 @@ Event::on(
 );
 ```
 
+### Add to Started Checkout
+
+This listener adds a purchase order number, from an order field with the handle `purchaseOrder`, to Started Checkout:
+
+```php
+use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
+use fostercommerce\klaviyoconnect\services\Track;
+use yii\base\Event;
+
+Event::on(
+    Track::class,
+    Track::ADD_ORDER_CUSTOM_PROPERTIES,
+    static function (AddOrderCustomPropertiesEvent $event): void {
+        if (in_array($event->event, ['Started Checkout', 'Updated Cart'], true)) {
+            $event->properties['PurchaseOrder'] = $event->order->getFieldValue('purchaseOrder');
+        }
+    },
+);
+```
+
+Started Checkout is sent once per cart, as soon as the cart has an email and an item, which is often before the shopper fills in later checkout fields. The listener also adds the value to Updated Cart, which is sent again when the cart changes, so a purchase order number entered later still reaches Klaviyo.
+
 ## Add line item properties
 
 `Track::ADD_LINE_ITEM_CUSTOM_PROPERTIES` fires once per line item, each time Klaviyo Connect builds an order event's properties. It fires before the order event, for the same event names.
