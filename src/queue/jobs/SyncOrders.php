@@ -14,24 +14,16 @@ class SyncOrders extends BaseJob
 	{
 		$this->setProgress($queue, 1);
 
-		if ($this->orderId !== 0) {
-			$order = Order::find()->id($this->orderId)->one();
+		$order = Order::find()->id($this->orderId)->one();
 
-			if ($order) {
-				// When syncing orders we want to use the timestamp from the order
-				// instead of the time the sync operation was performed.
-				Plugin::getInstance()->track->trackOrder(
-					'Placed Order',
-					$order,
-					null,
-					$order->dateOrdered?->format('Y-m-d\TH:i:s'),
-				);
-			}
+		// Date the event with when the order was placed, not when the sync runs
+		if ($order instanceof Order) {
+			Plugin::getInstance()->track->trackOrder('Placed Order', $order, null, $order->dateOrdered?->format(DATE_ATOM));
 		}
 	}
 
 	protected function defaultDescription(): string
 	{
-		return 'Syncing orders to Klaviyo';
+		return 'Sending order ' . $this->orderId . ' to Klaviyo';
 	}
 }

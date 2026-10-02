@@ -4,81 +4,113 @@ namespace fostercommerce\klaviyoconnect\controllers;
 
 use Craft;
 use craft\commerce\Plugin as Commerce;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use fostercommerce\klaviyoconnect\models\Settings;
+use craft\web\User;
+use craft\web\View;
 use fostercommerce\klaviyoconnect\Plugin;
-use yii\web\HttpException;
+use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 class CartController extends Controller
 {
 	protected array|int|bool $allowAnonymous = true;
 
+	/**
+	 * @throws BadRequestHttpException
+	 * @throws NotFoundHttpException
+	 */
 	public function actionRestore(): Response
 	{
-		$number = Craft::$app->getRequest()->getParam('number');
-
-		if (! $number) {
-			throw new HttpException(400, 'Cart number is required');
+		if (! Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
+			throw new BadRequestHttpException(Craft::t('klaviyoconnect', 'cart.error.commerceRequired'));
 		}
 
+		$number = $this->request->getQueryParam('number');
+		if (! is_string($number) || $number === '') {
+			throw new BadRequestHttpException(Craft::t('klaviyoconnect', 'cart.error.numberRequired'));
+		}
+
+		// Log out from the login page's form, then reload this link, since Craft's logout action ignores a posted redirect
+		if ($this->request->getIsPost() && $this->request->getBodyParam('logOut')) {
+			/** @var User $user */
+			$user = Craft::$app->getUser();
+			$user->logout(false);
+
+			return $this->redirect($this->request->getAbsoluteUrl());
+		}
+
+		/** @var Commerce $commerce */
 		$commerce = Commerce::getInstance();
 		$order = $commerce->getOrders()->getOrderByNumber($number);
-
-		if (! $order) {
-			throw new HttpException(404, 'Cart not found');
+		if ($order === null) {
+			throw new NotFoundHttpException(Craft::t('klaviyoconnect', 'cart.error.notFound'));
 		}
 
 		if ($order->isCompleted) {
-			throw new HttpException(400, 'Cannot restore a completed order');
+			throw new BadRequestHttpException(Craft::t('klaviyoconnect', 'cart.error.completed'));
 		}
 
-		// Get current user
-		$currentUser = Craft::$app->getUser()->getIdentity();
-		$currentUserId = $currentUser ? $currentUser->id : null;
+		// Restore on the order's site, since the cart cookie belongs to that site's store and domain
+		$currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
+		if ($order->orderSiteId !== null && $order->orderSiteId !== $currentSiteId) {
+			// Redirect once, since a disabled order site or a pinned CRAFT_SITE never becomes the current site
+			if (! $this->request->getQueryParam('siteRedirected')) {
+				return $this->redirect(UrlHelper::urlWithParams(Plugin::getInstance()->cart->restoreUrl($order), [
+					'siteRedirected' => 1,
+				]));
+			}
 
-		// Check if cart belongs to a CREDENTIALED user account (matches Commerce's behavior)
+			// Restore on this site only for the same store, since another store's cart number breaks this site's cart
+			if ($order->storeId !== $commerce->getStores()->getCurrentStore()->id) {
+				throw new BadRequestHttpException(Craft::t('klaviyoconnect', 'cart.error.otherStore'));
+			}
+		}
+
+		$cartUrl = Plugin::getInstance()->getSettings()->getCartUrl($currentSiteId);
+		if ($cartUrl === '') {
+			throw new BadRequestHttpException(Craft::t('klaviyoconnect', 'cart.error.cartUrlMissing'));
+		}
+
+		$currentUser = Craft::$app->getUser()->getIdentity();
 		$cartCustomer = $order->getCustomer();
 
-		// If no one is logged in, or wrong user is logged in
-		if ($cartCustomer && $cartCustomer->getIsCredentialed() && (! $currentUserId || $order->customerId !== $currentUserId)) {
-			// Show message page using CP template mode
-			$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
-			$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
-				'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
-			]);
-			$view = Craft::$app->getView();
-			$oldMode = $view->getTemplateMode();
-			$view->setTemplateMode(\craft\web\View::TEMPLATE_MODE_CP);
-			$html = $view->renderTemplate('klaviyoconnect/login-required', [
-				'loginUrl' => $loginUrl,
-				'message' => Craft::t('klaviyoconnect', 'This cart belongs to a user account. Please log in to view it.'),
-			]);
-			$view->setTemplateMode($oldMode);
-			return $this->asRaw($html);
+		// Block taking over another customer's cart, and require login for a cart that belongs to a user account
+		if ($currentUser !== null && $cartCustomer !== null && $cartCustomer->id !== $currentUser->id) {
+			return $this->renderLoginRequired(Craft::t('klaviyoconnect', 'cart.error.belongsToOther'), true);
 		}
 
-		// At this point, one of these is true:
-		// - Cart has no customer (guest cart)
-		// - Cart has non-credentialed customer (guest with email only)
-		// - Current user owns the cart (credentialed customer)
+		if ($currentUser === null && $cartCustomer?->getIsCredentialed()) {
+			return $this->renderLoginRequired(Craft::t('klaviyoconnect', 'cart.error.loginRequired'), false);
+		}
 
-		// Clear current cart and restore using Commerce 5's API
 		$cartsService = $commerce->getCarts();
 		$cartsService->forgetCart();
-		$cartsService->setSessionCartNumber($order->number);
+		$cartsService->setSessionCartNumber($number);
 
-		$session = Craft::$app->getSession();
-		$session->setNotice(Craft::t('klaviyoconnect', 'Your cart has been restored.'));
+		Craft::$app->getSession()->setNotice(Craft::t('klaviyoconnect', 'cart.restored'));
 
-		/** @var Settings $settings */
-		$settings = Plugin::getInstance()->getSettings();
-		$cartUrl = $settings->cartUrl;
+		return $this->redirect(UrlHelper::siteUrl($cartUrl, siteId: $currentSiteId));
+	}
 
-		if ((string) $cartUrl === '') {
-			throw new HttpException(400, 'Cart URL is not configured. Please set it in Settings → Klaviyo Connect Plus → Cart URL.');
-		}
+	private function renderLoginRequired(string $message, bool $logOutFirst): Response
+	{
+		$restoreUrl = $this->request->getAbsoluteUrl();
 
-		return $this->redirect($cartUrl);
+		/** @var User $user */
+		$user = Craft::$app->getUser();
+		// Send the owner back to this restore link after login
+		$user->setReturnUrl($restoreUrl);
+
+		/** @var string $loginPath */
+		$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
+
+		// Link a logged-in user through logout and back to this restore link
+		return $this->renderTemplate('klaviyoconnect/login-required', [
+			'loginUrl' => UrlHelper::url($loginPath),
+			'logOutFirst' => $logOutFirst,
+			'message' => $message,
+		], View::TEMPLATE_MODE_CP);
 	}
 }

@@ -1,12 +1,13 @@
 {
   "name": "klaviyoconnect",
   "repository": "git@github.com:FosterCommerce/klaviyoconnect.git",
-  "author": "Tyrone Tudehope <tyronetudehope@gmail.com>",
+  "author": "Tyrone Tudehope <tyrone@fostercommerce.com>",
   "scripts": {
-    "dev": "vuepress dev .",
-    "build": "vuepress build ."
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider vuepress dev .",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vuepress build ."
   },
   "devDependencies": {
     "vuepress": "^1.9.10"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

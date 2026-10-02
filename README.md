@@ -1,28 +1,47 @@
-![Header](docs/images/header.png)
+![Klaviyo Connect](docs/images/header.png)
+
 # Klaviyo Connect
 
-A [Craft CMS](https://craftcms.com/) plugin for [Klaviyo](https://www.klaviyo.com).
+Sends Craft Commerce carts, orders and customers to Klaviyo, so you can run email and SMS flows from what shoppers do.
 
-Take advantage of [Klaviyo](https://www.klaviyo.com) to drive more sales with super-targeted, highly-relevant email marketing campaigns.
+## Overview
 
-Connect your Klaviyo account to Craft Commerce to track shoppers during their checkout process and trigger custom events that help you segment shoppers for personalized email notifications.
+- Power abandoned cart reminders and post-purchase follow-ups without touching your templates: cart and order events go to Klaviyo from the server as they happen.
+- Personalize customer experiences, with Craft users synced to Klaviyo profiles and the fields and Twig values you choose.
+- Build welcome series and any flow your marketing team imagines, from your own events and list signups sent from your templates.
+- Bring shoppers back to the cart they left, from a link in your abandoned cart emails.
+- Start with your history: send past orders to Klaviyo, so flows and reports have data from the first day.
+- Nudge shoppers about products that caught their eye, with Viewed Product tracking from your product templates for browse abandonment flows.
+- Run each site or store on its own Klaviyo account and lists, or share one.
 
-Then within your Klaviyo account create the appropriate automated "flows" for these events to automate email messages or include your customers into specific campaigns.
+## How it works
 
-__Perfect for recovering abandoned carts, welcoming first-time shoppers, or marketing to purchasers of specific products.__
+Add each site's Klaviyo API keys in the plugin settings, and Klaviyo Connect starts sending cart, order and customer data to Klaviyo. It sends from the server through Craft's queue, so your templates stay as they are and a slow Klaviyo doesn't delay checkout. You choose which events and order data to send in the plugin settings.
+
+## Requirements
+
+- Craft CMS `^5.6.0`
+- Craft Commerce `^5.1.0`, for cart and order events
+- PHP `^8.2`
+
+## Install
+
+```sh
+composer require fostercommerce/klaviyoconnect
+./craft plugin/install klaviyoconnect
+```
 
 ## Documentation
 
-Visit the [Klaviyo Connect Plugin page](https://klaviyoconnect.fostercommerce.com).
+- [Getting started](https://www.fostercommerce.com/craft-cms-plugins/klaviyo-connect/docs/getting-started), install and first setup
+- [Configuration](https://www.fostercommerce.com/craft-cms-plugins/klaviyo-connect/docs/reference/configuration), every setting
+- [Actions](https://www.fostercommerce.com/craft-cms-plugins/klaviyo-connect/docs/reference/actions), forms and links that send events, profiles and list signups
+- [PHP events](https://www.fostercommerce.com/craft-cms-plugins/klaviyo-connect/docs/dev-guide/php-events), for adding your own properties to profiles and events
 
-## Changelog
+## License
 
-Visit the [CHANGELOG](https://github.com/FosterCommerce/klaviyoconnect/blob/master/CHANGELOG.md).
+Proprietary
 
-## Support
+---
 
-Create a [Github issue](https://github.com/FosterCommerce/klaviyoconnect/issues).
-
-<a href="https://fostercommerce.com" style="display: inline-block; margin-top: 1.25em;" target="_blank">
-  <img width="160" height="40" src="./docs/images/fostercommerce.svg">
-</a>
+<a href="https://www.fostercommerce.com" target="_blank"><img src="./docs/images/fostercommerce.svg" alt="Foster Commerce" width="160" height="40"></a>

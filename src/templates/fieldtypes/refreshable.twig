@@ -1,0 +1,6 @@
+{% do view.registerAssetBundle('fostercommerce\\klaviyoconnect\\assetbundles\\ListsFieldAsset') %}
+
+<div class="klaviyoconnect-lists-input" data-field-id="{{ field.id }}" data-site-id="{{ siteId }}" data-namespace="{{ view.getNamespace() }}">
+  <div class="klaviyoconnect-lists-control">{{ inputHtml|raw }}</div>
+  <a href="#" class="klaviyoconnect-refresh-lists light smalltext" role="button">{{ 'fields.refreshLists'|t('klaviyoconnect') }}</a>
+</div>

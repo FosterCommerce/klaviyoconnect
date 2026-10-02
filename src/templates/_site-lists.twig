@@ -1,0 +1,26 @@
+{% import '_includes/forms' as forms %}
+
+{% for siteListRow in siteListRows %}
+  {{ forms.checkboxSelectField({
+    label: 'settings.siteLists.label'|t('klaviyoconnect', { site: siteListRow.site.getUiLabel()|e }),
+    instructions: 'settings.siteLists.instructions'|t('klaviyoconnect'),
+    id: 'siteSettings-' ~ siteListRow.site.uid ~ '-lists',
+    name: 'siteSettings[' ~ siteListRow.site.uid ~ '][klaviyoAvailableLists]',
+    options: (siteListRow.lists ?? [])|map(list => { label: list.name, value: list.id }),
+    values: siteListRow.values,
+    showAllOption: true,
+    errors: siteListRow.lists is null ? [siteListRow.error ?: 'settings.lists.none'|t('klaviyoconnect')] : null,
+  }) }}
+
+  {# Keep the saved lists when Klaviyo's lists couldn't load, so saving doesn't clear them #}
+  {% if siteListRow.lists is null %}
+    {% set listsName = 'siteSettings[' ~ siteListRow.site.uid ~ '][klaviyoAvailableLists]' %}
+    {% if siteListRow.values is same as('*') %}
+      {{ hiddenInput(listsName, '*') }}
+    {% else %}
+      {% for listId in siteListRow.values ?? [] %}
+        {{ hiddenInput(listsName ~ '[]', listId) }}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+{% endfor %}

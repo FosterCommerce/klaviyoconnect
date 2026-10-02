@@ -3,7 +3,7 @@
 
 
 {% if options|length == 0 %}
-  No lists available
+  {{ 'fields.noLists'|t('klaviyoconnect') }}
 {% else %}
   {{ select({
       name:    name,

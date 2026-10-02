@@ -1,192 +1,483 @@
-{% import "_includes/forms" as forms %}
+{% import '_includes/forms' as forms %}
 
-{{ forms.autosuggestField({
-    label: 'Public API Key / Site ID'|t('klaviyoconnect'),
-    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyoconnect'),
-    id: 'klaviyoSiteId',
-    name: 'klaviyoSiteId',
-    value: settings.klaviyoSiteId,
-    errors: settings.getErrors('klaviyoSiteId'),
-    class: 'ltr',
-    suggestEnvVars: true,
+{% do view.registerAssetBundle('fostercommerce\\klaviyoconnect\\assetbundles\\SettingsAsset') %}
+{% js %}
+  new Craft.KlaviyoConnect.Settings({{ {
+    testConnectionButton: 'klaviyoconnect-test-connection'|namespaceInputId,
+    testResults: 'klaviyoconnect-test-results'|namespaceInputId,
+    siteLists: 'klaviyoconnect-site-lists'|namespaceInputId,
+    customPropertiesTable: 'klaviyoconnect-custom-properties'|namespaceInputId,
+    customPropertyRowTemplate: 'klaviyoconnect-custom-property-row'|namespaceInputId,
+    addCustomPropertyButton: 'klaviyoconnect-add-custom-property'|namespaceInputId,
+    imageEngine: 'imageEngine'|namespaceInputId,
+    namedTransform: 'productImageFieldTransformation'|namespaceInputId,
+    imageCraft: 'klaviyoconnect-image-craft'|namespaceInputId,
+    imageSize: 'klaviyoconnect-image-size'|namespaceInputId,
+  }|json_encode|raw }});
+{% endjs %}
+
+{# Prefill from saved settings only, so a key set in config/klaviyoconnect.php is never copied into project config #}
+{% set configFileSettings = craft.app.config.getConfigFromFile('klaviyoconnect') %}
+{% set siteColumns = ['klaviyoSiteId', 'klaviyoApiKey', 'cartUrl', 'eventPrefix'] %}
+{% set configFileColumns = siteColumns|filter(column => configFileSettings[column] is defined) %}
+
+<h2>{{ 'settings.account.heading'|t('klaviyoconnect') }}</h2>
+
+{# Clear the pre-7.3.0 values, since every site now holds its own #}
+{% for column in siteColumns|merge(['klaviyoAvailableLists']) %}
+  {{ hiddenInput(column, '') }}
+{% endfor %}
+{{ hiddenInput('klaviyoListsAll', '0') }}
+
+
+{{ forms.editableTableField({
+  label: 'settings.sites.label'|t('klaviyoconnect'),
+  instructions: 'settings.sites.instructions'|t('klaviyoconnect'),
+  tip: configFileColumns ? 'settings.sites.configFile'|t('klaviyoconnect', { settings: configFileColumns|join(', ') }),
+  warning: configFileSettings.siteSettings is defined ? 'settings.sites.configFileSiteSettings'|t('klaviyoconnect'),
+  id: 'siteSettings',
+  name: 'siteSettings',
+  cols: {
+    heading: {
+      type: 'heading',
+      heading: 'Site'|t('app'),
+      thin: true,
+    },
+    klaviyoSiteId: {
+      type: 'autosuggest',
+      heading: 'settings.sites.publicApiKey'|t('klaviyoconnect'),
+      suggestEnvVars: true,
+      class: 'code',
+    },
+    klaviyoApiKey: {
+      type: 'autosuggest',
+      heading: 'settings.sites.privateApiKey'|t('klaviyoconnect'),
+      suggestEnvVars: true,
+      class: 'code',
+    },
+    cartUrl: {
+      type: 'singleline',
+      heading: 'settings.cartUrl.label'|t('klaviyoconnect'),
+      placeholder: 'cart',
+    },
+    eventPrefix: {
+      type: 'singleline',
+      heading: 'settings.eventPrefix.label'|t('klaviyoconnect'),
+    },
+  },
+  rows: collect(craft.app.sites.getAllSites())
+    .keyBy(site => site.uid)
+    .map(site => {
+      heading: site.getUiLabel()|e,
+      klaviyoSiteId: savedSiteSettings[site.uid].klaviyoSiteId ?? (configFileSettings.klaviyoSiteId is defined ? '' : settings.klaviyoSiteId),
+      klaviyoApiKey: savedSiteSettings[site.uid].klaviyoApiKey ?? (configFileSettings.klaviyoApiKey is defined ? '' : settings.klaviyoApiKey),
+      cartUrl: (savedSiteSettings[site.uid].cartUrl ?? (configFileSettings.cartUrl is defined ? '' : settings.cartUrl))|e,
+      eventPrefix: (savedSiteSettings[site.uid].eventPrefix ?? (configFileSettings.eventPrefix is defined ? '' : settings.eventPrefix))|e,
+    })
+    .all(),
+  fullWidth: true,
+  allowAdd: false,
+  allowDelete: false,
+  allowReorder: false,
+  errors: settings.getErrors('siteSettings')|unique,
 }) }}
 
-{{ forms.autosuggestField({
-    label: 'Private API Key'|t('klaviyoconnect'),
-    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyoconnect'),
-    id: 'klaviyoApiKey',
-    name: 'klaviyoApiKey',
-    value: settings.klaviyoApiKey,
-    errors: settings.getErrors('klaviyoApiKey'),
-    class: 'ltr',
-    suggestEnvVars: true,
+{% set lastError = craft.klaviyoConnect.lastError() %}
+{% set connectionInput %}
+  <button type="button" class="btn" id="klaviyoconnect-test-connection">
+    <div class="label">{{ 'settings.testConnection.button'|t('klaviyoconnect') }}</div>
+    <div class="spinner spinner-absolute"></div>
+  </button>
+  <ul id="klaviyoconnect-test-results" class="klaviyoconnect-test-results" role="status"></ul>
+{% endset %}
+{{ forms.field({
+  label: 'settings.connection.label'|t('klaviyoconnect'),
+  instructions: 'settings.connection.instructions'|t('klaviyoconnect'),
+  warning: lastError ? 'settings.lastError'|t('klaviyoconnect', {
+    date: lastError.date|datetime('short'),
+    message: lastError.message|e,
+  }),
+}, connectionInput) }}
+
+<hr>
+
+<h2>{{ 'settings.lists.heading'|t('klaviyoconnect') }}</h2>
+
+{% set siteListRows = [] %}
+{% for site in craft.app.sites.getAllSites() %}
+  {% set siteLists = craft.klaviyoConnect.lists(site.id) %}
+  {# Read the saved lists, so a config file's siteSettings isn't copied into project config on save #}
+  {% set savedLists = savedSiteSettings[site.uid].klaviyoAvailableLists ?? null %}
+  {% set siteListRows = siteListRows|merge([{
+    site: site,
+    lists: siteLists,
+    error: siteLists is null ? craft.klaviyoConnect.error : null,
+    values: savedLists is not empty ? savedLists : (settings.klaviyoListsAll ? '*' : settings.klaviyoAvailableLists),
+  }]) %}
+{% endfor %}
+<div id="klaviyoconnect-site-lists">
+  {% include 'klaviyoconnect/_site-lists' %}
+</div>
+
+<hr>
+
+<h2>{{ 'settings.tracking.heading'|t('klaviyoconnect') }}</h2>
+
+{{ forms.lightswitchField({
+  label: 'settings.injectOnsiteScript.label'|t('klaviyoconnect'),
+  instructions: 'settings.injectOnsiteScript.instructions'|t('klaviyoconnect'),
+  warning: 'settings.injectOnsiteScript.warning'|t('klaviyoconnect'),
+  name: 'injectOnsiteScript',
+  on: settings.injectOnsiteScript,
+  toggle: 'excluded-uri-patterns',
 }) }}
 
+<div id="excluded-uri-patterns" class="{{ settings.injectOnsiteScript ? '' : 'hidden' }}">
+{{ forms.editableTableField({
+  label: 'settings.excludedUriPatterns.label'|t('klaviyoconnect'),
+  instructions: 'settings.excludedUriPatterns.instructions'|t('klaviyoconnect'),
+  tip: configFileSettings.excludedUriPatterns is defined ? 'settings.excludedUriPatterns.configFile'|t('klaviyoconnect'),
+  id: 'excludedUriPatterns',
+  name: 'excludedUriPatterns',
+  cols: {
+    enabled: {
+      type: 'lightswitch',
+      heading: 'Enabled'|t('app'),
+      thin: true,
+    },
+    siteUid: {
+      type: 'select',
+      heading: 'Site'|t('app'),
+      options: [{ label: 'All Sites'|t('app'), value: '' }]|merge(craft.app.sites.getAllSites()|map(site => { label: site.getUiLabel(), value: site.uid })),
+      thin: true,
+    },
+    uriPattern: {
+      type: 'singleline',
+      heading: 'settings.excludedUriPatterns.patternColumn'|t('klaviyoconnect'),
+      placeholder: 'settings.excludedUriPatterns.placeholder'|t('klaviyoconnect'),
+      code: true,
+    },
+  },
+  rows: settings.excludedUriPatterns,
+  defaultValues: {
+    enabled: true,
+  },
+  allowAdd: true,
+  allowDelete: true,
+  allowReorder: true,
+  addRowLabel: 'settings.excludedUriPatterns.addRow'|t('klaviyoconnect'),
+  errors: settings.getErrors('excludedUriPatterns')|unique,
+}) }}
+</div>
 
-<div class="field" id="klaviyoAvailableLists-field">
-  <div class="heading">
-    <label>Lists</label>
-    <p class="instructions">{{ "Select lists available to Control Panel" | t }}</p>
-  </div>
-{% if craft.klaviyoconnect.lists is not null %}
-  <div class="input">
-    <input type="hidden" name="klaviyoListsAll" value="0" />
-    <input type="hidden" name="klaviyoAvailableLists[]" value="" />
-    <div class="field checkboxfield">
-      <input type="checkbox"
-        class="klaviyoListsAll"
-        id="klaviyoListsAll"
-        name="klaviyoListsAll"
-        value="1"
-        {% if settings.klaviyoListsAll %}checked="checked"{% endif %}
-      />
-      <label for="klaviyoListsAll" class="klaviyoListsAll-label">All</label>
-    </div>
-    {% for list in craft.klaviyoconnect.lists %}
-    <div class="field checkboxfield">
-      <input type="checkbox" name="klaviyoAvailableLists[]"
-        class="klaviyoAvailableLists"
-        id="klaviyoAvailableLists{{ list.id }}" value="{{ list.id }}"
-        {% if list.id in settings.klaviyoAvailableLists %}
-          checked="checked"
-        {% endif %}
-      />
-      <label for="klaviyoAvailableLists{{ list.id }}">{{ list.name }}</label>
-    </div>
-    {% endfor %}
-  </div>
-{% elseif craft.klaviyoconnect.error is not null  %}
-  <ul class="errors">
-    <li>{{craft.klaviyoconnect.error}}</li>
-  </ul>
-{% else %}
-  <ul class="errors">
-    <li>No lists available</li>
-  </ul>
+{{ forms.lightswitchField({
+  label: 'settings.trackStartedCheckout.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackStartedCheckout.instructions'|t('klaviyoconnect'),
+  name: 'trackCommerceStartedCheckout',
+  on: settings.trackCommerceStartedCheckout,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.trackAddedToCart.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackAddedToCart.instructions'|t('klaviyoconnect'),
+  name: 'trackCommerceAddedToCart',
+  on: settings.trackCommerceAddedToCart,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.trackCartUpdated.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackCartUpdated.instructions'|t('klaviyoconnect'),
+  name: 'trackCommerceCartUpdated',
+  on: settings.trackCommerceCartUpdated,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.trackOrderCompleted.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackOrderCompleted.instructions'|t('klaviyoconnect'),
+  name: 'trackCommerceOrderCompleted',
+  on: settings.trackCommerceOrderCompleted,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.trackStatusUpdated.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackStatusUpdated.instructions'|t('klaviyoconnect'),
+  name: 'trackCommerceStatusUpdated',
+  on: settings.trackCommerceStatusUpdated,
+  toggle: 'order-status-mapping',
+}) }}
+
+<div id="order-status-mapping" class="{{ settings.trackCommerceStatusUpdated ? '' : 'hidden' }}">
+{% set orderStatusOptions = craft.klaviyoConnect.orderStatusOptions() %}
+{% if orderStatusOptions %}
+  {{ forms.checkboxSelectField({
+    label: 'settings.fulfilledOrderStatuses.label'|t('klaviyoconnect'),
+    instructions: 'settings.fulfilledOrderStatuses.instructions'|t('klaviyoconnect'),
+    id: 'fulfilledOrderStatuses',
+    name: 'fulfilledOrderStatuses',
+    options: orderStatusOptions,
+    values: settings.fulfilledOrderStatuses,
+  }) }}
+
+  {{ forms.checkboxSelectField({
+    label: 'settings.cancelledOrderStatuses.label'|t('klaviyoconnect'),
+    instructions: 'settings.cancelledOrderStatuses.instructions'|t('klaviyoconnect'),
+    id: 'cancelledOrderStatuses',
+    name: 'cancelledOrderStatuses',
+    options: orderStatusOptions,
+    values: settings.cancelledOrderStatuses,
+  }) }}
 {% endif %}
 </div>
 
-{% css %}
-  .klaviyoListsAll-label {
-    font-weight: bold;
-  }
-{% endcss %}
-
-{% js %}
-  var checkAll = document.querySelector('.klaviyoListsAll');
-  var checkboxes = document.querySelectorAll('.klaviyoAvailableLists');
-  if (checkAll && checkboxes) {
-    checkAll.onchange = function () {
-      checkboxes.forEach(function (checkbox) {
-        checkbox.checked = checkAll.checked;
-      });
-    };
-
-    checkboxes.forEach(function (checkbox) {
-      if (checkAll.checked) checkbox.checked = true;
-      checkbox.onchange = function () {
-        checkAll.checked = false;
-      };
-    });
-  }
-{% endjs %}
-
-<div class="field" id="klaviyoAvailableGroups-field">
-  <div class="heading">
-    <label>User Groups</label>
-    <p class="instructions">{{ "Select user groups to track changes to" | t }}</p>
-  </div>
-  <div class="input">
-    <input type="hidden" name="klaviyoAvailableGroups[]" value="" />
-    {% for group in craft.app.userGroups.getAllGroups %}
-    <div class="field checkboxfield">
-      <input type="checkbox" name="klaviyoAvailableGroups[]"
-        class="klaviyoAvailableGroups"
-        id="klaviyoAvailableGroups{{ group.id }}" value="{{ group.id }}"
-        {% if group.id in settings.klaviyoAvailableGroups %}
-          checked="checked"
-        {% endif %}
-      />
-      <label for="klaviyoAvailableGroups{{ group.id }}">{{ group.name }}</label>
-    </div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="field" id="eventPrefix-field">
-  <div class="heading">
-    <label for="cartUrl">Event Prefix</label>
-    <p class="instructions">
-      {{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}
-    </p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="eventPrefix" name="eventPrefix"
-      value="{{ settings.eventPrefix }}">
-  </div>
-</div>
-
-<div class="field" id="cartUrl-field">
-  <div class="heading">
-    <label for="cartUrl">Cart URL</label>
-    <p class="instructions">{{ "Url to your stores cart" | t }}</p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="cartUrl" name="cartUrl"
-      value="{{ settings.cartUrl }}">
-  </div>
-</div>
-
-<div class="field" id="productImageField-field">
-  <div class="heading">
-    <label for="productImageField">Product Image Handle</label>
-    <p class="instructions">{{ "Field to access product images" | t }}</p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="productImageField" name="productImageField"
-      value="{{ settings.productImageField }}">
-  </div>
-</div>
-
-<div class="field" id="productImageFieldTransformation-field">
-  <div class="heading">
-    <label for="productImageFieldTransformation">Product Image Transformation Handle</label>
-    <p class="instructions">{{ "Image field transformation to apply" | t }}</p>
-  </div>
-  <div class="input">
-    <input
-      class="text fullwidth" type="text" id="productImageFieldTransformation" name="productImageFieldTransformation"
-      value="{{ settings.productImageFieldTransformation }}">
-  </div>
-</div>
-
-{{ forms.checkboxField({
-  label: "Track Commerce Cart Updated",
-  name: 'trackCommerceCartUpdated',
-  checked: settings.trackCommerceCartUpdated,
-  instructions: 'Track in Klaviyo when the cart is updated'
-}) }}
-
-{{ forms.checkboxField({
-  label: "Track Commerce Order Complete",
-  name: 'trackCommerceOrderCompleted',
-  checked: settings.trackCommerceOrderCompleted,
-  instructions: 'Track in Klaviyo when order is completed'
-}) }}
-
-{{ forms.checkboxField({
-  label: "Track Commerce Order Status Updates",
-  name: 'trackCommerceStatusUpdated',
-  checked: settings.trackCommerceStatusUpdated,
-  instructions: 'Track in Klaviyo when order status is updated'
-}) }}
-
-{{ forms.checkboxField({
-  label: "Track Commerce Order Refunds",
+{{ forms.lightswitchField({
+  label: 'settings.trackRefunded.label'|t('klaviyoconnect'),
+  instructions: 'settings.trackRefunded.instructions'|t('klaviyoconnect'),
   name: 'trackCommerceRefunded',
-  checked: settings.trackCommerceRefunded,
-  instructions: 'Track in Klaviyo when a refund or partial refund is given'
+  on: settings.trackCommerceRefunded,
 }) }}
+
+{# Retire the pre-7.3.0 switch: groups alone now turn syncing on, and a switched-off install shows no groups selected #}
+{{ hiddenInput('trackSaveUser', '1') }}
+{{ forms.checkboxSelectField({
+  label: 'settings.userGroups.label'|t('klaviyoconnect'),
+  instructions: 'settings.userGroups.instructions'|t('klaviyoconnect'),
+  id: 'klaviyoAvailableGroups',
+  name: 'klaviyoAvailableGroups',
+  options: craft.app.userGroups.getAllGroups()|map(group => { label: group.name, value: group.id }),
+  values: settings.trackSaveUser or configFileSettings.trackSaveUser is defined ? settings.klaviyoAvailableGroups : [],
+  warning: configFileSettings.trackSaveUser is defined and not configFileSettings.trackSaveUser ? 'settings.userGroups.configFileOff'|t('klaviyoconnect'),
+}) }}
+
+{% set userFields = craft.app.fields.getLayoutByType('craft\\elements\\User').getCustomFields() %}
+{% set profileAttributes = {
+  external_id: 'settings.profileAttributes.externalId'|t('klaviyoconnect'),
+  phone_number: 'settings.profileAttributes.phoneNumber'|t('klaviyoconnect'),
+  organization: 'settings.profileAttributes.organization'|t('klaviyoconnect'),
+  title: 'settings.profileAttributes.title'|t('klaviyoconnect'),
+  locale: 'settings.profileAttributes.locale'|t('klaviyoconnect'),
+  image: 'settings.profileAttributes.image'|t('klaviyoconnect'),
+} %}
+
+{% set attributeSourceOptions = [
+  { label: '', value: '' },
+  { label: 'settings.profileAttributes.userIdOption'|t('klaviyoconnect'), value: '__userId__' },
+  { label: 'settings.profileAttributes.twigOption'|t('klaviyoconnect'), value: '__twig__' },
+]|merge(userFields|map(field => { label: field.name, value: field.handle })) %}
+{% set profileAttributesTable %}
+  <table class="data fullwidth klaviyoconnect-reveal-table">
+    <thead>
+      <tr>
+        <th scope="col">{{ 'settings.profileAttributes.attributeColumn'|t('klaviyoconnect') }}</th>
+        <th scope="col">{{ 'settings.profileAttributes.sourceColumn'|t('klaviyoconnect') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for attribute, label in profileAttributes %}
+        {% set attributeSource = settings.profileAttributeFields[attribute].userField ?? '' %}
+        <tr>
+          <th scope="row">{{ label }}</th>
+          <td>
+            <div class="flex flex-nowrap">
+              {{ forms.select({ name: 'profileAttributeFields[' ~ attribute ~ '][userField]', options: attributeSourceOptions, value: attributeSource, inputAttributes: { data: { reveal: '__twig__' } } }) }}
+              <div class="flex-grow klaviyoconnect-reveal {{ attributeSource != '__twig__' ? 'hidden' }}">
+                {{ forms.text({ name: 'profileAttributeFields[' ~ attribute ~ '][twig]', value: settings.profileAttributeFields[attribute].twig ?? '', class: 'code', placeholder: '{{ user.myField }}' }) }}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endset %}
+
+{{ forms.field({
+  label: 'settings.profileAttributes.label'|t('klaviyoconnect'),
+  instructions: 'settings.profileAttributes.instructions'|t('klaviyoconnect'),
+  errors: settings.getErrors('profileAttributeFields')|unique,
+}, profileAttributesTable) }}
+
+{% macro customPropertyRow(rowKey, row, sourceOptions) %}
+  {% import '_includes/forms' as forms %}
+  {% set rowSource = row.userField ?? '' %}
+  <tr>
+    <td>{{ forms.text({ name: 'profileCustomProperties[' ~ rowKey ~ '][name]', value: row.name ?? '', class: 'code' }) }}</td>
+    <td>
+      <div class="flex flex-nowrap">
+        {{ forms.select({ name: 'profileCustomProperties[' ~ rowKey ~ '][userField]', options: sourceOptions, value: rowSource, inputAttributes: { data: { reveal: '__twig__' } } }) }}
+        <div class="flex-grow klaviyoconnect-reveal {{ rowSource != '__twig__' ? 'hidden' }}">
+          {{ forms.text({ name: 'profileCustomProperties[' ~ rowKey ~ '][twig]', value: row.twig ?? '', class: 'code', placeholder: '{{ user.myField }}' }) }}
+        </div>
+      </div>
+    </td>
+    <td class="thin action"><a class="delete icon" title="{{ 'Delete'|t('app') }}" role="button" href="#"></a></td>
+  </tr>
+{% endmacro %}
+
+{% set customPropertiesTable %}
+  <table class="data fullwidth klaviyoconnect-reveal-table" id="klaviyoconnect-custom-properties">
+    <thead>
+      <tr>
+        <th scope="col">{{ 'settings.profileCustomProperties.nameColumn'|t('klaviyoconnect') }}</th>
+        <th scope="col">{{ 'settings.profileAttributes.sourceColumn'|t('klaviyoconnect') }}</th>
+        <th scope="col" class="thin"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rowKey, row in settings.profileCustomProperties %}
+        {{ _self.customPropertyRow(rowKey, row, attributeSourceOptions) }}
+      {% endfor %}
+    </tbody>
+  </table>
+  <template id="klaviyoconnect-custom-property-row">{{ _self.customPropertyRow('__ROW__', {}, attributeSourceOptions) }}</template>
+  <button type="button" class="btn add icon dashed" id="klaviyoconnect-add-custom-property">{{ 'settings.profileCustomProperties.addRow'|t('klaviyoconnect') }}</button>
+{% endset %}
+
+{{ forms.field({
+  label: 'settings.profileCustomProperties.label'|t('klaviyoconnect'),
+  instructions: 'settings.profileCustomProperties.instructions'|t('klaviyoconnect'),
+  errors: settings.getErrors('profileCustomProperties')|unique,
+}, customPropertiesTable) }}
+
+
+<hr>
+
+<h2>{{ 'settings.eventData.heading'|t('klaviyoconnect') }}</h2>
+
+{{ forms.lightswitchField({
+  label: 'settings.sendAddresses.label'|t('klaviyoconnect'),
+  instructions: 'settings.sendAddresses.instructions'|t('klaviyoconnect'),
+  name: 'sendAddresses',
+  on: settings.sendAddresses,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.sendCategories.label'|t('klaviyoconnect'),
+  instructions: 'settings.sendCategories.instructions'|t('klaviyoconnect'),
+  name: 'sendCategories',
+  on: settings.sendCategories,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.sendPricingDetail.label'|t('klaviyoconnect'),
+  instructions: 'settings.sendPricingDetail.instructions'|t('klaviyoconnect'),
+  name: 'sendPricingDetail',
+  on: settings.sendPricingDetail,
+}) }}
+
+{{ forms.lightswitchField({
+  label: 'settings.sendSiteContext.label'|t('klaviyoconnect'),
+  instructions: 'settings.sendSiteContext.instructions'|t('klaviyoconnect'),
+  name: 'sendSiteContext',
+  on: settings.sendSiteContext,
+}) }}
+
+
+{% set productTypes = craft.app.plugins.isPluginEnabled('commerce') ? craft.commerce.productTypes.allProductTypes : [] %}
+{% if productTypes %}
+  {# Clear the pre-7.3.0 image field, since each product type now holds its own #}
+  {{ hiddenInput('productImageField', '') }}
+
+  {% set productImageOptions = craft.klaviyoConnect.productFieldOptions('assets', 'product') %}
+  {% set variantImageOptions = craft.klaviyoConnect.productFieldOptions('assets', 'variant') %}
+  {% set extraSourceOptions = [
+    { label: 'settings.productTypeFields.productTypeName'|t('klaviyoconnect'), value: '__productType__' },
+    { label: 'settings.productTypeFields.customText'|t('klaviyoconnect'), value: '__custom__' },
+    { label: 'settings.profileAttributes.twigOption'|t('klaviyoconnect'), value: '__twig__' },
+  ] %}
+  {% set categoryOptions = [{ label: '', value: '' }]|merge(extraSourceOptions)|merge(craft.klaviyoConnect.productFieldOptions('categories')|slice(1)) %}
+  {% set brandOptions = [{ label: '', value: '' }]|merge(extraSourceOptions)|merge(craft.klaviyoConnect.productFieldOptions('brands')|slice(1)) %}
+
+  {% set catalogItemIdOptions = [
+    { label: 'settings.catalogItemId.productId'|t('klaviyoconnect'), value: 'productId' },
+    { label: 'settings.catalogItemId.variantId'|t('klaviyoconnect'), value: 'variantId' },
+    { label: 'settings.catalogItemId.variantSku'|t('klaviyoconnect'), value: 'variantSku' },
+  ] %}
+
+  {% macro textSourceInputs(inputPrefix, setting, options, settings, productType) %}
+    {% import '_includes/forms' as forms %}
+    {% set source = settings.getProductTypeField(productType, setting ~ 'Field') %}
+    <div class="flex flex-nowrap">
+      {{ forms.select({ name: inputPrefix ~ '[' ~ setting ~ 'Field]', options: options, value: source, inputAttributes: { data: { reveal: '' } } }) }}
+      <div class="flex-grow klaviyoconnect-reveal {{ source != '__custom__' ? 'hidden' }}" data-reveal-value="__custom__">
+        {{ forms.text({ name: inputPrefix ~ '[' ~ setting ~ 'Text]', value: settings.getProductTypeField(productType, setting ~ 'Text') }) }}
+      </div>
+      <div class="flex-grow klaviyoconnect-reveal {{ source != '__twig__' ? 'hidden' }}" data-reveal-value="__twig__">
+        {{ forms.text({ name: inputPrefix ~ '[' ~ setting ~ 'Twig]', value: settings.getProductTypeField(productType, setting ~ 'Twig'), class: 'code', placeholder: '{{ product.myField }}' }) }}
+      </div>
+    </div>
+  {% endmacro %}
+
+  {% set productFieldsTable %}
+    <table class="data fullwidth klaviyoconnect-reveal-table">
+      <thead>
+        <tr>
+          <th scope="col">{{ 'settings.productTypeFields.propertyColumn'|t('klaviyoconnect') }}</th>
+          <th scope="col">{{ 'settings.productTypeFields.sourceColumn'|t('klaviyoconnect') }}</th>
+        </tr>
+      </thead>
+      {% for productType in productTypes %}
+        {% set inputPrefix = 'productTypeFields[' ~ productType.uid ~ ']' %}
+        <tbody>
+          <tr>
+            <th scope="colgroup" colspan="2"><strong>{{ 'settings.productTypeFields.productTypeHeading'|t('klaviyoconnect', { name: productType.name }) }}</strong></th>
+          </tr>
+          <tr>
+            <th scope="row" class="thin">{{ 'settings.catalogItemId.label'|t('klaviyoconnect') }}</th>
+            <td>{{ forms.select({ name: inputPrefix ~ '[catalogItemId]', options: catalogItemIdOptions, value: settings.getProductTypeField(productType, 'catalogItemId') ?: 'productId' }) }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thin">{{ 'settings.productTypeFields.variantImage'|t('klaviyoconnect') }}</th>
+            <td>{{ forms.select({ name: inputPrefix ~ '[variantImageField]', options: variantImageOptions, value: settings.getProductTypeField(productType, 'variantImageField') }) }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thin">{{ 'settings.productTypeFields.productImage'|t('klaviyoconnect') }}</th>
+            <td>{{ forms.select({ name: inputPrefix ~ '[productImageField]', options: productImageOptions, value: settings.getProductTypeField(productType, 'productImageField') }) }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thin">{{ 'settings.productTypeFields.category'|t('klaviyoconnect') }}</th>
+            <td>{{ _self.textSourceInputs(inputPrefix, 'category', categoryOptions, settings, productType) }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="thin">{{ 'settings.productTypeFields.brand'|t('klaviyoconnect') }}</th>
+            <td>{{ _self.textSourceInputs(inputPrefix, 'brand', brandOptions, settings, productType) }}</td>
+          </tr>
+        </tbody>
+      {% endfor %}
+    </table>
+  {% endset %}
+
+  {{ forms.field({
+    label: 'settings.productTypeFields.label'|t('klaviyoconnect'),
+    instructions: 'settings.productTypeFields.instructions'|t('klaviyoconnect'),
+    errors: settings.getErrors('productTypeFields')|unique,
+  }, productFieldsTable) }}
+
+{% endif %}
+
+{% set imageEngine = settings.getImageEngine() %}
+{{ forms.selectField({
+  label: 'settings.imageEngine.label'|t('klaviyoconnect'),
+  instructions: 'settings.imageEngine.instructions'|t('klaviyoconnect'),
+  id: 'imageEngine',
+  name: 'imageEngine',
+  options: craft.klaviyoConnect.imageEngineOptions(),
+  value: imageEngine,
+}) }}
+
+<div id="klaviyoconnect-image-craft" class="{{ imageEngine != 'craft' ? 'hidden' }}">
+  {{ forms.selectField({
+    label: 'settings.productImageTransform.label'|t('klaviyoconnect'),
+    id: 'productImageFieldTransformation',
+    name: 'productImageFieldTransformation',
+    options: craft.klaviyoConnect.imageTransformOptions(settings.productImageFieldTransformation),
+    value: settings.productImageFieldTransformation,
+  }) }}
+</div>
+
+<div id="klaviyoconnect-image-size" class="{{ not settings.usesImageSize() ? 'hidden' }}">
+  <div class="flex">
+    {{ forms.textField({ label: 'settings.imageSize.width'|t('klaviyoconnect'), id: 'imageWidth', name: 'imageWidth', type: 'number', size: 6, value: settings.imageWidth, errors: settings.getErrors('imageWidth') }) }}
+    {{ forms.textField({ label: 'settings.imageSize.height'|t('klaviyoconnect'), id: 'imageHeight', name: 'imageHeight', type: 'number', size: 6, value: settings.imageHeight, errors: settings.getErrors('imageHeight') }) }}
+    {{ forms.selectField({ label: 'settings.imageSize.fit'|t('klaviyoconnect'), id: 'imageFit', name: 'imageFit', options: [{ label: 'settings.imageSize.crop'|t('klaviyoconnect'), value: 'crop' }, { label: 'settings.imageSize.fitOption'|t('klaviyoconnect'), value: 'fit' }], value: settings.imageFit }) }}
+  </div>
+</div>

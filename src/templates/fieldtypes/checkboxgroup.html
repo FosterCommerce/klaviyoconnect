@@ -1,7 +1,7 @@
 {% from "_includes/forms" import checkboxGroup %}
 
 {% if options|length == 0 %}
-    No lists available
+    {{ 'fields.noLists'|t('klaviyoconnect') }}
 {% else %}
     {{ checkboxGroup({
         name: name,

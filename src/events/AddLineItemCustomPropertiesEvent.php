@@ -8,6 +8,9 @@ use yii\base\Event;
 
 class AddLineItemCustomPropertiesEvent extends Event
 {
+	/**
+	 * @var array<string, mixed>
+	 */
 	public array $properties = [];
 
 	public Order $order;
