@@ -1,9 +1,9 @@
 # Release Notes for Klaviyo Connect
 
-## Unreleased
+## 7.4.0 - 2026-10-03
 
 > [!NOTE]
-> Klaviyo Connect 7.3.0 and 7.3.1 included changes that broke sites and code written for 7.2. This release restores 7.2 compatibility. For what still differs, see [upgrading to 7.4.0](https://github.com/FosterCommerce/klaviyoconnect/blob/main/docs/upgrade.md#upgrading-to-740).
+> 7.3.0 and 7.3.1 changed some classes and settings from 7.2, which may break sites that extend the classes or read the settings. This release restores them. For what still differs, see [upgrading to 7.4.0](https://github.com/FosterCommerce/klaviyoconnect/blob/main/docs/upgrade.md#upgrading-to-740).
 
 ### Deprecated
 
@@ -13,7 +13,7 @@
 ### Fixed
 
 - Fixed a bug where saving the plugin settings cleared the “Product Image Handle” setting, which templates may read.
-- Fixed a bug where saving the plugin settings cleared the `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` settings. They now hold the primary site’s values.
+- Fixed a bug where saving the plugin settings cleared the `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` settings. Saving now sets them to the primary site’s values.
 - Fixed a PHP error that occurred when a class written for Klaviyo Connect 7.2 extended `services\Base`, `services\Api`, `services\Track`, `models\Base`, `variables\Variable` or `controllers\ApiController`. Their 7.2 return types are restored.
 - Fixed an error that occurred when calling `getInputHtml()` on a Klaviyo List or Lists field without an element.
 

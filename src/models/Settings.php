@@ -473,7 +473,7 @@ class Settings extends Model
 			return $siteValue;
 		}
 
-		// Keep a saved blank, because the setting of the same name holds the primary site's value
+		// Keep a saved blank, because the setting of the same name is the primary site's value
 		if (array_key_exists($name, $settingsForSite) && ! array_key_exists($name, $this->configFileSettings())) {
 			return $siteValue;
 		}

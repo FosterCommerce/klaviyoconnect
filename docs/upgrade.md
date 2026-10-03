@@ -4,11 +4,11 @@ What to change on a site when updating Klaviyo Connect. For every change in a re
 
 ## Upgrading to 7.4.0
 
-7.3.0 and 7.3.1 included changes that broke sites and code written for 7.2. 7.4.0 restores 7.2 compatibility, except where this section says otherwise.
+7.3.0 and 7.3.1 changed some classes and settings from 7.2, which may break sites that extend the classes or read the settings. 7.4.0 restores them, except where this section says otherwise.
 
 ### Templates and modules that read plugin settings
 
-Saving the plugin settings no longer clears the settings that earlier versions stored once for the whole install. `productImageField` keeps its value, and `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` hold the primary site's values from the **Sites** table.
+Saving the plugin settings no longer clears the settings that earlier versions stored once for the whole install. `productImageField` keeps its value, and `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` are set to the primary site's values from the **Sites** table.
 
 If the settings were saved on 7.3.0 or 7.3.1:
 

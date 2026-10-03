@@ -21,7 +21,7 @@ class SettingsController extends Controller
 
 		/** @var array{siteSettings?: array<string, array{klaviyoApiKey?: string, klaviyoAvailableLists?: string|string[]}>} $settings */
 		$settings = $this->request->getBodyParam('settings', []);
-		// Test a blank row against the config file key, since the stored key holds the primary site's value
+		// Test a blank row against the config file key, since the stored key is the primary site's
 		$configFileSettings = Craft::$app->getConfig()->getConfigFromFile('klaviyoconnect');
 		$configFileApiKey = is_array($configFileSettings) && isset($configFileSettings['klaviyoApiKey']) ? Plugin::getInstance()->getSettings()->klaviyoApiKey : '';
 
