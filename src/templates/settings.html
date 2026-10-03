@@ -23,7 +23,7 @@
 
 <h2>{{ 'settings.account.heading'|t('klaviyoconnect') }}</h2>
 
-{# Clear the pre-7.3.0 values, since every site now holds its own #}
+{# Include these keys in the save, so it stores the primary site's values and clears the pre-7.3.0 lists #}
 {% for column in siteColumns|merge(['klaviyoAvailableLists']) %}
   {{ hiddenInput(column, '') }}
 {% endfor %}
@@ -374,8 +374,10 @@
 
 {% set productTypes = craft.app.plugins.isPluginEnabled('commerce') ? craft.commerce.productTypes.allProductTypes : [] %}
 {% if productTypes %}
-  {# Clear the pre-7.3.0 image field, since each product type now holds its own #}
-  {{ hiddenInput('productImageField', '') }}
+  {# Keep the pre-7.3.0 image field for templates and modules that read it, since the save stores only posted keys #}
+  {% if configFileSettings.productImageField is not defined %}
+    {{ hiddenInput('productImageField', settings.productImageField) }}
+  {% endif %}
 
   {% set productImageOptions = craft.klaviyoConnect.productFieldOptions('assets', 'product') %}
   {% set variantImageOptions = craft.klaviyoConnect.productFieldOptions('assets', 'variant') %}

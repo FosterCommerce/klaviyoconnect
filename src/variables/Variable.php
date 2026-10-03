@@ -23,16 +23,19 @@ class Variable
 	/**
 	 * Returns the lists of the given site's Klaviyo account, or the current site's.
 	 *
-	 * @return KlaviyoList[]|null
+	 * @return KlaviyoList[]|null Declared `mixed`, so a subclass written for 7.2.5 still loads
 	 */
-	public function lists(?int $siteId = null): ?array
+	public function lists(?int $siteId = null): mixed
 	{
 		$this->error = null;
 
 		return $this->listsForApiKey(Plugin::getInstance()->getSettings()->getApiKey($siteId));
 	}
 
-	public function error(): ?string
+	/**
+	 * @return string|null Declared `mixed`, so a subclass written for 7.2.5 still loads
+	 */
+	public function error(): mixed
 	{
 		return $this->error;
 	}
