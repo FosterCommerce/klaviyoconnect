@@ -31,6 +31,7 @@ use fostercommerce\klaviyoconnect\events\AddOrderCustomPropertiesEvent;
 use fostercommerce\klaviyoconnect\events\AddProfilePropertiesEvent;
 use fostercommerce\klaviyoconnect\helpers\EmailAddress;
 use fostercommerce\klaviyoconnect\helpers\ImageUrl;
+use fostercommerce\klaviyoconnect\helpers\PhoneNumber;
 use fostercommerce\klaviyoconnect\helpers\SandboxedTwig;
 use fostercommerce\klaviyoconnect\models\EventProperties;
 use fostercommerce\klaviyoconnect\Plugin;
@@ -76,6 +77,8 @@ class Track extends Component
 		if (! isset($profile['email'])) {
 			return;
 		}
+
+		$profile = $this->withValidPhone($profile, 'profile update');
 
 		foreach ($siteIds !== [] ? $siteIds : [Craft::$app->getSites()->getCurrentSite()->id] as $siteId) {
 			$this->queue(new SendToKlaviyo([
@@ -223,7 +226,10 @@ class Track extends Component
 	public function addToLists(array $listIds, array $profile, bool $subscribe = false, ?array $consentChannels = null): void
 	{
 		$profile = $this->withValidEmail($profile, 'list signup');
-		if (! isset($profile['email']) && ($profile['phone_number'] ?? '') === '') {
+		$profile = $this->withValidPhone($profile, 'list signup');
+		if (! isset($profile['email']) && ! isset($profile['phone_number'])) {
+			Craft::warning('Klaviyo Connect skipped a list signup, since it has no valid email or phone number.', 'klaviyoconnect');
+
 			return;
 		}
 
@@ -301,6 +307,9 @@ class Track extends Component
 			]
 		);
 
+		// Format the phone once, so each Ordered Product event doesn't log the same warning
+		$profile = $this->withValidPhone($profile, "\"{$eventName}\" event", $order, $order->orderSiteId);
+
 		/** @var CacheInterface $cache */
 		$cache = Craft::$app->getCache();
 		$cartFingerprint = null;
@@ -311,7 +320,7 @@ class Track extends Component
 			}
 		}
 
-		$queued = $this->queueEvent($eventName, $profile, $eventProperties, $timestamp, $order->orderSiteId);
+		$queued = $this->queueEvent($eventName, $profile, $eventProperties, $timestamp, $order->orderSiteId, $order);
 
 		if ($queued && $cartFingerprint !== null) {
 			$cache->set($this->cartFingerprintKey($order), $cartFingerprint);
@@ -584,7 +593,7 @@ class Track extends Component
 			]);
 			$eventProperties->setCustomProperties($item);
 
-			$this->queueEvent('Ordered Product', $profile, $eventProperties, $timestamp, $order->orderSiteId);
+			$this->queueEvent('Ordered Product', $profile, $eventProperties, $timestamp, $order->orderSiteId, $order);
 		}
 	}
 
@@ -778,12 +787,14 @@ class Track extends Component
 	/**
 	 * @param array<string, mixed> $profile
 	 */
-	private function queueEvent(string $eventName, array $profile, EventProperties $eventProperties, ?string $timestamp, ?int $siteId): bool
+	private function queueEvent(string $eventName, array $profile, EventProperties $eventProperties, ?string $timestamp, ?int $siteId, ?Order $order = null): bool
 	{
 		$profile = $this->withValidEmail($profile, "\"{$eventName}\" event");
 		if (! isset($profile['email'])) {
 			return false;
 		}
+
+		$profile = $this->withValidPhone($profile, "\"{$eventName}\" event", $order, $siteId);
 
 		return $this->queue(new SendToKlaviyo([
 			'action' => SendToKlaviyo::ACTION_EVENT,
@@ -817,6 +828,64 @@ class Track extends Component
 		$profile['email'] = trim($email);
 
 		return $profile;
+	}
+
+	/**
+	 * Formats the profile's phone number as E.164, and removes a number it can't format, so the send isn't queued only to fail.
+	 *
+	 * @param array<string, mixed> $profile
+	 * @return array<string, mixed>
+	 */
+	private function withValidPhone(array $profile, string $send, ?Order $order = null, ?int $siteId = null): array
+	{
+		$phoneNumber = $profile['phone_number'] ?? null;
+		if ($phoneNumber === null || $phoneNumber === '') {
+			unset($profile['phone_number']);
+
+			return $profile;
+		}
+
+		$countryCode = $this->phoneCountryCode($profile, $order, $siteId);
+		$e164PhoneNumber = PhoneNumber::toE164($phoneNumber, $countryCode);
+		if ($e164PhoneNumber !== null) {
+			$profile['phone_number'] = $e164PhoneNumber;
+
+			return $profile;
+		}
+
+		$reason = match (true) {
+			is_string($phoneNumber) && str_starts_with(trim($phoneNumber), '+') => "it isn't a valid international number.",
+			$countryCode === null => 'it has no country code, and no order address, posted country or site language region gave a country to read it in. Collect the number with its country code, or post `profile[location][country]`.',
+			default => "it isn't a valid number in {$countryCode}. If the number is from another country, collect it with its country code.",
+		};
+		Craft::warning("Klaviyo Connect ignored the phone number on a {$send}, since {$reason}", 'klaviyoconnect');
+		unset($profile['phone_number']);
+
+		return $profile;
+	}
+
+	/**
+	 * Returns the country to read a phone number typed without its country code.
+	 *
+	 * @param array<string, mixed> $profile
+	 */
+	private function phoneCountryCode(array $profile, ?Order $order, ?int $siteId): ?string
+	{
+		$address = $order?->shippingAddress ?? $order?->billingAddress;
+		if ($address instanceof Address) {
+			return $address->countryCode;
+		}
+
+		// Use only a two-letter code, since a posted or handler-set country can be a name
+		$postedCountry = is_array($profile['location'] ?? null) ? ($profile['location']['country'] ?? null) : null;
+		if (is_string($postedCountry) && preg_match('/^[A-Za-z]{2}$/', $postedCountry) === 1) {
+			return strtoupper($postedCountry);
+		}
+
+		$sitesService = Craft::$app->getSites();
+		$site = $siteId === null ? $sitesService->getCurrentSite() : $sitesService->getSiteById($siteId, true);
+
+		return $site?->getLocale()->getTerritoryID();
 	}
 
 	/**

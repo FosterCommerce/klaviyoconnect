@@ -1,5 +1,15 @@
 # Release Notes for Klaviyo Connect
 
+## 7.3.1 - 2026-10-03
+
+### Changed
+
+- Phone numbers are now sent to Klaviyo in international format, using `giggsey/libphonenumber-for-php-lite`, and a number that can't be formatted is ignored, with a warning.
+
+### Fixed
+
+- Fixed an error that occurred when sending an event, profile update or list signup with a phone number that wasn't in international format.
+
 ## 7.3.0 - 2026-10-02
 
 > [!WARNING]

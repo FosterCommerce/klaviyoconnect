@@ -27,7 +27,8 @@ Accepts every parameter on this page. Without `event[name]`, the action does not
 | `email` | The profile's email address. Used when `profile[email]` is absent or invalid. |
 | `profile[email]` | The profile's email address. |
 | `profile[first_name]`, `profile[last_name]` | The profile's name. |
-| `profile[phone_number]` | Phone number in international format, such as `+15551234567`. |
+| `profile[phone_number]` | The phone number as typed. Klaviyo Connect formats it, as in [phone numbers](./profile-attributes.md#phone-numbers). |
+| `profile[location][country]` | A two-letter country code, such as `GB`. Klaviyo Connect reads a phone number typed without its country code in this country. |
 | `profile[location][city]` | The profile's city. The other location keys are in [profile attributes](./profile-attributes.md). |
 | `profile[properties][Name]` | A custom profile property named `Name`. |
 
@@ -43,7 +44,7 @@ For the full list of profile keys Klaviyo accepts, see [profile attributes](./pr
 | `lists[]` | Several Klaviyo list IDs. Ignored when `list` is present. |
 | `subscribe` | `1` subscribes the profile to each list. Omit it to add the profile to each list without subscribing it. |
 
-With `subscribe`, Klaviyo creates the profile if needed and marks the channels the form posted as subscribed: email when it posts a valid `email` or `profile[email]`, and SMS when it posts `profile[phone_number]`. A logged-in user's account email identifies the profile but isn't subscribed unless the form posts it. A list with double opt-in sends its confirmation first; see Klaviyo's [subscribe profiles](https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles) reference. The plugin does not record consent wording, so collect the shopper's opt-in on your form before you post `subscribe`.
+With `subscribe`, Klaviyo creates the profile if needed and marks the channels the form posted as subscribed: email when it posts a valid `email` or `profile[email]`, and SMS when it posts a valid `profile[phone_number]`. A logged-in user's account email identifies the profile but isn't subscribed unless the form posts it. A list with double opt-in sends its confirmation first; see Klaviyo's [subscribe profiles](https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles) reference. The plugin does not record consent wording, so collect the shopper's opt-in on your form before you post `subscribe`.
 
 Without `subscribe`, the plugin looks up the profile by email and adds it to each list. If Klaviyo has no profile for the email when the job runs, the plugin does not add one.
 

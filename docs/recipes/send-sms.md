@@ -17,12 +17,13 @@ Go to **Settings -> Plugins -> Klaviyo Connect**. In **Klaviyo Profile Attribute
 - **For a user field**, choose the field in the **Source** column.
 - **For an address field**, choose **Twig value**. The template gets `user` and, on order events including guest checkouts, `order`. Read the address field from `order`.
 
-Klaviyo needs the number in international format, such as `+15551234567`. Klaviyo Connect sends the template's output as written, so format the number in the template. For a store whose customers enter 10-digit US numbers:
+Output the number as the shopper typed it:
 
 ```twig
-{%- set digits = (order.billingAddress.phone ?? '')|replace('/[^0-9]/', '') -%}
-{{- digits|length == 10 ? '+1' ~ digits : (digits ? '+' ~ digits) -}}
+{{ order.shippingAddress.phone ?? order.billingAddress.phone ?? '' }}
 ```
+
+Klaviyo Connect formats the number for Klaviyo, as described in [phone numbers](../reference/profile-attributes.md#phone-numbers).
 
 Click **Save**. If the template has a Twig error, the settings do not save and the field shows the error.
 
@@ -43,7 +44,7 @@ Add a form that posts to `klaviyoconnect/api/track` with the number, a Klaviyo l
   {{ hiddenInput('subscribe', '1') }}
 
   <label for="sms-phone">Mobile number</label>
-  <input id="sms-phone" type="tel" name="profile[phone_number]" placeholder="+15551234567" pattern="\+[1-9][0-9]{7,14}" required>
+  <input id="sms-phone" type="tel" name="profile[phone_number]" required>
 
   <p>{# Your SMS consent wording #}</p>
 
@@ -51,7 +52,7 @@ Add a form that posts to `klaviyoconnect/api/track` with the number, a Klaviyo l
 </form>
 ```
 
-Replace `AbC123` with the ID of your Klaviyo list. The form posts the number as the shopper types it, so the `pattern` attribute asks for international format.
+Replace `AbC123` with the ID of your Klaviyo list. To read numbers from shoppers in other countries correctly, add a country field, as in [collect a phone number with its country](../dev-guide/template-examples.md#collect-a-phone-number-with-its-country).
 
 A phone number alone is enough. To subscribe an email to the same list, add an input named `profile[email]`.
 

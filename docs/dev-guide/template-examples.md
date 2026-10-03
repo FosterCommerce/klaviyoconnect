@@ -18,7 +18,7 @@ Each form posts to a Klaviyo Connect action with Craft's CSRF token. The example
   <input type="email" id="email" name="email" required>
 
   <label for="phone">Mobile number (optional)</label>
-  <input type="tel" id="phone" name="profile[phone_number]" placeholder="+15551234567">
+  <input type="tel" id="phone" name="profile[phone_number]">
 
   <label>
     <input type="checkbox" name="consent" required>
@@ -29,9 +29,32 @@ Each form posts to a Klaviyo Connect action with Craft's CSRF token. The example
 </form>
 ```
 
-With `subscribe`, Klaviyo creates the profile if needed and subscribes the email to the list. A phone number subscribes to SMS on the same list. Klaviyo requires international format, such as `+15551234567`. The plugin does not send the `consent` checkbox to Klaviyo. Your form collects the opt-in.
+With `subscribe`, Klaviyo creates the profile if needed and subscribes the email to the list. A phone number subscribes to SMS on the same list. For how Klaviyo Connect formats the number, see [phone numbers](../reference/profile-attributes.md#phone-numbers). The plugin does not send the `consent` checkbox to Klaviyo. Your form collects the opt-in.
 
 To send several lists, post `lists[]` once per list ID instead of `list`. To use a list chosen by an editor, see [list fields](../user-guide/list-fields.md#use-the-field-in-a-signup-form).
+
+## Collect a phone number with its country
+
+To read the number in the visitor's country, post the country beside it. The list shows country names in the site's language, with the site's country selected. On a site whose language has no region, such as `de`, the visitor has to choose a country.
+
+```twig
+{% set siteCountry = currentSite.getLocale().getTerritoryID() %}
+
+<label for="phone-country">Country</label>
+<select id="phone-country" name="profile[location][country]" required>
+  <option value="" disabled {{- siteCountry ? '' : ' selected' }}>Choose a country</option>
+  {% for countryCode, countryName in craft.app.addresses.countryRepository.getList(currentSite.language) %}
+    <option value="{{ countryCode }}" {{- countryCode == siteCountry ? ' selected' }}>{{ countryName }}</option>
+  {% endfor %}
+</select>
+
+<label for="phone">Mobile number</label>
+<input type="tel" id="phone" name="profile[phone_number]">
+```
+
+Use these fields in place of the phone input in [sign up for a list](#sign-up-for-a-list), or in any form that posts to `klaviyoconnect/api/track`.
+
+When the form also posts an email, Klaviyo Connect sends the code to Klaviyo as the profile's country, such as `NL`. Order events send the English name, such as `Netherlands`. For how Klaviyo Connect reads the number, see [phone numbers](../reference/profile-attributes.md#phone-numbers).
 
 ## Let the visitor choose lists
 

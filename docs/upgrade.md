@@ -2,6 +2,22 @@
 
 What to change on a site when updating Klaviyo Connect. For every change in a release, see the [changelog](https://github.com/FosterCommerce/klaviyoconnect/blob/main/CHANGELOG.md).
 
+## Upgrading to 7.3.1
+
+### Update
+
+If the site has giggsey/libphonenumber-for-php older than 8.13.35, such as through Formie, update both packages:
+
+```sh
+composer update fostercommerce/klaviyoconnect giggsey/libphonenumber-for-php
+```
+
+Otherwise, run `composer update fostercommerce/klaviyoconnect`.
+
+### Phone numbers
+
+Klaviyo Connect formats phone numbers in international format before it sends them, and ignores a number it can't format. A template or module that formats numbers itself can keep its code, since Klaviyo Connect sends a valid `+` number unchanged. For how Klaviyo Connect reads a number, and how to collect one it can read, see [phone numbers](./reference/profile-attributes.md#phone-numbers).
+
 ## Upgrading to 7.3
 
 ### Prepare
