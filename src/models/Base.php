@@ -22,7 +22,13 @@ abstract class Base extends Model
 		}
 	}
 
-	public function __get(mixed $name): mixed
+	/**
+	 * Untyped like `yii\base\Component::__get()`, so a subclass written for 7.2.5 still loads.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function __get($name)
 	{
 		try {
 			return parent::__get($name);
@@ -56,9 +62,9 @@ abstract class Base extends Model
 	/**
 	 * @param string[] $fields
 	 * @param string[] $expand
-	 * @return array<string, mixed>
+	 * @return array<string, mixed> Declared `mixed`, so a subclass written for 7.2.5 still loads
 	 */
-	public function toArray(array $fields = [], array $expand = [], $recursive = true): array
+	public function toArray(array $fields = [], array $expand = [], $recursive = true): mixed
 	{
 		$arr = parent::toArray($fields, $expand, $recursive);
 

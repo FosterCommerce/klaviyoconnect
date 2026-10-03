@@ -91,6 +91,14 @@ class ListField extends Field
 		]);
 	}
 
+	/**
+	 * Keeps `$element` optional for callers written for 7.2.5.
+	 */
+	public function getInputHtml(mixed $value, ?ElementInterface $element = null): string
+	{
+		return parent::getInputHtml($value, $element);
+	}
+
 	protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline = false): string
 	{
 		return Craft::$app->getView()->renderTemplate('klaviyoconnect/fieldtypes/refreshable', [

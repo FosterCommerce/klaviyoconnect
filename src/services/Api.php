@@ -16,11 +16,10 @@ use KlaviyoAPI\Model\ListMembersAddQuery;
 use KlaviyoAPI\Model\ProfileUpsertQuery;
 use KlaviyoAPI\Model\SubscriptionCreateJobCreateQuery;
 use Throwable;
-use yii\base\Component;
 use yii\base\Exception;
 use yii\caching\CacheInterface;
 
-class Api extends Component
+class Api extends Base
 {
 	private const LAST_ERROR_CACHE_KEY = 'klaviyoconnect:last-error';
 
@@ -184,9 +183,9 @@ class Api extends Component
 	}
 
 	/**
-	 * @return KlaviyoList[]
+	 * @return KlaviyoList[] Declared `mixed`, so a subclass written for 7.2.5 still loads
 	 */
-	public function getLists(?int $siteId = null, bool $refresh = false): array
+	public function getLists(?int $siteId = null, bool $refresh = false): mixed
 	{
 		return $this->getListsForApiKey(Plugin::getInstance()->getSettings()->getApiKey($siteId), $refresh);
 	}

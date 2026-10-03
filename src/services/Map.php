@@ -16,9 +16,8 @@ use fostercommerce\klaviyoconnect\helpers\SandboxedTwig;
 use fostercommerce\klaviyoconnect\Plugin;
 use Illuminate\Support\Collection;
 use Stringable;
-use yii\base\Component;
 
-class Map extends Component
+class Map extends Base
 {
 	/**
 	 * Klaviyo's standard profile attributes a user field can set.

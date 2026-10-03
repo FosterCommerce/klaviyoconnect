@@ -22,6 +22,11 @@ class Settings extends Model
 	public string $klaviyoApiKey = '';
 
 	/**
+	 * @deprecated in 7.4.0. Klaviyo Connect doesn't read it.
+	 */
+	public string $klaviyoDefaultProfileMapping = 'formdata_mapping';
+
+	/**
 	 * List IDs, or `*` for every list in the account.
 	 *
 	 * @var string[]|string
@@ -138,11 +143,16 @@ class Settings extends Model
 
 	/**
 	 * Each site's keys, lists, cart URL and event prefix, keyed by site UID.
-	 * A blank value uses the setting of the same name, set by a config file or saved before 7.3.0.
+	 * A blank value uses the setting of the same name only when a config file sets that setting, or the site has no saved row.
 	 *
 	 * @var array<string, array<string, mixed>>
 	 */
 	public array $siteSettings = [];
+
+	/**
+	 * @var array<string, mixed>|null
+	 */
+	private ?array $configFileSettings = null;
 
 	/**
 	 * Returns each mapped Klaviyo profile attribute's source, without blank rows.
@@ -190,14 +200,14 @@ class Settings extends Model
 	public function getProductTypeField(?ProductType $productType, string $column): string
 	{
 		$productTypeSettings = $this->productTypeFields[(string) $productType?->uid] ?? $this->productTypeFields[(string) $productType?->handle] ?? [];
-		$fieldHandle = $productTypeSettings[$column] ?? '';
+		$fieldHandle = $productTypeSettings[$column] ?? null;
 
-		// Fall back to the pre-7.3.0 image field, which applied to products and variants alike
-		if ($fieldHandle === '' && in_array($column, ['productImageField', 'variantImageField'], true)) {
+		// Fall back to the pre-7.3.0 image field, used for products and variants alike, until the product type saves its own
+		if ($fieldHandle === null && in_array($column, ['productImageField', 'variantImageField'], true)) {
 			return $this->productImageField;
 		}
 
-		return $fieldHandle;
+		return $fieldHandle ?? '';
 	}
 
 	public function getImageEngine(): string
@@ -279,6 +289,8 @@ class Settings extends Model
 				$this->{$attribute} = $size === false ? null : $size;
 			}
 		}
+
+		$this->copyPrimarySiteSettings();
 
 		parent::afterValidate();
 	}
@@ -455,9 +467,43 @@ class Settings extends Model
 
 	private function siteSetting(string $name, ?int $siteId): mixed
 	{
-		$siteValue = $this->settingsForSite($siteId)[$name] ?? null;
+		$settingsForSite = $this->settingsForSite($siteId);
+		$siteValue = $settingsForSite[$name] ?? null;
+		if (! in_array($siteValue, [null, '', []], true)) {
+			return $siteValue;
+		}
 
-		return in_array($siteValue, [null, '', []], true) ? $this->{$name} : $siteValue;
+		// Keep a saved blank, because the setting of the same name holds the primary site's value
+		if (array_key_exists($name, $settingsForSite) && ! array_key_exists($name, $this->configFileSettings())) {
+			return $siteValue;
+		}
+
+		return $this->{$name};
+	}
+
+	/**
+	 * Copies the primary site's values to the settings of the same name, which 7.2.5 templates and modules read.
+	 */
+	private function copyPrimarySiteSettings(): void
+	{
+		$primarySiteSettings = $this->siteSettings[Craft::$app->getSites()->getPrimarySite()->uid] ?? [];
+		foreach (['klaviyoSiteId', 'klaviyoApiKey', 'cartUrl', 'eventPrefix'] as $column) {
+			$this->{$column} = is_string($primarySiteSettings[$column] ?? null) ? $primarySiteSettings[$column] : '';
+		}
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	private function configFileSettings(): array
+	{
+		// Read the file once, since each blank site setting checks it
+		if ($this->configFileSettings === null) {
+			$configFileSettings = Craft::$app->getConfig()->getConfigFromFile('klaviyoconnect');
+			$this->configFileSettings = is_array($configFileSettings) ? $configFileSettings : [];
+		}
+
+		return $this->configFileSettings;
 	}
 
 	/**

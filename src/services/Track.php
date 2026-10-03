@@ -39,11 +39,10 @@ use fostercommerce\klaviyoconnect\queue\jobs\SendToKlaviyo;
 use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
 use Illuminate\Support\Collection;
 use Stringable;
-use yii\base\Component;
 use yii\base\Event;
 use yii\caching\CacheInterface;
 
-class Track extends Component
+class Track extends Base
 {
 	public const ADD_CUSTOM_PROPERTIES = 'addCustomProperties';
 
@@ -185,7 +184,7 @@ class Track extends Component
 
 		// Mark the cart only once the event is queued, so a corrected email still sends it
 		// The Started Checkout unique_id still dedupes the event if this key expires
-		if ($this->trackOrder('Started Checkout', $order)) {
+		if ($this->queueOrderEvent('Started Checkout', $order)) {
 			$cache->set($startedCheckoutKey, true);
 		}
 	}
@@ -264,73 +263,11 @@ class Track extends Component
 	}
 
 	/**
-	 * Returns whether the event was queued.
-	 *
 	 * @param array<string, mixed>|null $profile
 	 */
-	public function trackOrder(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null, ?string $uniqueId = null): bool
+	public function trackOrder(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null, ?string $uniqueId = null): void
 	{
-		if ($order->email !== null) {
-			$profile = $this->orderProfile($order);
-		}
-
-		// Placed Order's unique_id is the order number, so an early send would block the real one
-		if ($eventName === 'Placed Order' && ! $order->isCompleted) {
-			return false;
-		}
-
-		if ($profile === null || $profile === []) {
-			return false;
-		}
-
-		$orderDetails = $this->getOrderDetails($order, $eventName);
-		$eventProperties = new EventProperties([
-			'unique_id' => $uniqueId ?? $this->orderEventUniqueId($eventName, $order, $fullEvent),
-			'value' => (string) $order->totalPrice,
-			'value_currency' => $order->currency,
-		]);
-		$eventProperties->setCustomProperties($orderDetails);
-
-		$eventName = $this->addOrderEventProperties($eventProperties, $eventName, $fullEvent);
-
-		$success = ! $fullEvent instanceof RefundTransactionEvent || $fullEvent->refundTransaction->status === 'success';
-		if (! $success) {
-			return false;
-		}
-
-		$profile = $this->createProfile(
-			$profile,
-			$eventName,
-			[
-				'order' => $order,
-				'eventProperties' => $eventProperties,
-			]
-		);
-
-		// Format the phone once, so each Ordered Product event doesn't log the same warning
-		$profile = $this->withValidPhone($profile, "\"{$eventName}\" event", $order, $order->orderSiteId);
-
-		/** @var CacheInterface $cache */
-		$cache = Craft::$app->getCache();
-		$cartFingerprint = null;
-		if ($eventName === 'Updated Cart') {
-			$cartFingerprint = $this->cartFingerprint($profile, $eventProperties);
-			if ($cache->get($this->cartFingerprintKey($order)) === $cartFingerprint) {
-				return false;
-			}
-		}
-
-		$queued = $this->queueEvent($eventName, $profile, $eventProperties, $timestamp, $order->orderSiteId, $order);
-
-		if ($queued && $cartFingerprint !== null) {
-			$cache->set($this->cartFingerprintKey($order), $cartFingerprint);
-		}
-
-		if ($eventName === 'Placed Order') {
-			$this->queueOrderedProducts($order, $orderDetails, $profile, $timestamp);
-		}
-
-		return $queued;
+		$this->queueOrderEvent($eventName, $order, $profile, $timestamp, $fullEvent, $uniqueId);
 	}
 
 	/**
@@ -434,6 +371,76 @@ class Track extends Component
 		Event::trigger(static::class, self::ADD_ORDER_CUSTOM_PROPERTIES, $addOrderCustomPropertiesEvent);
 
 		return $addOrderCustomPropertiesEvent->properties;
+	}
+
+	/**
+	 * Returns whether the event was queued.
+	 *
+	 * @param array<string, mixed>|null $profile
+	 */
+	private function queueOrderEvent(string $eventName, Order $order, ?array $profile = null, ?string $timestamp = null, ?Event $fullEvent = null, ?string $uniqueId = null): bool
+	{
+		if ($order->email !== null) {
+			$profile = $this->orderProfile($order);
+		}
+
+		// Placed Order's unique_id is the order number, so an early send would block the real one
+		if ($eventName === 'Placed Order' && ! $order->isCompleted) {
+			return false;
+		}
+
+		if ($profile === null || $profile === []) {
+			return false;
+		}
+
+		$orderDetails = $this->getOrderDetails($order, $eventName);
+		$eventProperties = new EventProperties([
+			'unique_id' => $uniqueId ?? $this->orderEventUniqueId($eventName, $order, $fullEvent),
+			'value' => (string) $order->totalPrice,
+			'value_currency' => $order->currency,
+		]);
+		$eventProperties->setCustomProperties($orderDetails);
+
+		$eventName = $this->addOrderEventProperties($eventProperties, $eventName, $fullEvent);
+
+		$success = ! $fullEvent instanceof RefundTransactionEvent || $fullEvent->refundTransaction->status === 'success';
+		if (! $success) {
+			return false;
+		}
+
+		$profile = $this->createProfile(
+			$profile,
+			$eventName,
+			[
+				'order' => $order,
+				'eventProperties' => $eventProperties,
+			]
+		);
+
+		// Format the phone once, so each Ordered Product event doesn't log the same warning
+		$profile = $this->withValidPhone($profile, "\"{$eventName}\" event", $order, $order->orderSiteId);
+
+		/** @var CacheInterface $cache */
+		$cache = Craft::$app->getCache();
+		$cartFingerprint = null;
+		if ($eventName === 'Updated Cart') {
+			$cartFingerprint = $this->cartFingerprint($profile, $eventProperties);
+			if ($cache->get($this->cartFingerprintKey($order)) === $cartFingerprint) {
+				return false;
+			}
+		}
+
+		$queued = $this->queueEvent($eventName, $profile, $eventProperties, $timestamp, $order->orderSiteId, $order);
+
+		if ($queued && $cartFingerprint !== null) {
+			$cache->set($this->cartFingerprintKey($order), $cartFingerprint);
+		}
+
+		if ($eventName === 'Placed Order') {
+			$this->queueOrderedProducts($order, $orderDetails, $profile, $timestamp);
+		}
+
+		return $queued;
 	}
 
 	/**

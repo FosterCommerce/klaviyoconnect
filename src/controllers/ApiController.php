@@ -55,7 +55,7 @@ class ApiController extends Controller
 	/**
 	 * @deprecated in 7.3.0. Use the Klaviyo Connect utility or the `klaviyoconnect/orders/sync` command instead.
 	 */
-	public function actionSyncOrders(): ?YiiResponse
+	public function actionSyncOrders(): void
 	{
 		// Require the utility permission, since the action resends every order in the range
 		$this->requirePermission('utility:' . KCUtilities::id());
@@ -65,7 +65,7 @@ class ApiController extends Controller
 		$start = $this->request->getQueryParam('start');
 		$end = $this->request->getQueryParam('end');
 		if (! Craft::$app->getPlugins()->isPluginEnabled('commerce') || ! is_numeric($start) || ! is_numeric($end)) {
-			return null;
+			return;
 		}
 
 		$orderIds = Order::find()->isCompleted()->dateCreated(['and', ">= {$start}", "<= {$end}"])->ids();
@@ -74,11 +74,9 @@ class ApiController extends Controller
 				'orderId' => $orderId,
 			]));
 		}
-
-		return null;
 	}
 
-	public function actionIdentify(): ?YiiResponse
+	public function actionIdentify(): void
 	{
 		$this->requirePostRequest();
 
@@ -88,7 +86,8 @@ class ApiController extends Controller
 			Craft::error('Klaviyo identify failed: ' . $throwable->getMessage(), 'klaviyoconnect');
 		}
 
-		return $this->forwardOrRedirect();
+		// Discard the response, since actionIdentify() stays void for 7.2.5 subclasses
+		$this->forwardOrRedirect();
 	}
 
 	private function trackEvent(): void

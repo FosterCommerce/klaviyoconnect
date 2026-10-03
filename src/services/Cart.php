@@ -6,10 +6,9 @@ use Craft;
 use craft\commerce\elements\Order;
 use craft\commerce\Plugin as Commerce;
 use craft\helpers\UrlHelper;
-use yii\base\Component;
 use yii\web\NotFoundHttpException;
 
-class Cart extends Component
+class Cart extends Base
 {
 	public function restoreUrl(Order $order): string
 	{

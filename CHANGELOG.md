@@ -1,5 +1,22 @@
 # Release Notes for Klaviyo Connect
 
+## Unreleased
+
+> [!NOTE]
+> Klaviyo Connect 7.3.0 and 7.3.1 included changes that broke sites and code written for 7.2. This release restores 7.2 compatibility. For what still differs, see [upgrading to 7.4.0](https://github.com/FosterCommerce/klaviyoconnect/blob/main/docs/upgrade.md#upgrading-to-740).
+
+### Deprecated
+
+- Deprecated `fostercommerce\klaviyoconnect\services\Base`, which is restored for classes that extend it.
+- Deprecated the `klaviyoDefaultProfileMapping` setting, which is restored for templates and modules that read it.
+
+### Fixed
+
+- Fixed a bug where saving the plugin settings cleared the “Product Image Handle” setting, which templates may read.
+- Fixed a bug where saving the plugin settings cleared the `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` settings. They now hold the primary site’s values.
+- Fixed a PHP error that occurred when a class written for Klaviyo Connect 7.2 extended `services\Base`, `services\Api`, `services\Track`, `models\Base`, `variables\Variable` or `controllers\ApiController`. Their 7.2 return types are restored.
+- Fixed an error that occurred when calling `getInputHtml()` on a Klaviyo List or Lists field without an element.
+
 ## 7.3.1 - 2026-10-03
 
 ### Changed

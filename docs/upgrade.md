@@ -2,6 +2,28 @@
 
 What to change on a site when updating Klaviyo Connect. For every change in a release, see the [changelog](https://github.com/FosterCommerce/klaviyoconnect/blob/main/CHANGELOG.md).
 
+## Upgrading to 7.4.0
+
+7.3.0 and 7.3.1 included changes that broke sites and code written for 7.2. 7.4.0 restores 7.2 compatibility, except where this section says otherwise.
+
+### Templates and modules that read plugin settings
+
+Saving the plugin settings no longer clears the settings that earlier versions stored once for the whole install. `productImageField` keeps its value, and `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix` hold the primary site's values from the **Sites** table.
+
+If the settings were saved on 7.3.0 or 7.3.1:
+
+- Go to **Settings -> Plugins -> Klaviyo Connect** and click **Save**, to refill `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix`.
+- If a template reads `productImageField`, set it again in `config/klaviyoconnect.php`, since the settings page no longer shows it.
+
+### Classes that extend Klaviyo Connect
+
+Classes written for 7.2 that extend `services\Base`, `services\Api`, `services\Track`, `models\Base`, `variables\Variable` or `controllers\ApiController` load again, since 7.4.0 restores their 7.2 return types. `services\Base` is deprecated.
+
+To keep loading, a subclass needs these changes:
+
+- A method that overrides one with a new optional argument, such as `Api::track()` or `Track::identifyUser()`, adds that argument to its declaration.
+- A subclass of `models\Settings` that redeclares a setting declares it with the same type.
+
 ## Upgrading to 7.3.1
 
 ### Update
