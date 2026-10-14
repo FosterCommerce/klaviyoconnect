@@ -111,7 +111,7 @@ class Api extends Base
 		]));
 
 		// Log the unique_id to match against the profile's activity feed in Klaviyo
-		Craft::info('Sent Klaviyo event with unique_id ' . Json::encode($eventData['attributes']['unique_id'] ?? null), 'klaviyoconnect');
+		Craft::debug('Sent Klaviyo event with unique_id ' . Json::encode($eventData['attributes']['unique_id'] ?? null), 'klaviyoconnect');
 	}
 
 	/**

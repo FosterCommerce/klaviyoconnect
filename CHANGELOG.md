@@ -1,5 +1,11 @@
 # Release Notes for Klaviyo Connect
 
+## Unreleased
+
+### Changed
+
+- Klaviyo Connect now logs each event it sends to Klaviyo at the `debug` level.
+
 ## 7.4.0 - 2026-10-03
 
 > [!NOTE]
