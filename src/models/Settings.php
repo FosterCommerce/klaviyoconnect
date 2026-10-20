@@ -30,9 +30,13 @@ class Settings extends Model
 	 * List IDs, or `*` for every list in the account.
 	 *
 	 * @var string[]|string
+	 * @deprecated in 7.5.0. Klaviyo Connect doesn't read it.
 	 */
 	public array|string $klaviyoAvailableLists = [];
 
+	/**
+	 * @deprecated in 7.5.0. Klaviyo Connect doesn't read it.
+	 */
 	public bool $klaviyoListsAll = false;
 
 	/**
@@ -142,7 +146,7 @@ class Settings extends Model
 	public array $profileCustomProperties = [];
 
 	/**
-	 * Each site's keys, lists, cart URL and event prefix, keyed by site UID.
+	 * Each site's keys, cart URL and event prefix, keyed by site UID.
 	 * A blank value uses the setting of the same name only when a config file sets that setting, or the site has no saved row.
 	 *
 	 * @var array<string, array<string, mixed>>
@@ -225,6 +229,18 @@ class Settings extends Model
 		return $this->stringSetting('klaviyoApiKey', $siteId);
 	}
 
+	/**
+	 * The site's Private API Key setting before environment variables are parsed, such as `$KLAVIYO_PRIVATE_API_KEY`.
+	 *
+	 * @since 7.5.0
+	 */
+	public function getRawApiKey(?int $siteId = null): string
+	{
+		$value = $this->siteSetting('klaviyoApiKey', $siteId);
+
+		return is_string($value) ? trim($value) : '';
+	}
+
 	public function getPublicApiKey(?int $siteId = null): string
 	{
 		return $this->stringSetting('klaviyoSiteId', $siteId);
@@ -242,22 +258,23 @@ class Settings extends Model
 
 	/**
 	 * @return string[]
+	 * @deprecated in 7.5.0. List fields show every list in the site's Klaviyo account, so this returns no IDs.
 	 */
 	public function getAvailableLists(?int $siteId = null): array
 	{
-		$lists = $this->siteSetting('klaviyoAvailableLists', $siteId);
+		Craft::$app->getDeprecator()->log(__METHOD__, '`Settings::getAvailableLists()` has been deprecated. List fields show every list in the site’s Klaviyo account.');
 
-		return is_array($lists) ? array_values(array_filter($lists, static fn (mixed $listId): bool => is_string($listId) && $listId !== '')) : [];
+		return [];
 	}
 
+	/**
+	 * @deprecated in 7.5.0. List fields show every list in the site's Klaviyo account, so this returns true.
+	 */
 	public function getListsAll(?int $siteId = null): bool
 	{
-		$siteLists = $this->settingsForSite($siteId)['klaviyoAvailableLists'] ?? null;
-		if (in_array($siteLists, [null, '', []], true)) {
-			return $this->klaviyoListsAll || $this->klaviyoAvailableLists === '*';
-		}
+		Craft::$app->getDeprecator()->log(__METHOD__, '`Settings::getListsAll()` has been deprecated. List fields show every list in the site’s Klaviyo account.');
 
-		return $siteLists === '*';
+		return true;
 	}
 
 	public function beforeValidate(): bool

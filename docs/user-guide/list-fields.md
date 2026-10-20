@@ -13,7 +13,7 @@ Klaviyo Connect adds two field types:
 
 Create the field in **Settings -> Fields -> New field**, then add it to a field layout.
 
-The field offers the lists chosen for the element's site under **Lists for {site}**, in **Settings -> Plugins -> Klaviyo Connect**. Choose **All** there to offer every list in the site's Klaviyo account.
+The field shows every list in the Klaviyo account of the element's site.
 
 ## Refresh the lists
 
@@ -21,13 +21,13 @@ Klaviyo Connect stores each Klaviyo account's lists until they are refreshed, so
 
 To refresh the lists, click **Refresh lists from Klaviyo** under the field. The field reloads with the account's lists and keeps the lists already selected. Every list field using that Klaviyo account shows the refreshed lists.
 
-**Check Connection and Load Lists** in the plugin settings also refreshes every site's lists.
+**Check Connection** at **Utilities -> Klaviyo Connect** also refreshes every site's lists.
 
 Read-only views of the field, such as a revision or an entry you cannot edit, do not show the refresh link.
 
 ## Sites with different Klaviyo accounts
 
-Each element uses its own site's Klaviyo account, and the field offers that account's lists.
+Each element uses its own site's Klaviyo account, and the field shows that account's lists.
 
 A list ID saved from another account stays saved. The field shows the list ID followed by "(not in this Klaviyo account)", and saving the entry keeps it. To remove the list, clear the selection.
 

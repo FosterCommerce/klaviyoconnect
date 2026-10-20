@@ -2,9 +2,30 @@
 
 ## Unreleased
 
+### Added
+
+- Added `fostercommerce\klaviyoconnect\models\Settings::getRawApiKey()`.
+
 ### Changed
 
 - Klaviyo Connect now logs each event it sends to Klaviyo at the `debug` level.
+- Moved “Check Connection and Load Lists” from the plugin settings to the Klaviyo Connect utility, as “Check Connection”.
+- “Check Connection” now checks each site's saved Private API Key, and works where `allowAdminChanges` is off.
+- The Klaviyo Connect utility is now available without Craft Commerce.
+- Klaviyo List and Klaviyo Lists fields now show every list in the site's Klaviyo account.
+- `Api::getAvailableLists()` now returns every list in the site's Klaviyo account.
+
+### Deprecated
+
+- Deprecated the `klaviyoAvailableLists` and `klaviyoListsAll` settings, `Settings::getAvailableLists()`, `Settings::getListsAll()` and `Api::getAvailableLists()`.
+
+### Removed
+
+- Removed the “Lists for {site}” settings.
+
+### Fixed
+
+- Fixed an issue where Klaviyo Connect didn't report a site whose Private API Key is an environment variable that isn't set.
 
 ## 7.4.0 - 2026-10-03
 

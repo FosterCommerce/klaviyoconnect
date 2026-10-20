@@ -26,15 +26,15 @@ In Craft, go to **Settings -> Plugins -> Klaviyo Connect**. In the **Sites** tab
 
 Enter the **Cart URL** for each site, such as `cart`. Cart restore links in Klaviyo emails open this page.
 
-Click **Check Connection and Load Lists**. Each site shows a green dot and its number of Klaviyo lists. A red dot shows why a site can't connect, such as a missing key, an environment variable that isn't set, or an error from Klaviyo.
-
 Click **Save**.
 
 ## 3. Choose what to send
 
-Under **Tracking**, every Commerce event is on by default. For the list, see [turn events on or off](./user-guide/automatic-tracking.md#turn-events-on-or-off). Under **Event Data**, choose whether order events include addresses, categories, pricing detail and the site and store.
+Under **Tracking**, every Commerce event is on by default. For the list, see [turn events on or off](./user-guide/automatic-tracking.md#turn-events-on-or-off). Under **Event Data**, choose whether order events include addresses, categories, pricing detail and the site and store. Click **Save**.
 
 ## 4. Check an event in Klaviyo
+
+Go to **Utilities -> Klaviyo Connect** and click **Check Connection**. Each site shows a green dot and its number of Klaviyo lists. A red dot shows why a site can't connect, such as a missing key, an environment variable that isn't set, or an error from Klaviyo.
 
 On your storefront, add a product to a cart and enter an email at checkout. Klaviyo Connect sends Started Checkout to Klaviyo when Craft's queue runs.
 

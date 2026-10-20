@@ -30,7 +30,7 @@ class ListsField extends Field
 	public function listsInputHtml(mixed $value, ?int $siteId): string
 	{
 		try {
-			$lists = Plugin::getInstance()->api->getAvailableLists($siteId);
+			$lists = Plugin::getInstance()->api->getLists($siteId);
 		} catch (ApiException) {
 			$lists = [];
 		}

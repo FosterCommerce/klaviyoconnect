@@ -3,9 +3,6 @@
 {% do view.registerAssetBundle('fostercommerce\\klaviyoconnect\\assetbundles\\SettingsAsset') %}
 {% js %}
   new Craft.KlaviyoConnect.Settings({{ {
-    testConnectionButton: 'klaviyoconnect-test-connection'|namespaceInputId,
-    testResults: 'klaviyoconnect-test-results'|namespaceInputId,
-    siteLists: 'klaviyoconnect-site-lists'|namespaceInputId,
     customPropertiesTable: 'klaviyoconnect-custom-properties'|namespaceInputId,
     customPropertyRowTemplate: 'klaviyoconnect-custom-property-row'|namespaceInputId,
     addCustomPropertyButton: 'klaviyoconnect-add-custom-property'|namespaceInputId,
@@ -83,41 +80,24 @@
 }) }}
 
 {% set lastError = craft.klaviyoConnect.lastError() %}
-{% set connectionInput %}
-  <button type="button" class="btn" id="klaviyoconnect-test-connection">
-    <div class="label">{{ 'settings.testConnection.button'|t('klaviyoconnect') }}</div>
-    <div class="spinner spinner-absolute"></div>
-  </button>
-  <ul id="klaviyoconnect-test-results" class="klaviyoconnect-test-results" role="status"></ul>
-{% endset %}
-{{ forms.field({
-  label: 'settings.connection.label'|t('klaviyoconnect'),
-  instructions: 'settings.connection.instructions'|t('klaviyoconnect'),
-  warning: lastError ? 'settings.lastError'|t('klaviyoconnect', {
+{# Warn per site, since an unset key variable records no last error #}
+{% set connectionWarnings = craft.app.sites.getAllSites(true)
+  |filter(site => settings.getRawApiKey(site.id) and not settings.getApiKey(site.id))
+  |map(site => 'settings.connection.envMissing'|t('klaviyoconnect', {
+    site: site.getUiLabel()|e,
+    variable: settings.getRawApiKey(site.id)|e,
+  })) %}
+{% if lastError %}
+  {% set connectionWarnings = connectionWarnings|merge(['settings.lastError'|t('klaviyoconnect', {
     date: lastError.date|datetime('short'),
     message: lastError.message|e,
-  }),
-}, connectionInput) }}
-
-<hr>
-
-<h2>{{ 'settings.lists.heading'|t('klaviyoconnect') }}</h2>
-
-{% set siteListRows = [] %}
-{% for site in craft.app.sites.getAllSites() %}
-  {% set siteLists = craft.klaviyoConnect.lists(site.id) %}
-  {# Read the saved lists, so a config file's siteSettings isn't copied into project config on save #}
-  {% set savedLists = savedSiteSettings[site.uid].klaviyoAvailableLists ?? null %}
-  {% set siteListRows = siteListRows|merge([{
-    site: site,
-    lists: siteLists,
-    error: siteLists is null ? craft.klaviyoConnect.error : null,
-    values: savedLists is not empty ? savedLists : (settings.klaviyoListsAll ? '*' : settings.klaviyoAvailableLists),
-  }]) %}
-{% endfor %}
-<div id="klaviyoconnect-site-lists">
-  {% include 'klaviyoconnect/_site-lists' %}
-</div>
+  })]) %}
+{% endif %}
+{{ forms.field({
+  label: 'settings.connection.label'|t('klaviyoconnect'),
+  instructions: 'settings.connection.instructions'|t('klaviyoconnect', { url: cpUrl('utilities/klaviyo-connect') }),
+  warning: connectionWarnings ? connectionWarnings|join(' '),
+}, '') }}
 
 <hr>
 

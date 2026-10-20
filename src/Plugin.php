@@ -98,11 +98,11 @@ class Plugin extends BasePlugin
 			});
 		}
 
-		if (Craft::$app->plugins->isPluginEnabled('commerce')) {
-			Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITIES, static function (RegisterComponentTypesEvent $event): void {
-				$event->types[] = KCUtilities::class;
-			});
+		Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITIES, static function (RegisterComponentTypesEvent $event): void {
+			$event->types[] = KCUtilities::class;
+		});
 
+		if (Craft::$app->plugins->isPluginEnabled('commerce')) {
 			// Register for site requests only, so CP and console order saves don't send Started Checkout
 			if ($settings->trackCommerceStartedCheckout && Craft::$app->getRequest()->getIsSiteRequest()) {
 				Event::on(Order::class, Order::EVENT_AFTER_SAVE, static function (Event $event): void {
