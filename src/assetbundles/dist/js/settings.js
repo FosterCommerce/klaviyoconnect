@@ -1,34 +1,17 @@
 (function($) {
 	Craft.KlaviyoConnect = Craft.KlaviyoConnect || {};
 
-	Craft.KlaviyoConnect.Settings = Garnish.Base.extend({
-		init(ids) {
-			this.initTestConnection(ids);
-			this.initCustomProperties(ids);
-			this.initImageEngine(ids);
-			this.initReveal();
-		},
-
-		initTestConnection(ids) {
-			const $button = $('#' + ids.testConnectionButton);
-			const $results = $('#' + ids.testResults);
+	Craft.KlaviyoConnect.ConnectionCheck = Garnish.Base.extend({
+		init({ button, results }) {
+			const $button = $('#' + button);
+			const $results = $('#' + results);
 
 			$button.on('click', () => {
 				$button.addClass('loading');
 				$results.empty();
 
-				Craft.sendActionRequest('POST', 'klaviyoconnect/settings/test-connection', {
-					data: $button.closest('form').find('[name^="settings["]').serialize(),
-				})
+				Craft.sendActionRequest('POST', 'klaviyoconnect/settings/test-connection')
 					.then(({ data }) => {
-						if (data.lastErrorCleared) {
-							$button.closest('.field').find('.warning').remove();
-						}
-
-						const $siteLists = $('#' + ids.siteLists);
-						$siteLists.html(data.siteListsHtml);
-						Craft.initUiElements($siteLists);
-
 						data.results.forEach((result) => {
 							$('<li/>')
 								.append($('<span/>', { class: 'status ' + (result.connected ? 'green' : 'red') }))
@@ -40,6 +23,14 @@
 					.catch(({ response }) => Craft.cp.displayError(response?.data?.message))
 					.finally(() => $button.removeClass('loading'));
 			});
+		},
+	});
+
+	Craft.KlaviyoConnect.Settings = Garnish.Base.extend({
+		init(ids) {
+			this.initCustomProperties(ids);
+			this.initImageEngine(ids);
+			this.initReveal();
 		},
 
 		initCustomProperties(ids) {

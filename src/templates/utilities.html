@@ -1,5 +1,24 @@
 {% import '_includes/forms' as forms %}
 
+{% do view.registerAssetBundle('fostercommerce\\klaviyoconnect\\assetbundles\\SettingsAsset') %}
+{% js %}
+  new Craft.KlaviyoConnect.ConnectionCheck({{ {
+    button: 'klaviyoconnect-test-connection',
+    results: 'klaviyoconnect-test-results',
+  }|json_encode|raw }});
+{% endjs %}
+
+<h2>{{ 'connection.heading'|t('klaviyoconnect') }}</h2>
+<p>{{ 'connection.instructions'|t('klaviyoconnect') }}</p>
+<button type="button" class="btn" id="klaviyoconnect-test-connection">
+  <div class="label">{{ 'connection.button'|t('klaviyoconnect') }}</div>
+  <div class="spinner spinner-absolute"></div>
+</button>
+<ul id="klaviyoconnect-test-results" class="klaviyoconnect-test-results" role="status"></ul>
+
+{% if craft.app.plugins.isPluginEnabled('commerce') %}
+<hr>
+
 <form method="post" accept-charset="UTF-8">
   {{ actionInput('klaviyoconnect/orders/sync') }}
   {{ csrfInput() }}
@@ -25,3 +44,4 @@
 
   <button type="submit" class="btn submit">{{ 'sync.button'|t('klaviyoconnect') }}</button>
 </form>
+{% endif %}

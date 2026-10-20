@@ -10,23 +10,13 @@ Every setting on **Settings -> Plugins -> Klaviyo Connect**, in the order the pa
 | Sites: Private API Key | `klaviyoApiKey` | Blank | Sends events, profiles and list signups. If a site's key is blank, Klaviyo Connect does not send that site's data. |
 | Sites: Cart URL | `cartUrl` | `/shop/cart` | The page a restored cart opens on. Enter a path relative to the site, such as `cart`, `/` for the homepage, or a full URL. |
 | Sites: Event Prefix | `eventPrefix` | Blank | Added before every event name, followed by a space. Up to 60 characters. |
-| Connection | | | **Check Connection and Load Lists** checks each site's Private API Key, including unsaved changes, and reloads that site's lists. |
+| Connection | | | Shows a warning for each site whose Private API Key is an environment variable that isn't set. To check each site's saved key and reload its lists, click **Check Connection** at **Utilities -> Klaviyo Connect**. |
 
 The **Sites** table has one row per site. Enter keys as environment variables, such as `$KLAVIYO_PRIVATE_API_KEY`, to keep them out of project config. To share one Klaviyo account across sites, enter the same variable names in each row. To use a separate account for a site, give that row its own variables.
 
 A site with a blank cell uses the value of that config key from `config/klaviyoconnect.php`, and the table shows which keys the file sets. After an upgrade from a version before 7.3, the single account saved before the upgrade fills every row.
 
 When a queued send fails, **Connection** shows the error Klaviyo returned and its date. The error clears after a connection check where every site with a Private API Key connects.
-
-## Lists
-
-| Setting | Config key | Default | What it does |
-|---|---|---|---|
-| Lists for {site} | `siteSettings.{siteUid}.klaviyoAvailableLists` | No lists | The lists that [Klaviyo List and Klaviyo Lists fields](../user-guide/list-fields.md) offer on that site. **All** offers every list in the site's account. |
-
-If a site's lists cannot load, saving the page keeps that site's chosen lists. For when lists refresh, see [refresh the lists](../user-guide/list-fields.md#refresh-the-lists).
-
-To set lists for every site from the config file, use `klaviyoAvailableLists` with an array of list IDs, or `'*'` for every list. A site with its own lists chosen ignores that key.
 
 ## Tracking
 
@@ -74,7 +64,7 @@ In the config file, `profileAttributeFields` is keyed by `external_id`, `phone_n
 | Send Categories | `sendCategories` | On | Adds `Categories` to order events, their line items and Viewed Product. Categories come from **Product Type Data Mapping**. |
 | Send Pricing Detail | `sendPricingDetail` | On | Adds `Subtotal`, `ShippingTotal`, `TaxTotal` and `ShippingMethod` to order events, and `SalePrice`, `Discount`, `Tax` and `Total` to line items. |
 | Send Site and Store | `sendSiteContext` | On | Adds `SiteHandle` and `StoreHandle` to order events. |
-| Product Type Data Mapping | `productTypeFields` | No fields | For each product type: its **Catalog Item ID**, image fields, and where its category and brand come from. Shown when Commerce has a product type. |
+| Product Type Data Mapping | `productTypeFields` | No fields | For each product type: its **Catalog Item ID**, image fields, and where its category and brand come from, for cart and order line items, Ordered Product and Viewed Product. Shown when Commerce has a product type. |
 | Image Engine | `imageEngine` | None, or Craft when a saved transform exists | How the product and variant image URLs sent to Klaviyo are produced: `none` (the image's own URL), `craft`, `imagerx` or `smallpics`. Imager X and Small Pics appear when installed. |
 | Craft Transform | `productImageFieldTransformation` | `productThumbnail` | With the Craft engine, a named image transform, or **Custom size** to use **Width**, **Height** and **Fit**. If no transform has the saved handle, Klaviyo Connect uses the saved size, or the original image. |
 | Width, Height, Fit | `imageWidth`, `imageHeight`, `imageFit` | None, None, `crop` | The size for Imager X, Small Pics, or Craft without a named transform. Either width or height can be left blank. `imageFit` is `crop` or `fit`. With no width or height, Klaviyo Connect sends the original image. |
@@ -98,8 +88,6 @@ return [
     'klaviyoApiKey' => '$KLAVIYO_PRIVATE_API_KEY',
     'cartUrl' => 'cart',
     'eventPrefix' => '',
-
-    'klaviyoAvailableLists' => '*',
 
     'injectOnsiteScript' => true,
     'excludedUriPatterns' => [
@@ -144,4 +132,4 @@ return [
 ];
 ```
 
-To set one site's values from the file, use `siteSettings`, keyed by site UID. Each site's array accepts `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl`, `eventPrefix` and `klaviyoAvailableLists`. Setting `siteSettings` in the file replaces every row the control panel saved.
+To set one site's values from the file, use `siteSettings`, keyed by site UID. Each site's array accepts `klaviyoSiteId`, `klaviyoApiKey`, `cartUrl` and `eventPrefix`. Setting `siteSettings` in the file replaces every row the control panel saved.

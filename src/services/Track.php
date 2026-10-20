@@ -52,6 +52,11 @@ class Track extends Base
 
 	public const ADD_PROFILE_PROPERTIES = 'addProfileProperties';
 
+	/**
+	 * @var array<int, true>
+	 */
+	private array $warnedUnsetApiKeyBySiteId = [];
+
 	public function onSaveUser(Event $event): void
 	{
 		/** @var User $user */
@@ -782,7 +787,17 @@ class Track extends Base
 	private function queue(SendToKlaviyo $job): bool
 	{
 		// Skip sites without a Private API Key, since every request without one fails with a 401
-		if (Plugin::getInstance()->getSettings()->getApiKey($job->siteId) === '') {
+		$settings = Plugin::getInstance()->getSettings();
+		if ($settings->getApiKey($job->siteId) === '') {
+			$rawApiKey = $settings->getRawApiKey($job->siteId);
+
+			// Warn about an unset variable but not a blank key, which opts the site out
+			$siteId = $job->siteId ?? 0;
+			if ($rawApiKey !== '' && ! isset($this->warnedUnsetApiKeyBySiteId[$siteId])) {
+				Craft::warning("Klaviyo Connect skipped sends for site {$siteId}, because the environment variable {$rawApiKey} isn't set.", 'klaviyoconnect');
+				$this->warnedUnsetApiKeyBySiteId[$siteId] = true;
+			}
+
 			return false;
 		}
 

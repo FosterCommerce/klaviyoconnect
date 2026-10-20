@@ -256,20 +256,13 @@ class Api extends Base
 
 	/**
 	 * @return KlaviyoList[]
+	 * @deprecated in 7.5.0. Use `getLists()`, since list fields show every list in the site's Klaviyo account.
 	 */
 	public function getAvailableLists(?int $siteId = null, bool $refresh = false): array
 	{
-		$settings = Plugin::getInstance()->getSettings();
-		if ($settings->getListsAll($siteId)) {
-			return $this->getLists($siteId, $refresh);
-		}
+		Craft::$app->getDeprecator()->log(__METHOD__, '`Api::getAvailableLists()` has been deprecated. Use `getLists()` instead.');
 
-		$availableListIds = $settings->getAvailableLists($siteId);
-
-		return array_values(array_filter(
-			$this->getLists($siteId, $refresh),
-			static fn (KlaviyoList $list): bool => in_array($list->id, $availableListIds, true),
-		));
+		return $this->getLists($siteId, $refresh);
 	}
 
 	public function getProfileId(string $profileEmail, ?int $siteId = null): ?string

@@ -2,6 +2,16 @@
 
 What to change on a site when updating Klaviyo Connect. For every change in a release, see the [changelog](https://github.com/FosterCommerce/klaviyoconnect/blob/main/CHANGELOG.md).
 
+## Upgrading to 7.5.0
+
+### Klaviyo List and Klaviyo Lists fields
+
+The fields now show every list in the site's Klaviyo account. The plugin settings no longer have **Lists for {site}**, and `klaviyoAvailableLists` and `klaviyoListsAll` are deprecated. Klaviyo Connect ignores both keys, and a config file that sets them still loads. `Api::getAvailableLists()` returns every list, the same as `getLists()`.
+
+### Connection check
+
+**Check Connection and Load Lists** moved from the plugin settings to **Utilities -> Klaviyo Connect**, as **Check Connection**. Save the plugin settings before you click **Check Connection**, because it checks the saved keys. A user without admin rights needs the **Klaviyo Connect** utility permission to use it.
+
 ## Upgrading to 7.4.0
 
 7.3.0 and 7.3.1 changed some classes and settings from 7.2, which may break sites that extend the classes or read the settings. 7.4.0 restores them, except where this section says otherwise.
@@ -55,7 +65,7 @@ composer update fostercommerce/klaviyoconnect
 ./craft migrate/all
 ```
 
-Then go to **Settings -> Plugins -> Klaviyo Connect**, click **Check Connection and Load Lists**, and click **Save**. Saving moves the single Klaviyo account from earlier versions into the **Sites** table, with the same keys, lists, cart URL and event prefix for every site.
+Then go to **Settings -> Plugins -> Klaviyo Connect** and click **Save**. Saving moves the single Klaviyo account from earlier versions into the **Sites** table, with the same keys, cart URL and event prefix for every site.
 
 ### Settings
 
