@@ -194,6 +194,6 @@ Event::on(
 
 ## Errors in a listener
 
-If a listener throws an exception, Klaviyo Connect logs it to the `klaviyoconnect` log category and does not send that event. The request that triggered the event continues, so a failing listener does not stop checkout.
+If a listener throws an exception or adds a value PHP can't serialize, Klaviyo Connect logs the error to the `klaviyoconnect` log category and does not send that event. The request that triggered the event continues, so a failing listener does not stop checkout.
 
 Placed Order is the exception. It is built in a queue job, for live orders and for past orders, so an exception fails the job. After fixing the listener, retry the job from **Utilities -> Queue Manager**.

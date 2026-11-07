@@ -94,6 +94,7 @@ class Plugin extends BasePlugin
 					self::getInstance()->track->onSaveUser($event);
 				} catch (Throwable $throwable) {
 					Craft::error('Klaviyo onSaveUser failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+					Craft::$app->getErrorHandler()->logException($throwable);
 				}
 			});
 		}
@@ -110,6 +111,7 @@ class Plugin extends BasePlugin
 						self::getInstance()->track->onStartedCheckout($event);
 					} catch (Throwable $throwable) {
 						Craft::error('Klaviyo onStartedCheckout failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+						Craft::$app->getErrorHandler()->logException($throwable);
 					}
 				});
 			}
@@ -121,6 +123,7 @@ class Plugin extends BasePlugin
 						self::getInstance()->track->onAddedToCart($event);
 					} catch (Throwable $throwable) {
 						Craft::error('Klaviyo onAddedToCart failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+						Craft::$app->getErrorHandler()->logException($throwable);
 					}
 				});
 			}
@@ -131,6 +134,7 @@ class Plugin extends BasePlugin
 						self::getInstance()->track->onCartUpdated($event);
 					} catch (Throwable $throwable) {
 						Craft::error('Klaviyo onCartUpdated failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+						Craft::$app->getErrorHandler()->logException($throwable);
 					}
 				});
 			}
@@ -155,6 +159,7 @@ class Plugin extends BasePlugin
 							self::getInstance()->track->onStatusChanged($event);
 						} catch (Throwable $throwable) {
 							Craft::error('Klaviyo onStatusChanged failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+							Craft::$app->getErrorHandler()->logException($throwable);
 						}
 					}
 				);
@@ -169,6 +174,7 @@ class Plugin extends BasePlugin
 							self::getInstance()->track->onOrderRefunded($event);
 						} catch (Throwable $throwable) {
 							Craft::error('Klaviyo onOrderRefunded failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+							Craft::$app->getErrorHandler()->logException($throwable);
 						}
 					}
 				);
