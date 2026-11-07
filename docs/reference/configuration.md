@@ -7,7 +7,7 @@ Every setting on **Settings -> Plugins -> Klaviyo Connect**, in the order the pa
 | Setting | Config key | Default | What it does |
 |---|---|---|---|
 | Sites: Public API Key | `klaviyoSiteId` | Blank | Used only by the tracking script. |
-| Sites: Private API Key | `klaviyoApiKey` | Blank | Sends events, profiles and list signups. If a site's key is blank, Klaviyo Connect does not send that site's data. |
+| Sites: Private API Key | `klaviyoApiKey` | Blank | Sends events, profiles and list signups. If a site's key is blank, or an environment variable that isn't set, Klaviyo Connect does not send that site's data. |
 | Sites: Cart URL | `cartUrl` | `/shop/cart` | The page a restored cart opens on. Enter a path relative to the site, such as `cart`, `/` for the homepage, or a full URL. |
 | Sites: Event Prefix | `eventPrefix` | Blank | Added before every event name, followed by a space. Up to 60 characters. |
 | Connection | | | Shows a warning for each site whose Private API Key is an environment variable that isn't set. To check each site's saved key and reload its lists, click **Check Connection** at **Utilities -> Klaviyo Connect**. |
@@ -77,7 +77,7 @@ In the config file, `productTypeFields` is keyed by product type UID or handle. 
 
 ## Config file
 
-A key set in `config/klaviyoconnect.php` overrides the value saved in the control panel. The **Sites** table and list keys are the exception: they fill only blank cells, unless the file sets `siteSettings`.
+A key set in `config/klaviyoconnect.php` overrides the value saved in the control panel. The **Sites** table is the exception: its keys fill only blank cells, unless the file sets `siteSettings`.
 
 ```php
 <?php

@@ -2,9 +2,6 @@
 
 ## 7.5.0 - 2026-11-07
 
-> [!NOTE]
-> Klaviyo List and Klaviyo Lists fields now show every list in the site’s Klaviyo account, and “Check Connection” moved to the Klaviyo Connect utility. See [upgrading to 7.5.0](https://github.com/FosterCommerce/klaviyoconnect/blob/main/docs/upgrade.md#upgrading-to-750).
-
 ### Added
 
 - Added `fostercommerce\klaviyoconnect\models\Settings::getRawApiKey()`.
@@ -13,16 +10,16 @@
 
 - Each event sent to Klaviyo is now logged at the `debug` level.
 - Errors logged when tracking fails are now followed by the exception and its stack trace.
-- When an event can’t be queued because it contains a value PHP can’t serialize, the logged error now names that value.
+- When an event, profile update, or list signup can’t be queued because it contains a value PHP can’t serialize, the logged error now names that value.
 - Moved “Check Connection and Load Lists” from the plugin settings to the Klaviyo Connect utility, as “Check Connection”.
-- “Check Connection” now checks each site's saved Private API Key, and works where `allowAdminChanges` is off.
+- “Check Connection” now checks each site’s saved Private API Key, works where `allowAdminChanges` is off, and is available to users with the Klaviyo Connect utility permission.
 - The Klaviyo Connect utility is now available without Craft Commerce.
-- Klaviyo List and Klaviyo Lists fields now show every list in the site's Klaviyo account.
-- `Api::getAvailableLists()` now returns every list in the site's Klaviyo account.
+- Klaviyo List and Klaviyo Lists fields now show every list in the site’s Klaviyo account.
+- `fostercommerce\klaviyoconnect\services\Api::getAvailableLists()` now returns every list in the site’s Klaviyo account, `fostercommerce\klaviyoconnect\models\Settings::getAvailableLists()` now returns an empty array, and `fostercommerce\klaviyoconnect\models\Settings::getListsAll()` now returns `true`.
 
 ### Deprecated
 
-- Deprecated the `klaviyoAvailableLists` and `klaviyoListsAll` settings, `Settings::getAvailableLists()`, `Settings::getListsAll()` and `Api::getAvailableLists()`.
+- Deprecated the `klaviyoAvailableLists` and `klaviyoListsAll` settings, `fostercommerce\klaviyoconnect\models\Settings::getAvailableLists()`, `fostercommerce\klaviyoconnect\models\Settings::getListsAll()`, and `fostercommerce\klaviyoconnect\services\Api::getAvailableLists()`.
 
 ### Removed
 
@@ -30,7 +27,7 @@
 
 ### Fixed
 
-- Fixed an issue where Klaviyo Connect didn't report a site whose Private API Key is an environment variable that isn't set.
+- Fixed an issue where a site whose Private API Key is an environment variable that isn’t set didn’t send to Klaviyo, and no warning said why.
 
 ## 7.4.0 - 2026-10-03
 

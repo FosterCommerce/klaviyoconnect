@@ -6,7 +6,7 @@ What to change on a site when updating Klaviyo Connect. For every change in a re
 
 ### Klaviyo List and Klaviyo Lists fields
 
-The fields now show every list in the site's Klaviyo account. The plugin settings no longer have **Lists for {site}**, and `klaviyoAvailableLists` and `klaviyoListsAll` are deprecated. Klaviyo Connect ignores both keys, and a config file that sets them still loads. `Api::getAvailableLists()` returns every list, the same as `getLists()`.
+The fields now show every list in the site's Klaviyo account. The plugin settings no longer have **Lists for {site}**. Klaviyo Connect ignores the deprecated `klaviyoAvailableLists` and `klaviyoListsAll` keys, including `klaviyoAvailableLists` under `siteSettings`, and a config file that sets them still loads. `Api::getAvailableLists()` returns every list, the same as `getLists()`. `Settings::getAvailableLists()` returns an empty array, and `Settings::getListsAll()` returns `true`.
 
 ### Connection check
 
