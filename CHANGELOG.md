@@ -1,6 +1,9 @@
 # Release Notes for Klaviyo Connect
 
-## Unreleased
+## 7.5.0 - 2026-11-07
+
+> [!NOTE]
+> Klaviyo List and Klaviyo Lists fields now show every list in the site’s Klaviyo account, and “Check Connection” moved to the Klaviyo Connect utility. See [upgrading to 7.5.0](https://github.com/FosterCommerce/klaviyoconnect/blob/main/docs/upgrade.md#upgrading-to-750).
 
 ### Added
 
@@ -8,7 +11,9 @@
 
 ### Changed
 
-- Klaviyo Connect now logs each event it sends to Klaviyo at the `debug` level.
+- Each event sent to Klaviyo is now logged at the `debug` level.
+- Errors logged when tracking fails are now followed by the exception and its stack trace.
+- When an event can’t be queued because it contains a value PHP can’t serialize, the logged error now names that value.
 - Moved “Check Connection and Load Lists” from the plugin settings to the Klaviyo Connect utility, as “Check Connection”.
 - “Check Connection” now checks each site's saved Private API Key, and works where `allowAdminChanges` is off.
 - The Klaviyo Connect utility is now available without Craft Commerce.

@@ -35,18 +35,21 @@ class ApiController extends Controller
 			$this->identify();
 		} catch (Throwable $throwable) {
 			Craft::error('Klaviyo identify failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+			Craft::$app->getErrorHandler()->logException($throwable);
 		}
 
 		try {
 			$this->trackEvent();
 		} catch (Throwable $throwable) {
 			Craft::error('Klaviyo trackEvent failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+			Craft::$app->getErrorHandler()->logException($throwable);
 		}
 
 		try {
 			$this->addProfileToLists();
 		} catch (Throwable $throwable) {
 			Craft::error('Klaviyo addProfileToLists failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+			Craft::$app->getErrorHandler()->logException($throwable);
 		}
 
 		return $this->forwardOrRedirect();
@@ -84,6 +87,7 @@ class ApiController extends Controller
 			$this->identify();
 		} catch (Throwable $throwable) {
 			Craft::error('Klaviyo identify failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+			Craft::$app->getErrorHandler()->logException($throwable);
 		}
 
 		// Discard the response, since actionIdentify() stays void for 7.2.5 subclasses
@@ -216,6 +220,7 @@ class ApiController extends Controller
 		} catch (Throwable $throwable) {
 			// Swallow. Klaviyo flake/outage must not break host request flow.
 			Craft::error('Klaviyo identifyUser failed: ' . $throwable->getMessage(), 'klaviyoconnect');
+			Craft::$app->getErrorHandler()->logException($throwable);
 		}
 	}
 

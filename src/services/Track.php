@@ -39,6 +39,7 @@ use fostercommerce\klaviyoconnect\queue\jobs\SendToKlaviyo;
 use fostercommerce\klaviyoconnect\queue\jobs\SyncOrders;
 use Illuminate\Support\Collection;
 use Stringable;
+use Throwable;
 use yii\base\Event;
 use yii\caching\CacheInterface;
 
@@ -801,9 +802,41 @@ class Track extends Base
 			return false;
 		}
 
-		Craft::$app->getQueue()->push($job);
+		try {
+			Craft::$app->getQueue()->push($job);
+		} catch (Throwable $throwable) {
+			$unserializablePaths = $this->unserializablePaths(get_object_vars($job), 'job');
+			if ($unserializablePaths !== []) {
+				Craft::error('Klaviyo Connect couldn’t queue a send. These payload values can’t be serialized: ' . implode(', ', $unserializablePaths), 'klaviyoconnect');
+			}
+
+			throw $throwable;
+		}
 
 		return true;
+	}
+
+	/**
+	 * @return list<string>
+	 */
+	private function unserializablePaths(mixed $value, string $path): array
+	{
+		if (is_array($value)) {
+			$paths = [];
+			foreach ($value as $key => $item) {
+				$paths = [...$paths, ...$this->unserializablePaths($item, "{$path}.{$key}")];
+			}
+
+			return $paths;
+		}
+
+		try {
+			serialize($value);
+		} catch (Throwable) {
+			return [$path . ' (' . get_debug_type($value) . ')'];
+		}
+
+		return [];
 	}
 
 	/**
